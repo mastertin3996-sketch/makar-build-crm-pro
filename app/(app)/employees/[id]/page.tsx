@@ -1,0 +1,234 @@
+import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import { requireUser } from "@/lib/auth";
+import {
+  can,
+  ROLE_LABELS,
+  SCOPE_LABELS,
+  MODULES,
+  ACTIONS,
+  FINANCE_PERMS,
+  effectiveMatrix,
+  effectiveFinance,
+} from "@/lib/permissions";
+import { PageHeader, Card } from "@/components/ui";
+import { formatDate } from "@/lib/labels";
+import type { Role, RequestScope } from "@prisma/client";
+import {
+  changeRole,
+  toggleBlock,
+  resetPassword,
+  assignManager,
+  updatePermissions,
+} from "../actions";
+
+export const dynamic = "force-dynamic";
+
+export default async function EmployeeCardPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const me = await requireUser();
+  if (!can(me, "employees", "view")) redirect("/");
+  const canEdit = can(me, "employees", "edit");
+
+  const { id } = await params;
+  const user = await prisma.user.findUnique({
+    where: { id },
+    include: { manager: true },
+  });
+  if (!user) notFound();
+
+  const matrix = effectiveMatrix(user);
+  const finance = effectiveFinance(user);
+  const managers = await prisma.user.findMany({
+    where: { role: { in: ["OWNER", "ADMIN", "SALES_HEAD"] }, id: { not: user.id } },
+    orderBy: { fullName: "asc" },
+  });
+  const ROLES = Object.keys(ROLE_LABELS) as Role[];
+  const SCOPES = Object.keys(SCOPE_LABELS) as RequestScope[];
+  const usingDefaults = !user.permissions;
+
+  return (
+    <>
+      <PageHeader
+        title={user.fullName}
+        subtitle={`${ROLE_LABELS[user.role]} · ${user.email}`}
+        action={
+          <Link href="/employees" className="text-sm text-slate-500 hover:text-slate-700">
+            ← До списку
+          </Link>
+        }
+      />
+
+      <div className="grid gap-6 p-8 lg:grid-cols-3">
+        {/* Ліворуч — швидкі дії */}
+        <div className="space-y-6">
+          <Card className="p-6">
+            <h2 className="mb-4 text-base font-semibold text-slate-900">Обліковий запис</h2>
+            <dl className="space-y-2 text-sm">
+              <Row label="Статус" value={user.isActive ? "Активний" : "Заблокований"} />
+              <Row label="Логін" value={user.login ?? "—"} />
+              <Row label="Керівник" value={user.manager?.fullName ?? "—"} />
+              <Row label="Останній вхід" value={user.lastLoginAt ? formatDate(user.lastLoginAt) : "—"} />
+              <Row label="2FA" value={user.twoFactorEnabled ? "Увімкнено" : "Вимкнено"} />
+            </dl>
+          </Card>
+
+          {canEdit && (
+            <>
+              <Card className="p-6">
+                <h3 className="mb-3 text-sm font-semibold text-slate-900">Роль</h3>
+                <form action={changeRole} className="flex gap-2">
+                  <input type="hidden" name="id" value={user.id} />
+                  <select name="role" defaultValue={user.role} className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+                    {ROLES.filter((r) => r !== "OWNER" || me.role === "OWNER").map((r) => (
+                      <option key={r} value={r}>{ROLE_LABELS[r]}</option>
+                    ))}
+                  </select>
+                  <button className="rounded-lg bg-slate-800 px-3 py-2 text-sm font-medium text-white hover:bg-slate-900">OK</button>
+                </form>
+              </Card>
+
+              <Card className="p-6">
+                <h3 className="mb-3 text-sm font-semibold text-slate-900">Керівник</h3>
+                <form action={assignManager} className="flex gap-2">
+                  <input type="hidden" name="id" value={user.id} />
+                  <select name="managerId" defaultValue={user.managerId ?? ""} className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+                    <option value="">— не призначено —</option>
+                    {managers.map((m) => (
+                      <option key={m.id} value={m.id}>{m.fullName}</option>
+                    ))}
+                  </select>
+                  <button className="rounded-lg bg-slate-800 px-3 py-2 text-sm font-medium text-white hover:bg-slate-900">OK</button>
+                </form>
+              </Card>
+
+              <Card className="p-6">
+                <h3 className="mb-3 text-sm font-semibold text-slate-900">Скинути пароль</h3>
+                <form action={resetPassword} className="flex gap-2">
+                  <input type="hidden" name="id" value={user.id} />
+                  <input name="password" type="text" placeholder="Новий пароль (мін. 6)" className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500" />
+                  <button className="rounded-lg bg-slate-800 px-3 py-2 text-sm font-medium text-white hover:bg-slate-900">Скинути</button>
+                </form>
+              </Card>
+
+              {user.role !== "OWNER" && user.id !== me.id && (
+                <Card className="p-6">
+                  <h3 className="mb-3 text-sm font-semibold text-slate-900">Доступ</h3>
+                  <form action={toggleBlock}>
+                    <input type="hidden" name="id" value={user.id} />
+                    <button className={`w-full rounded-lg px-4 py-2 text-sm font-medium text-white ${user.isActive ? "bg-red-600 hover:bg-red-700" : "bg-emerald-600 hover:bg-emerald-700"}`}>
+                      {user.isActive ? "🔒 Заблокувати" : "🔓 Розблокувати"}
+                    </button>
+                  </form>
+                </Card>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* Праворуч — матриця прав */}
+        <div className="lg:col-span-2">
+          <Card className="p-6">
+            <div className="mb-1 flex items-center justify-between">
+              <h2 className="text-base font-semibold text-slate-900">
+                Гнучке налаштування доступу
+              </h2>
+              {usingDefaults && (
+                <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-700">
+                  Дефолти ролі
+                </span>
+              )}
+            </div>
+            <p className="mb-4 text-xs text-slate-500">
+              Права за замовчуванням визначені роллю. Будь-яку клітинку можна перевизначити вручну.
+            </p>
+
+            <form action={updatePermissions} className="space-y-6">
+              <input type="hidden" name="id" value={user.id} />
+
+              {/* Матриця модулів */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-xs uppercase tracking-wide text-slate-400">
+                      <th className="px-2 py-2 text-left font-medium">Модуль</th>
+                      {ACTIONS.map((a) => (
+                        <th key={a.key} className="px-2 py-2 text-center font-medium">{a.label}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {MODULES.map((m) => (
+                      <tr key={m.key}>
+                        <td className="px-2 py-2 text-slate-700">{m.label}</td>
+                        {ACTIONS.map((a) => (
+                          <td key={a.key} className="px-2 py-2 text-center">
+                            <input
+                              type="checkbox"
+                              name={`perm.${m.key}.${a.key}`}
+                              defaultChecked={matrix[m.key][a.key]}
+                              disabled={!canEdit}
+                              className="h-4 w-4 accent-teal-600"
+                            />
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Контроль заявок */}
+              <div>
+                <h3 className="mb-2 text-sm font-semibold text-slate-900">Контроль заявок</h3>
+                <select name="scope" defaultValue={user.requestScope} disabled={!canEdit} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500 md:w-72">
+                  {SCOPES.map((s) => (
+                    <option key={s} value={s}>{SCOPE_LABELS[s]}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Фінансові права */}
+              <div>
+                <h3 className="mb-2 text-sm font-semibold text-slate-900">Контроль фінансів</h3>
+                <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+                  {FINANCE_PERMS.map((f) => (
+                    <label key={f.key} className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                      <input
+                        type="checkbox"
+                        name={`fin.${f.key}`}
+                        defaultChecked={finance[f.key]}
+                        disabled={!canEdit}
+                        className="h-4 w-4 accent-teal-600"
+                      />
+                      {f.label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {canEdit && (
+                <button className="rounded-lg bg-teal-600 px-5 py-2 text-sm font-medium text-white hover:bg-teal-700">
+                  Зберегти права доступу
+                </button>
+              )}
+            </form>
+          </Card>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between gap-3">
+      <dt className="text-slate-400">{label}</dt>
+      <dd className="text-right text-slate-700">{value}</dd>
+    </div>
+  );
+}

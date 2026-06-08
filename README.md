@@ -1,36 +1,122 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MAKAR BUILD CRM PRO — прототип (MVP)
 
-## Getting Started
+CRM/ERP система для продажу будівельних матеріалів, огорож, воріт та металоконструкцій.
+**Усі модулі ТЗ реалізовано** (MVP): Dashboard, Клієнти, Заявки, Каталог, Склад, Замовлення,
+Логістика, Документообіг, Фінанси, Звіти, Месенджери, Телефонія, ШІ-помічник, Співробітники
+(авторизація+ролі), Журнал дій.
 
-First, run the development server:
+## Технології
+
+- **Next.js 16** (App Router, Server Components, Server Actions) + **React 19**
+- **TypeScript** + **Tailwind CSS v4**
+- **Prisma 7** ORM
+- **Anthropic Claude** (claude-opus-4-8) для ШІ-модуля (опціонально, з офлайн-фолбеком)
+- **SQLite** для локального прототипу (легко перемикається на PostgreSQL — див. нижче)
+
+## Запуск
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run db:reset   # створює БД + наповнює демо-даними (seed)
+npm run dev        # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Корисні команди:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Команда | Дія |
+|---|---|
+| `npm run dev` | Дев-сервер |
+| `npm run build` / `npm start` | Продакшен-збірка / запуск |
+| `npm run db:seed` | Наповнити демо-даними |
+| `npm run db:reset` | Перестворити БД + seed |
+| `npm run db:studio` | Prisma Studio (перегляд БД) |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Що реалізовано
 
-## Learn More
+- **Dashboard** — KPI (продажі, очікування оплат, нові заявки, активні замовлення),
+  графік заявок за статусами, джерела лідів, таблиця останніх заявок.
+- **Клієнти** — список із пошуком, додавання клієнта, картка клієнта з блоком
+  «Комунікації з клієнтом» (нотатки/завдання/Email/SMS/Telegram/Viber/Instagram),
+  історія взаємодій, заявки клієнта.
+- **Заявки** — список із фільтром за 13 статусами (ТЗ), швидке створення,
+  картка заявки з позиціями (прорахунок), зміною статусу та комунікаціями.
+- **Каталог** — 10 категорій (3D паркани, стовпи, ворота, хвіртки, профнастил,
+  металоконструкції, послуги тощо), додавання товару, маржа, контроль залишків.
+- **Телефонія** — інтеграції Binotel / Ringostat / UniTalk: історія дзвінків (вхідні/вихідні/
+  пропущені), записи розмов, **автоматичне створення лідів** із вхідних дзвінків невідомих
+  номерів, контроль менеджерів (кількість, час розмов, пропущені); демо-кнопка вхідного
+  дзвінка з авто-лідом.
+- **Месенджери** — єдине вікно комунікацій (Telegram, Viber, WhatsApp, Instagram, Facebook,
+  Email, SMS): список діалогів зліва з фільтром каналів і лічильником непрочитаних, листування
+  з бульбашками (вхідні/вихідні), композер із підтримкою емодзі та вкладень; нові діалоги,
+  демо-імітація вхідних; вихідні дублюються в історію комунікацій клієнта.
+- **Звіти** — 7 звітів (продажі по місяцях, KPI менеджерів, топ товарів, відправлення по
+  містах, прибуток із COGS, воронка конверсії, джерела лідів) із бар-чартами; звіт прибутку
+  прихований без права `canFinance(profit)`.
+- **Фінанси** — облік оплат (готівка / банк / післяплата / онлайн), провайдери (LiqPay,
+  WayForPay, Fondy, Monobank, ПриватБанк), напрям (надходження/видаток), статуси
+  (очікує/оплачено/відхилено/повернено), онлайн-оплата з платіжним посиланням (демо-шлюз) і
+  підтвердженням; KPI (надходження/очікувані/чистий потік) та **контроль заборгованості** по
+  клієнтах. Фінансові показники приховуються без відповідних прав (`canFinance`).
+- **Документообіг** — генерація 6 типів документів (КП, рахунок, договір, акт, видаткова
+  накладна, гарантійний лист) з автозаповненням позицій із замовлення/заявки; статуси;
+  друк/PDF (бланк із реквізитами, `/doc/[id]`); **експорт у Word (.doc) та Excel (.xls)**;
+  типоспецифічний рендер (реквізити оплати в рахунку, текст договору тощо).
+- **ШІ-помічник** — генерація документів (КП/рахунок/договір), автоматичні відповіді клієнтам,
+  аналіз продажів і рекомендації менеджерам. Працює через **Anthropic Claude (claude-opus-4-8)**
+  за наявності `ANTHROPIC_API_KEY`, інакше — детермінований офлайн-фолбек (демо-шаблони).
+- **Логістика** — відправлення/ТТН, перевізники (Нова Пошта, Укрпошта, Meest, Delivery,
+  SAT), створення ТТН з автозаповненням отримувача із замовлення, відстеження з історією
+  статусів (timeline), авто-оновлення статусу (демо-симуляція трекінгу), повернення/
+  скасування, **друк ТТН** (окремий бланк зі штрих-кодом, `/ttn/[id]`).
+- **Замовлення** — мультиканальні (Сайт/Prom/Rozetka/Epicentr/OLX/Instagram/Facebook/
+  Telegram), картка з позиціями, життєвий цикл (нове→підтверджено→зарезервовано→
+  комплектація→відправлено→виконано/скасовано). **Автоматичне резервування товару під
+  замовлення** на складі; відвантаження списує резерв, скасування — повертає. Демо-кнопка
+  «Імпорт з каналу» імітує автостворення замовлень із маркетплейсу.
+- **Склад** — кілька складів, залишки по складах з резервом (доступно = залишок −
+  резерв), операції: надходження, списання, переміщення, резервування, зняття резерву,
+  інвентаризація, повернення; журнал рухів; KPI та підсвітка дефіциту. Залишки
+  синхронізуються з Каталогом.
+- **Авторизація та ролі** — вхід (email/логін + пароль, JWT у httpOnly-cookie +
+  refresh-токен), 9 ролей, гнучка матриця прав (модуль × дія), контроль видимості
+  заявок (свої/відділу/усі), фінансові права, журнал дій (аудит), панель
+  співробітників (створення/блокування/ролі/скидання пароля/керівник), сесії
+  пристроїв + «завершити всі сесії». Захист маршрутів через `proxy.ts`.
 
-To learn more about Next.js, take a look at the following resources:
+### Демо-доступи
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Роль | Логін | Пароль |
+|---|---|---|
+| Власник | `owner@makar.ua` | `owner1234` |
+| Адміністратор | `admin@makar.ua` | `admin1234` |
+| Керівник продажів | `head@makar.ua` | `head1234` |
+| Менеджер | `manager@makar.ua` | `manager1234` |
+| Бухгалтер | `buh@makar.ua` | `buh1234` |
+| Логіст | `logist@makar.ua` | `logist1234` |
+| Комірник | `sklad@makar.ua` | `sklad1234` |
+| Монтажник | `montaj@makar.ua` | `montaj1234` |
+| Спостерігач | `viewer@makar.ua` | `viewer1234` |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+> **Наступний етап безпеки (заскафолджено, не активовано):** 2FA (Email/Telegram/
+> Google Authenticator), CAPTCHA, обмеження за IP, автовихід після бездіяльності,
+> захист від підбору пароля, відновлення пароля. Для проду — задати випадковий
+> `AUTH_SECRET` у `.env`.
 
-## Deploy on Vercel
+## Перехід на PostgreSQL (для продакшену)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. У `prisma/schema.prisma` змінити `provider = "sqlite"` → `provider = "postgresql"`.
+2. У `.env` вказати `DATABASE_URL="postgresql://user:pass@host:5432/makar_crm"`.
+3. Замінити драйвер-адаптер у `lib/prisma.ts` та `prisma/seed.ts`
+   на `@prisma/adapter-pg` (`npm i @prisma/adapter-pg pg`).
+4. `npx prisma db push && npm run db:seed`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Що далі (поза MVP-прототипом)
+
+Усі функціональні модулі ТЗ реалізовано на рівні прототипу. Для продакшену залишаються:
+реальні інтеграції замість демо-симуляцій (API Нової Пошти/Укрпошти, платіжні шлюзи
+LiqPay/Mono/WayForPay, вебхуки месенджерів і АТС, OAuth маркетплейсів), повна 2FA/CAPTCHA,
+перехід на PostgreSQL, файлове сховище для вкладень, тести та CI/CD.
+
+Архітектура (Prisma-моделі, server actions, модульна структура `app/(app)/<модуль>/`)
+розрахована на поступову заміну заглушок реальними інтеграціями.

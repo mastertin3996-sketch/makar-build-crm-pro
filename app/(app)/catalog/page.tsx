@@ -1,0 +1,217 @@
+import Link from "next/link";
+import { prisma } from "@/lib/prisma";
+import { requireUser } from "@/lib/auth";
+import { canFinance } from "@/lib/permissions";
+import { PageHeader, Card } from "@/components/ui";
+import { CATEGORY_LABELS, formatUAH } from "@/lib/labels";
+import type { ProductCategory } from "@prisma/client";
+import { createProduct } from "./actions";
+
+export const dynamic = "force-dynamic";
+
+const CATEGORY_KEYS = Object.keys(CATEGORY_LABELS) as ProductCategory[];
+
+export default async function CatalogPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ cat?: string }>;
+}) {
+  const me = await requireUser();
+  const showCost = canFinance(me, "costPrices");
+  const showMargin = canFinance(me, "margin");
+  const { cat } = await searchParams;
+  const categoryFilter = CATEGORY_KEYS.includes(cat as ProductCategory)
+    ? (cat as ProductCategory)
+    : undefined;
+
+  const [products, counts] = await Promise.all([
+    prisma.product.findMany({
+      where: { category: categoryFilter },
+      orderBy: { name: "asc" },
+    }),
+    prisma.product.groupBy({ by: ["category"], _count: true }),
+  ]);
+
+  const countOf = (c: ProductCategory) =>
+    counts.find((x) => x.category === c)?._count ?? 0;
+  const total = counts.reduce((s, c) => s + c._count, 0);
+
+  return (
+    <>
+      <PageHeader title="Каталог товарів" subtitle={`Позицій: ${total}`} />
+
+      <div className="p-8 space-y-6">
+        {/* Додати товар */}
+        <Card>
+          <details className="group">
+            <summary className="flex cursor-pointer list-none items-center gap-2 px-6 py-4 text-sm font-medium text-teal-600">
+              <span className="text-lg leading-none">＋</span>
+              Додати товар
+            </summary>
+            <form
+              action={createProduct}
+              className="grid grid-cols-1 gap-4 border-t border-slate-100 px-6 py-5 md:grid-cols-3"
+            >
+              <Field name="name" label="Назва *" required className="md:col-span-2" />
+              <Field name="sku" label="Артикул" />
+              <label className="block">
+                <span className="mb-1 block text-xs font-medium text-slate-600">
+                  Категорія
+                </span>
+                <select
+                  name="category"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
+                >
+                  {CATEGORY_KEYS.map((c) => (
+                    <option key={c} value={c}>
+                      {CATEGORY_LABELS[c]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <Field name="unit" label="Одиниця" placeholder="шт" />
+              <Field name="stock" label="Залишок" type="number" />
+              <Field name="costPrice" label="Собівартість" type="number" />
+              <Field name="price" label="Ціна продажу" type="number" />
+              <Field name="minPrice" label="Мінімальна ціна" type="number" />
+              <Field name="description" label="Опис" className="md:col-span-3" />
+              <div className="md:col-span-3">
+                <button className="rounded-lg bg-teal-600 px-5 py-2 text-sm font-medium text-white hover:bg-teal-700">
+                  Зберегти товар
+                </button>
+              </div>
+            </form>
+          </details>
+        </Card>
+
+        {/* Категорії */}
+        <div className="flex flex-wrap gap-2">
+          <Chip href="/catalog" active={!categoryFilter} label={`Усі (${total})`} />
+          {CATEGORY_KEYS.filter((c) => countOf(c) > 0).map((c) => (
+            <Chip
+              key={c}
+              href={`/catalog?cat=${c}`}
+              active={categoryFilter === c}
+              label={`${CATEGORY_LABELS[c]} (${countOf(c)})`}
+            />
+          ))}
+        </div>
+
+        {/* Сітка товарів */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {products.map((p) => {
+            const margin =
+              p.price > 0
+                ? Math.round(((p.price - p.costPrice) / p.price) * 100)
+                : 0;
+            const lowStock = p.category !== "SERVICES" && p.stock <= 20;
+            return (
+              <Card key={p.id} className="flex flex-col p-5">
+                <div className="flex items-start justify-between gap-2">
+                  <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500">
+                    {CATEGORY_LABELS[p.category]}
+                  </span>
+                  {p.sku && (
+                    <span className="text-xs text-slate-400">{p.sku}</span>
+                  )}
+                </div>
+                <h3 className="mt-3 text-sm font-semibold text-slate-900">
+                  {p.name}
+                </h3>
+                {p.description && (
+                  <p className="mt-1 text-xs text-slate-500">{p.description}</p>
+                )}
+                <div className="mt-4 flex items-end justify-between">
+                  <div>
+                    <div className="text-lg font-bold text-slate-900">
+                      {formatUAH(p.price)}
+                    </div>
+                    {(showCost || showMargin) && (
+                      <div className="text-xs text-slate-400">
+                        {showCost && <>собів. {formatUAH(p.costPrice)}</>}
+                        {showCost && showMargin && " · "}
+                        {showMargin && <>маржа {margin}%</>}
+                      </div>
+                    )}
+                  </div>
+                  {p.category !== "SERVICES" && (
+                    <div
+                      className={`text-right text-xs ${
+                        lowStock ? "text-red-600" : "text-slate-500"
+                      }`}
+                    >
+                      <div className="font-medium">
+                        {p.stock} {p.unit}
+                      </div>
+                      <div>{lowStock ? "мало на складі" : "на складі"}</div>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            );
+          })}
+          {products.length === 0 && (
+            <div className="col-span-full rounded-xl border border-dashed border-slate-300 py-12 text-center text-slate-400">
+              Товарів не знайдено
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
+function Chip({
+  href,
+  active,
+  label,
+}: {
+  href: string;
+  active: boolean;
+  label: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+        active
+          ? "bg-slate-800 text-white"
+          : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+      }`}
+    >
+      {label}
+    </Link>
+  );
+}
+
+function Field({
+  name,
+  label,
+  type = "text",
+  required = false,
+  placeholder,
+  className = "",
+}: {
+  name: string;
+  label: string;
+  type?: string;
+  required?: boolean;
+  placeholder?: string;
+  className?: string;
+}) {
+  return (
+    <label className={`block ${className}`}>
+      <span className="mb-1 block text-xs font-medium text-slate-600">
+        {label}
+      </span>
+      <input
+        name={name}
+        type={type}
+        step={type === "number" ? "any" : undefined}
+        required={required}
+        placeholder={placeholder}
+        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
+      />
+    </label>
+  );
+}

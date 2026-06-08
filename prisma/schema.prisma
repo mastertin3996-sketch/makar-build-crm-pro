@@ -1,0 +1,595 @@
+// MAKAR BUILD CRM PRO — схема бази даних
+// Для прототипу використовується SQLite (працює без окремого сервера БД).
+// Для продакшену: змінити provider на "postgresql" і DATABASE_URL у .env
+// (Prisma робить цей перехід тривіальним).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ----------------------------------------------------------------------------
+// Клієнти (CRM)
+// ----------------------------------------------------------------------------
+model Client {
+  id          String   @id @default(cuid())
+  fullName    String // ПІБ
+  phone       String
+  email       String?
+  company     String? // Назва компанії
+  edrpou      String? // ЄДРПОУ
+  ipn         String? // ІПН
+  address     String? // Адреса доставки
+  notes       String? // Примітки
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  requests      Request[]
+  interactions  Interaction[]
+  orders        Order[]
+  shipments     Shipment[]
+  documents     Document[]
+  payments      Payment[]
+  conversations Conversation[]
+  calls         Call[]
+}
+
+// ----------------------------------------------------------------------------
+// Заявки
+// ----------------------------------------------------------------------------
+enum RequestStatus {
+  NEW_LEAD // Новий лід
+  CALL_BACK // Передзвонити
+  CALCULATION // Прорахунок
+  QUOTE_SENT // КП надіслано
+  APPROVAL // Узгодження
+  INVOICED // Рахунок виставлено
+  AWAITING_PAYMENT // Очікує оплату
+  PAID // Оплачено
+  PRODUCTION // Виробництво
+  PICKING // Комплектація
+  SHIPPED // Відправлено
+  COMPLETED // Завершено
+  CANCELLED // Скасовано
+}
+
+enum RequestSource {
+  WEBSITE
+  PROM
+  ROZETKA
+  EPICENTR
+  OLX
+  INSTAGRAM
+  FACEBOOK
+  TELEGRAM
+  PHONE
+  MANUAL
+}
+
+model Request {
+  id        String        @id @default(cuid())
+  number    Int           @unique // № заявки (присвоюється в коді: max+1)
+  title     String // Короткий опис
+  status    RequestStatus @default(NEW_LEAD)
+  source    RequestSource @default(MANUAL)
+  amount    Float         @default(0) // Сума
+  manager   String? // Менеджер
+  comment   String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  clientId String?
+  client   Client?       @relation(fields: [clientId], references: [id], onDelete: SetNull)
+
+  ownerId String? // власник заявки (менеджер) — для контролю видимості (scope)
+  owner   User?   @relation("OwnedRequests", fields: [ownerId], references: [id], onDelete: SetNull)
+
+  items        RequestItem[]
+  interactions Interaction[]
+  documents    Document[]
+  calls        Call[]
+}
+
+model RequestItem {
+  id        String  @id @default(cuid())
+  name      String
+  quantity  Float   @default(1)
+  price     Float   @default(0)
+  requestId String
+  request   Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+}
+
+// ----------------------------------------------------------------------------
+// Каталог товарів
+// ----------------------------------------------------------------------------
+enum ProductCategory {
+  FENCE_3D // 3D паркани
+  POSTS // Стовпи
+  FASTENERS // Кріплення
+  GATES // Ворота
+  WICKETS // Хвіртки
+  CHAIN_MESH // Сітка рабиця
+  PROFILED_SHEET // Профнастил
+  METAL_STRUCTURES // Металоконструкції
+  COMPONENTS // Комплектуючі
+  SERVICES // Послуги
+}
+
+model Product {
+  id          String          @id @default(cuid())
+  name        String
+  sku         String?         @unique // Артикул
+  category    ProductCategory
+  costPrice   Float           @default(0) // Собівартість
+  price       Float           @default(0) // Ціна продажу
+  minPrice    Float           @default(0) // Мінімальна ціна
+  stock       Float           @default(0) // Залишок
+  unit        String          @default("шт") // Одиниця
+  description String?
+  imageUrl    String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  requestItems RequestItem[]
+  stockItems   StockItem[]
+  movements    StockMovement[]
+  orderItems   OrderItem[]
+}
+
+// ----------------------------------------------------------------------------
+// Комунікації / Історія взаємодій
+// ----------------------------------------------------------------------------
+enum InteractionType {
+  NOTE // Нотатка
+  TASK // Завдання
+  CALL // Дзвінок
+  SMS
+  EMAIL
+  TELEGRAM
+  VIBER
+  INSTAGRAM
+}
+
+model Interaction {
+  id        String          @id @default(cuid())
+  type      InteractionType
+  content   String
+  createdAt DateTime        @default(now())
+
+  clientId  String?
+  client    Client?  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  requestId String?
+  request   Request? @relation(fields: [requestId], references: [id], onDelete: Cascade)
+}
+
+// ----------------------------------------------------------------------------
+// Авторизація, ролі та доступ
+// ----------------------------------------------------------------------------
+enum Role {
+  OWNER // Власник
+  ADMIN // Адміністратор
+  SALES_HEAD // Керівник відділу продажів
+  MANAGER // Менеджер
+  LOGIST // Логіст
+  STOREKEEPER // Комірник
+  ACCOUNTANT // Бухгалтер
+  INSTALLER // Монтажник
+  VIEWER // Спостерігач
+}
+
+enum RequestScope {
+  OWN // лише свої заявки
+  DEPARTMENT // заявки відділу
+  ALL // усі заявки
+}
+
+model User {
+  id               String       @id @default(cuid())
+  email            String       @unique
+  login            String?      @unique
+  passwordHash     String
+  fullName         String
+  role             Role         @default(MANAGER)
+  isActive         Boolean      @default(true)
+  twoFactorEnabled Boolean      @default(false)
+  requestScope     RequestScope @default(OWN)
+  // JSON-перевизначення прав (null = використати дефолти ролі):
+  permissions      String? // матриця модулів {module:{view,create,edit,delete,export,print}}
+  financePerms     String? // фінансові права {costPrices,profit,margin,payments,salaries}
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  lastLoginAt      DateTime?
+
+  managerId    String?
+  manager      User?   @relation("Subordinates", fields: [managerId], references: [id], onDelete: SetNull)
+  subordinates User[]  @relation("Subordinates")
+
+  ownedRequests    Request[]   @relation("OwnedRequests")
+  ownedOrders      Order[]     @relation("OwnedOrders")
+  ownedShipments   Shipment[]  @relation("OwnedShipments")
+  ownedDocuments   Document[]  @relation("OwnedDocuments")
+  recordedPayments Payment[]   @relation("RecordedPayments")
+  sentMessages     Message[]   @relation("SentMessages")
+  handledCalls     Call[]      @relation("HandledCalls")
+  sessions         Session[]
+  auditLogs        AuditLog[]
+}
+
+model Session {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshToken String    @unique
+  ip           String?
+  userAgent    String?
+  browser      String?
+  device       String?
+  location     String?
+  createdAt    DateTime  @default(now())
+  lastSeenAt   DateTime  @default(now())
+  revokedAt    DateTime?
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String // LOGIN, LOGOUT, CREATE_REQUEST, STATUS_CHANGE, ...
+  entity    String? // Request, Client, Product, User...
+  entityId  String?
+  details   String?
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+// ----------------------------------------------------------------------------
+// Складський облік
+// ----------------------------------------------------------------------------
+model Warehouse {
+  id        String   @id @default(cuid())
+  name      String
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  items     StockItem[]
+  movements StockMovement[] @relation("FromWarehouse")
+  incoming  StockMovement[] @relation("ToWarehouse")
+  orders    Order[]
+}
+
+// Залишок конкретного товару на конкретному складі
+model StockItem {
+  id          String    @id @default(cuid())
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  warehouseId String
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  quantity    Float     @default(0) // фізичний залишок
+  reserved    Float     @default(0) // зарезервовано (доступно = quantity - reserved)
+
+  @@unique([productId, warehouseId])
+}
+
+enum MovementType {
+  RECEIPT // Надходження
+  WRITEOFF // Списання
+  TRANSFER // Переміщення
+  RESERVE // Резервування
+  UNRESERVE // Зняття резерву
+  INVENTORY // Інвентаризація (коригування)
+  RETURN // Повернення
+}
+
+model StockMovement {
+  id            String       @id @default(cuid())
+  type          MovementType
+  quantity      Float
+  note          String?
+  createdAt     DateTime     @default(now())
+
+  productId     String
+  product       Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  warehouseId   String
+  warehouse     Warehouse    @relation("FromWarehouse", fields: [warehouseId], references: [id], onDelete: Cascade)
+  toWarehouseId String?
+  toWarehouse   Warehouse?   @relation("ToWarehouse", fields: [toWarehouseId], references: [id], onDelete: SetNull)
+  userId        String?
+}
+
+// ----------------------------------------------------------------------------
+// Замовлення (мультиканальні; канал = RequestSource)
+// ----------------------------------------------------------------------------
+enum OrderStatus {
+  NEW // Нове
+  CONFIRMED // Підтверджено
+  RESERVED // Зарезервовано
+  PACKING // Комплектація
+  SHIPPED // Відправлено
+  COMPLETED // Виконано
+  CANCELLED // Скасовано
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  number      Int         @unique // № замовлення (присвоюється в коді)
+  channel     RequestSource @default(MANUAL) // джерело: сайт/Prom/Rozetka/OLX/Instagram...
+  status      OrderStatus @default(NEW)
+  totalAmount Float       @default(0)
+  comment     String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  clientId    String?
+  client      Client?     @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  warehouseId String?
+  warehouse   Warehouse?  @relation(fields: [warehouseId], references: [id], onDelete: SetNull)
+  ownerId     String?
+  owner       User?       @relation("OwnedOrders", fields: [ownerId], references: [id], onDelete: SetNull)
+
+  items     OrderItem[]
+  shipments Shipment[]
+  documents Document[]
+  payments  Payment[]
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  name        String
+  quantity    Float   @default(1)
+  price       Float   @default(0)
+  reservedQty Float   @default(0) // скільки фактично зарезервовано під цю позицію
+
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+}
+
+// ----------------------------------------------------------------------------
+// Логістика (ТТН, перевізники, відстеження)
+// ----------------------------------------------------------------------------
+enum Carrier {
+  NOVA_POSHTA // Нова Пошта
+  UKRPOSHTA // Укрпошта
+  MEEST // Meest
+  DELIVERY // Delivery
+  SAT // SAT
+}
+
+enum ShipmentStatus {
+  CREATED // ТТН створено
+  ACCEPTED // Прийнято до відправлення
+  IN_TRANSIT // У дорозі
+  ARRIVED // Прибуло у відділення
+  DELIVERED // Вручено
+  RETURNED // Повернення
+  CANCELLED // Скасовано
+}
+
+model Shipment {
+  id             String         @id @default(cuid())
+  ttn            String         @unique // номер ТТН
+  carrier        Carrier
+  status         ShipmentStatus @default(CREATED)
+  recipientName  String
+  recipientPhone String?
+  cityFrom       String?
+  cityTo         String?
+  address        String?
+  weight         Float? // кг
+  declaredValue  Float? // оголошена вартість
+  cost           Float? // вартість доставки
+  payer          String? // платник (Відправник/Отримувач)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  orderId  String?
+  order    Order?  @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  clientId String?
+  client   Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  ownerId  String?
+  owner    User?   @relation("OwnedShipments", fields: [ownerId], references: [id], onDelete: SetNull)
+
+  events TrackingEvent[]
+}
+
+model TrackingEvent {
+  id          String         @id @default(cuid())
+  status      ShipmentStatus
+  description String
+  location    String?
+  createdAt   DateTime       @default(now())
+
+  shipmentId String
+  shipment   Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+}
+
+// ----------------------------------------------------------------------------
+// Документообіг
+// ----------------------------------------------------------------------------
+enum DocumentType {
+  QUOTE // Комерційна пропозиція
+  INVOICE // Рахунок
+  CONTRACT // Договір
+  ACT // Акт виконаних робіт
+  WAYBILL // Видаткова накладна
+  WARRANTY // Гарантійний лист
+}
+
+enum DocumentStatus {
+  DRAFT // Чернетка
+  SENT // Надіслано
+  SIGNED // Підписано
+  PAID // Оплачено
+  CANCELLED // Скасовано
+}
+
+model Document {
+  id        String         @id @default(cuid())
+  number    String         @unique // напр. КП-1001
+  type      DocumentType
+  status    DocumentStatus @default(DRAFT)
+  title     String
+  items     String? // JSON-знімок позицій [{name,quantity,price}]
+  total     Float          @default(0)
+  notes     String?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  clientId  String?
+  client    Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  requestId String?
+  request   Request? @relation(fields: [requestId], references: [id], onDelete: SetNull)
+  orderId   String?
+  order     Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  ownerId   String?
+  owner     User?    @relation("OwnedDocuments", fields: [ownerId], references: [id], onDelete: SetNull)
+
+  payments Payment[]
+}
+
+// ----------------------------------------------------------------------------
+// Фінанси (облік оплат)
+// ----------------------------------------------------------------------------
+enum PaymentDirection {
+  INCOME // Надходження
+  EXPENSE // Видаток
+}
+
+enum PaymentMethod {
+  CASH // Готівка
+  BANK_TRANSFER // Банківський переказ
+  COD // Післяплата
+  ONLINE // Онлайн оплата
+}
+
+enum PaymentProvider {
+  LIQPAY
+  WAYFORPAY
+  FONDY
+  MONOBANK
+  PRIVATBANK
+}
+
+enum PaymentStatus {
+  PENDING // Очікує оплату
+  PAID // Оплачено
+  FAILED // Відхилено
+  REFUNDED // Повернено
+}
+
+model Payment {
+  id        String           @id @default(cuid())
+  number    Int              @unique // присвоюється в коді
+  amount    Float
+  direction PaymentDirection @default(INCOME)
+  method    PaymentMethod
+  provider  PaymentProvider?
+  status    PaymentStatus    @default(PENDING)
+  payUrl    String? // посилання на онлайн-оплату (демо)
+  comment   String?
+  paidAt    DateTime?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  clientId   String?
+  client     Client?   @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  orderId    String?
+  order      Order?    @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  documentId String?
+  document   Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  ownerId    String?
+  owner      User?     @relation("RecordedPayments", fields: [ownerId], references: [id], onDelete: SetNull)
+}
+
+// ----------------------------------------------------------------------------
+// Месенджери (єдине вікно комунікацій)
+// ----------------------------------------------------------------------------
+enum MessengerChannel {
+  TELEGRAM
+  VIBER
+  WHATSAPP
+  INSTAGRAM
+  FACEBOOK
+  EMAIL
+  SMS
+}
+
+enum MessageDirection {
+  IN // вхідне (від клієнта)
+  OUT // вихідне (від менеджера)
+}
+
+model Conversation {
+  id            String           @id @default(cuid())
+  channel       MessengerChannel
+  externalId    String? // @username / телефон / email
+  title         String // відображувана назва (ім'я клієнта/контакту)
+  unread        Int              @default(0)
+  lastMessageAt DateTime         @default(now())
+  createdAt     DateTime         @default(now())
+
+  clientId String?
+  client   Client?   @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  messages Message[]
+}
+
+model Message {
+  id         String           @id @default(cuid())
+  direction  MessageDirection
+  content    String
+  attachment String? // ім'я вкладення (демо)
+  createdAt  DateTime         @default(now())
+
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  authorId       String?
+  author         User?        @relation("SentMessages", fields: [authorId], references: [id], onDelete: SetNull)
+}
+
+// ----------------------------------------------------------------------------
+// Телефонія (Binotel / Ringostat / UniTalk)
+// ----------------------------------------------------------------------------
+enum CallProvider {
+  BINOTEL
+  RINGOSTAT
+  UNITALK
+}
+
+enum CallDirection {
+  INBOUND // вхідний
+  OUTBOUND // вихідний
+}
+
+enum CallStatus {
+  ANSWERED // прийнятий
+  MISSED // пропущений
+  NO_ANSWER // без відповіді
+}
+
+model Call {
+  id           String        @id @default(cuid())
+  provider     CallProvider
+  direction    CallDirection
+  status       CallStatus    @default(ANSWERED)
+  fromNumber   String
+  toNumber     String
+  duration     Int           @default(0) // тривалість, секунди
+  recordingUrl String? // посилання на запис
+  comment      String?
+  createdAt    DateTime      @default(now())
+
+  clientId  String?
+  client    Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  managerId String?
+  manager   User?    @relation("HandledCalls", fields: [managerId], references: [id], onDelete: SetNull)
+  requestId String?
+  request   Request? @relation(fields: [requestId], references: [id], onDelete: SetNull)
+}

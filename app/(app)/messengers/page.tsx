@@ -1,0 +1,204 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import { requireUser } from "@/lib/auth";
+import { can } from "@/lib/permissions";
+import { PageHeader } from "@/components/ui";
+import {
+  CHANNEL_LABELS,
+  CHANNEL_ICONS,
+  CHANNEL_COLORS,
+} from "@/lib/labels";
+import type { MessengerChannel } from "@prisma/client";
+import { sendMessage, createConversation, simulateIncoming } from "./actions";
+
+export const dynamic = "force-dynamic";
+
+const CHANNELS = ["TELEGRAM", "VIBER", "WHATSAPP", "INSTAGRAM", "FACEBOOK", "EMAIL", "SMS"] as const;
+
+function fmtTime(d: Date) {
+  return new Intl.DateTimeFormat("uk-UA", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" }).format(d);
+}
+
+export default async function MessengersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ c?: string; channel?: string }>;
+}) {
+  const me = await requireUser();
+  if (!can(me, "messengers", "view")) redirect("/");
+  const canWrite = can(me, "messengers", "create");
+
+  const { c, channel } = await searchParams;
+  const channelFilter = (CHANNELS as readonly string[]).includes(channel ?? "")
+    ? (channel as MessengerChannel)
+    : undefined;
+
+  // позначаємо відкритий діалог прочитаним (до вибірки списку)
+  if (c) {
+    await prisma.conversation.updateMany({ where: { id: c, unread: { gt: 0 } }, data: { unread: 0 } });
+  }
+
+  const [conversations, clients] = await Promise.all([
+    prisma.conversation.findMany({
+      where: { channel: channelFilter },
+      include: { client: true, messages: { orderBy: { createdAt: "desc" }, take: 1 } },
+      orderBy: { lastMessageAt: "desc" },
+    }),
+    prisma.client.findMany({ orderBy: { fullName: "asc" } }),
+  ]);
+
+  const selected = c
+    ? await prisma.conversation.findUnique({
+        where: { id: c },
+        include: { client: true, messages: { orderBy: { createdAt: "asc" }, include: { author: true } } },
+      })
+    : null;
+
+  const totalUnread = conversations.reduce((s, cv) => s + cv.unread, 0);
+
+  return (
+    <>
+      <PageHeader title="Месенджери" subtitle={`Єдине вікно комунікацій${totalUnread ? ` · ${totalUnread} непрочитаних` : ""}`} />
+
+      <div className="grid h-[calc(100vh-89px)] grid-cols-[340px_1fr]">
+        {/* Ліва панель — діалоги */}
+        <div className="flex flex-col border-r border-slate-200 bg-white">
+          {/* фільтр каналів */}
+          <div className="flex flex-wrap gap-1.5 border-b border-slate-100 p-3">
+            <ChipLink href="/messengers" active={!channelFilter} label="Усі" />
+            {CHANNELS.map((ch) => (
+              <ChipLink key={ch} href={`/messengers?channel=${ch}`} active={channelFilter === ch} label={`${CHANNEL_ICONS[ch]}`} title={CHANNEL_LABELS[ch]} />
+            ))}
+          </div>
+
+          {canWrite && (
+            <details className="border-b border-slate-100">
+              <summary className="cursor-pointer list-none px-4 py-2.5 text-sm font-medium text-teal-600">＋ Новий діалог</summary>
+              <form action={createConversation} className="space-y-2 px-4 pb-4">
+                <select name="channel" defaultValue="TELEGRAM" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+                  {CHANNELS.map((ch) => (<option key={ch} value={ch}>{CHANNEL_LABELS[ch]}</option>))}
+                </select>
+                <select name="clientId" defaultValue="" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+                  <option value="">— контакт без клієнта —</option>
+                  {clients.map((cl) => (<option key={cl.id} value={cl.id}>{cl.fullName}</option>))}
+                </select>
+                <input name="externalId" placeholder="@нік / телефон / email" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500" />
+                <button className="w-full rounded-lg bg-teal-600 px-3 py-2 text-sm font-medium text-white hover:bg-teal-700">Створити</button>
+              </form>
+            </details>
+          )}
+
+          {/* список */}
+          <div className="flex-1 overflow-y-auto">
+            {conversations.map((cv) => {
+              const last = cv.messages[0];
+              const isActive = cv.id === c;
+              return (
+                <Link
+                  key={cv.id}
+                  href={`/messengers?c=${cv.id}`}
+                  className={`flex gap-3 border-b border-slate-50 px-4 py-3 transition-colors ${isActive ? "bg-teal-50" : "hover:bg-slate-50"}`}
+                >
+                  <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-base ${CHANNEL_COLORS[cv.channel]}`}>
+                    {CHANNEL_ICONS[cv.channel]}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="truncate text-sm font-medium text-slate-800">{cv.title}</span>
+                      <span className="shrink-0 text-[11px] text-slate-400">{fmtTime(cv.lastMessageAt)}</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="truncate text-xs text-slate-500">
+                        {last ? (last.direction === "OUT" ? "Ви: " : "") + last.content : "—"}
+                      </span>
+                      {cv.unread > 0 && (
+                        <span className="ml-1 shrink-0 rounded-full bg-teal-600 px-1.5 text-[11px] font-medium text-white">{cv.unread}</span>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+            {conversations.length === 0 && (
+              <div className="p-6 text-center text-sm text-slate-400">Діалогів немає</div>
+            )}
+          </div>
+        </div>
+
+        {/* Права панель — листування */}
+        <div className="flex flex-col bg-slate-50">
+          {selected ? (
+            <>
+              <div className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-3">
+                <div className="flex items-center gap-3">
+                  <span className={`flex h-9 w-9 items-center justify-center rounded-full ${CHANNEL_COLORS[selected.channel]}`}>{CHANNEL_ICONS[selected.channel]}</span>
+                  <div>
+                    <div className="text-sm font-semibold text-slate-900">
+                      {selected.client ? (
+                        <Link href={`/clients/${selected.client.id}`} className="hover:underline">{selected.title}</Link>
+                      ) : selected.title}
+                    </div>
+                    <div className="text-xs text-slate-400">{CHANNEL_LABELS[selected.channel]}{selected.externalId ? ` · ${selected.externalId}` : ""}</div>
+                  </div>
+                </div>
+                {canWrite && (
+                  <form action={simulateIncoming}>
+                    <input type="hidden" name="conversationId" value={selected.id} />
+                    <button className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-200" title="Демо: імітувати вхідне повідомлення">⬇ Вхідне (демо)</button>
+                  </form>
+                )}
+              </div>
+
+              <div className="flex-1 space-y-3 overflow-y-auto p-6">
+                {selected.messages.map((m) => (
+                  <div key={m.id} className={`flex ${m.direction === "OUT" ? "justify-end" : "justify-start"}`}>
+                    <div className={`max-w-[70%] rounded-2xl px-4 py-2 text-sm ${m.direction === "OUT" ? "bg-teal-600 text-white" : "bg-white text-slate-800 ring-1 ring-slate-200"}`}>
+                      {m.attachment && <div className={`mb-1 text-xs ${m.direction === "OUT" ? "text-teal-100" : "text-slate-400"}`}>📎 {m.attachment}</div>}
+                      <div className="whitespace-pre-wrap">{m.content}</div>
+                      <div className={`mt-1 text-[10px] ${m.direction === "OUT" ? "text-teal-100" : "text-slate-400"}`}>
+                        {m.direction === "OUT" && m.author ? `${m.author.fullName} · ` : ""}{fmtTime(m.createdAt)}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {selected.messages.length === 0 && (
+                  <div className="text-center text-sm text-slate-400">Повідомлень ще немає</div>
+                )}
+              </div>
+
+              {canWrite && (
+                <form action={sendMessage} className="border-t border-slate-200 bg-white p-3">
+                  <input type="hidden" name="conversationId" value={selected.id} />
+                  <div className="flex items-end gap-2">
+                    <input name="attachment" placeholder="📎 файл/фото (опц.)" className="w-40 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500" />
+                    <input name="content" placeholder="Напишіть повідомлення… 🙂" autoComplete="off" className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500" />
+                    <button className="rounded-lg bg-teal-600 px-5 py-2 text-sm font-medium text-white hover:bg-teal-700">Надіслати</button>
+                  </div>
+                </form>
+              )}
+            </>
+          ) : (
+            <div className="flex flex-1 items-center justify-center text-sm text-slate-400">
+              Оберіть діалог зі списку зліва
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
+function ChipLink({ href, active, label, title }: { href: string; active: boolean; label: string; title?: string }) {
+  return (
+    <Link
+      href={href}
+      title={title}
+      className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
+        active ? "bg-slate-800 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+      }`}
+    >
+      {label}
+    </Link>
+  );
+}

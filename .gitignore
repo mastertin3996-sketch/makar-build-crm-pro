@@ -33,6 +33,11 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# database (local SQLite prototype — містить дані та хеші паролів)
+*.db
+*.db-journal
+/prisma/*.db
+
 # vercel
 .vercel
 
