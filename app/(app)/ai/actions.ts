@@ -1,5 +1,6 @@
 "use server";
 
+import type { OrderItem, RequestItem } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireUser, audit } from "@/lib/auth";
 import { can, canFinance } from "@/lib/permissions";
@@ -32,10 +33,10 @@ export async function genDocument(_prev: AiState, formData: FormData): Promise<A
   let total = 0;
   if (source.startsWith("order:")) {
     const o = await prisma.order.findUnique({ where: { id: source.slice(6) }, include: { items: true, client: true } });
-    if (o) { clientName = o.client?.fullName ?? clientName; items = o.items.map((i) => ({ name: i.name, quantity: i.quantity, price: i.price })); total = o.totalAmount; }
+    if (o) { clientName = o.client?.fullName ?? clientName; items = o.items.map((i: OrderItem) => ({ name: i.name, quantity: i.quantity, price: i.price })); total = o.totalAmount; }
   } else if (source.startsWith("request:")) {
     const r = await prisma.request.findUnique({ where: { id: source.slice(8) }, include: { items: true, client: true } });
-    if (r) { clientName = r.client?.fullName ?? clientName; items = r.items.map((i) => ({ name: i.name, quantity: i.quantity, price: i.price })); total = items.reduce((s, i) => s + i.price * i.quantity, 0) || r.amount; }
+    if (r) { clientName = r.client?.fullName ?? clientName; items = r.items.map((i: RequestItem) => ({ name: i.name, quantity: i.quantity, price: i.price })); total = items.reduce((s, i) => s + i.price * i.quantity, 0) || r.amount; }
   }
   const typeLabel = DOC_TYPE_LABELS[docType] ?? "Документ";
 

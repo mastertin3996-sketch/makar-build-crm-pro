@@ -1,14 +1,12 @@
 // MAKAR BUILD CRM PRO — схема бази даних
-// Для прототипу використовується SQLite (працює без окремого сервера БД).
-// Для продакшену: змінити provider на "postgresql" і DATABASE_URL у .env
-// (Prisma робить цей перехід тривіальним).
+// Продакшен: PostgreSQL (Neon, підключено через Vercel-інтеграцію).
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 // ----------------------------------------------------------------------------
