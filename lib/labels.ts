@@ -69,6 +69,19 @@ export const SOURCE_LABELS: Record<RequestSource, string> = {
   MANUAL: "Вручну",
 };
 
+export const SOURCE_ICONS: Record<RequestSource, string> = {
+  WEBSITE: "🌐",
+  PROM: "🛒",
+  ROZETKA: "🛍️",
+  EPICENTR: "🏗️",
+  OLX: "📦",
+  INSTAGRAM: "📷",
+  FACEBOOK: "💬",
+  TELEGRAM: "✈️",
+  PHONE: "📞",
+  MANUAL: "✍️",
+};
+
 export const CATEGORY_LABELS: Record<ProductCategory, string> = {
   FENCE_3D: "3D паркани",
   POSTS: "Стовпи",
