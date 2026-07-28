@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { requireUser, requestScopeWhere } from "@/lib/auth";
 import { canFinance } from "@/lib/permissions";
 import { PageHeader, Card, StatusBadge } from "@/components/ui";
+import { BarChart } from "@/components/BarChart";
 import {
   STATUS_LABELS,
   STATUS_ORDER,
@@ -52,16 +53,21 @@ export default async function DashboardPage() {
 
   // Розподіл за статусами
   const byStatus = STATUS_ORDER.map((status) => ({
-    status,
-    count: requests.filter((r) => r.status === status).length,
-  })).filter((s) => s.count > 0);
-  const maxStatus = Math.max(...byStatus.map((s) => s.count), 1);
+    label: STATUS_LABELS[status],
+    value: requests.filter((r) => r.status === status).length,
+  })).filter((s) => s.value > 0);
 
   // Воронка за джерелами
-  const sources = requests.reduce<Record<string, number>>((acc, r) => {
+  const sourceCounts = requests.reduce<Record<string, number>>((acc, r) => {
     acc[r.source] = (acc[r.source] ?? 0) + 1;
     return acc;
   }, {});
+  const bySource = Object.entries(sourceCounts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([source, count]) => ({
+      label: SOURCE_LABELS[source as RequestSource],
+      value: count,
+    }));
 
   const stats = [
     // Фінансові показники — лише за наявності права на перегляд оплат
@@ -105,24 +111,7 @@ export default async function DashboardPage() {
             <h2 className="mb-4 text-base font-semibold text-slate-900">
               Заявки за статусами
             </h2>
-            <div className="space-y-3">
-              {byStatus.map(({ status, count }) => (
-                <div key={status} className="flex items-center gap-3">
-                  <div className="w-36 shrink-0 text-sm text-slate-600">
-                    {STATUS_LABELS[status]}
-                  </div>
-                  <div className="h-5 flex-1 rounded bg-slate-100">
-                    <div
-                      className="h-5 rounded bg-teal-500"
-                      style={{ width: `${(count / maxStatus) * 100}%` }}
-                    />
-                  </div>
-                  <div className="w-6 text-right text-sm font-medium text-slate-700">
-                    {count}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <BarChart data={byStatus} />
           </Card>
 
           {/* Джерела лідів */}
@@ -130,23 +119,7 @@ export default async function DashboardPage() {
             <h2 className="mb-4 text-base font-semibold text-slate-900">
               Джерела лідів
             </h2>
-            <div className="grid grid-cols-2 gap-3">
-              {Object.entries(sources)
-                .sort((a, b) => b[1] - a[1])
-                .map(([source, count]) => (
-                  <div
-                    key={source}
-                    className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-3"
-                  >
-                    <span className="text-sm text-slate-600">
-                      {SOURCE_LABELS[source as RequestSource]}
-                    </span>
-                    <span className="text-lg font-bold text-slate-900">
-                      {count}
-                    </span>
-                  </div>
-                ))}
-            </div>
+            <BarChart data={bySource} barColor="bg-violet-500" barColorHover="bg-violet-600" />
           </Card>
         </div>
 
