@@ -2,7 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireUser, requestScopeWhere } from "@/lib/auth";
 import { can, SCOPE_LABELS } from "@/lib/permissions";
-import { PageHeader, Card, StatusBadge } from "@/components/ui";
+import { PageHeader, Card, StatusBadge, Button, Field, EmptyRow, Select as UiSelect } from "@/components/ui";
 import {
   STATUS_LABELS,
   STATUS_ORDER,
@@ -73,11 +73,11 @@ export default async function RequestsPage({
         title="Заявки"
         subtitle={`Усього: ${totalCount} · Видимість: ${SCOPE_LABELS[me.requestScope]}`}
         action={
-          <div className="flex gap-1 rounded-lg bg-slate-100 p-1">
+          <div className="flex gap-1 rounded-lg bg-white/5 p-1">
             <Link
               href={viewHref("table")}
               className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                !isBoard ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                !isBoard ? "bg-brand text-background shadow-sm" : "text-muted hover:text-foreground"
               }`}
             >
               ☰ Таблиця
@@ -85,7 +85,7 @@ export default async function RequestsPage({
             <Link
               href={viewHref("board")}
               className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                isBoard ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                isBoard ? "bg-brand text-background shadow-sm" : "text-muted hover:text-foreground"
               }`}
             >
               ▤ Дошка
@@ -98,24 +98,15 @@ export default async function RequestsPage({
         {/* Швидка заявка */}
         <Card>
           <details className="group">
-            <summary className="flex cursor-pointer list-none items-center gap-2 px-6 py-4 text-sm font-medium text-teal-600">
+            <summary className="flex cursor-pointer list-none items-center gap-2 px-6 py-4 text-sm font-medium text-brand transition-colors hover:text-brand-light">
               <span className="text-lg leading-none">＋</span>
               Швидка заявка
             </summary>
             <form
               action={createRequest}
-              className="grid grid-cols-1 gap-4 border-t border-slate-100 px-6 py-5 md:grid-cols-2"
+              className="grid grid-cols-1 gap-4 border-t border-brand/10 px-6 py-5 md:grid-cols-2"
             >
-              <label className="block md:col-span-2">
-                <span className="mb-1 block text-xs font-medium text-slate-600">
-                  Опис заявки *
-                </span>
-                <input
-                  name="title"
-                  required
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
-                />
-              </label>
+              <Field name="title" label="Опис заявки *" required className="md:col-span-2" />
 
               <Select name="status" label="Статус">
                 {STATUS_ORDER.map((s) => (
@@ -142,33 +133,12 @@ export default async function RequestsPage({
                 ))}
               </Select>
 
-              <label className="block">
-                <span className="mb-1 block text-xs font-medium text-slate-600">
-                  Сума, грн
-                </span>
-                <input
-                  name="amount"
-                  type="number"
-                  step="any"
-                  defaultValue={0}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
-                />
-              </label>
+              <Field name="amount" label="Сума, грн" type="number" step="any" defaultValue={0} />
 
-              <label className="block">
-                <span className="mb-1 block text-xs font-medium text-slate-600">
-                  Менеджер
-                </span>
-                <input
-                  name="manager"
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
-                />
-              </label>
+              <Field name="manager" label="Менеджер" />
 
               <div className="md:col-span-2">
-                <button className="rounded-lg bg-teal-600 px-5 py-2 text-sm font-medium text-white hover:bg-teal-700">
-                  Створити заявку
-                </button>
+                <Button type="submit">Створити заявку</Button>
               </div>
             </form>
           </details>
@@ -194,7 +164,7 @@ export default async function RequestsPage({
             <Card>
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
+                  <tr className="text-left text-xs uppercase tracking-wide text-muted">
                     <th className="px-6 py-3 font-medium">№</th>
                     <th className="px-6 py-3 font-medium">Опис</th>
                     <th className="px-6 py-3 font-medium">Клієнт</th>
@@ -205,19 +175,19 @@ export default async function RequestsPage({
                     <th className="px-6 py-3 font-medium">Дата</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-brand/5">
                   {requests.map((r) => (
-                    <tr key={r.id} className="hover:bg-slate-50">
+                    <tr key={r.id} className="hover:bg-white/5">
                       <td className="px-6 py-3">
                         <Link
                           href={`/requests/${r.id}`}
-                          className="font-medium text-teal-600 hover:underline"
+                          className="font-medium text-brand hover:underline"
                         >
                           #{r.number}
                         </Link>
                       </td>
-                      <td className="px-6 py-3 text-slate-700">{r.title}</td>
-                      <td className="px-6 py-3 text-slate-500">
+                      <td className="px-6 py-3 text-[#cfc9ba]">{r.title}</td>
+                      <td className="px-6 py-3 text-muted">
                         {r.client ? (
                           <Link
                             href={`/clients/${r.client.id}`}
@@ -229,27 +199,23 @@ export default async function RequestsPage({
                           "—"
                         )}
                       </td>
-                      <td className="px-6 py-3 text-slate-500">
+                      <td className="px-6 py-3 text-muted">
                         {SOURCE_LABELS[r.source]}
                       </td>
-                      <td className="px-6 py-3 text-slate-500">{r.manager ?? "—"}</td>
+                      <td className="px-6 py-3 text-muted">{r.manager ?? "—"}</td>
                       <td className="px-6 py-3">
                         <StatusBadge status={r.status} />
                       </td>
-                      <td className="px-6 py-3 text-right font-medium text-slate-700">
+                      <td className="px-6 py-3 text-right font-medium text-[#cfc9ba]">
                         {formatUAH(r.amount)}
                       </td>
-                      <td className="px-6 py-3 text-slate-500">
+                      <td className="px-6 py-3 text-muted">
                         {formatDate(r.createdAt)}
                       </td>
                     </tr>
                   ))}
                   {requests.length === 0 && (
-                    <tr>
-                      <td colSpan={8} className="px-6 py-10 text-center text-slate-400">
-                        Заявок не знайдено
-                      </td>
-                    </tr>
+                    <EmptyRow colSpan={8}>Заявок не знайдено</EmptyRow>
                   )}
                 </tbody>
               </table>
@@ -275,8 +241,8 @@ function FilterChip({
       href={href}
       className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
         active
-          ? "bg-slate-800 text-white"
-          : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+          ? "bg-brand text-background"
+          : "bg-white/5 text-muted ring-1 ring-brand/15 hover:bg-white/10"
       }`}
     >
       {label}
@@ -295,13 +261,8 @@ function Select({
 }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-xs font-medium text-slate-600">{label}</span>
-      <select
-        name={name}
-        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
-      >
-        {children}
-      </select>
+      <span className="mb-1 block text-xs font-medium text-muted">{label}</span>
+      <UiSelect name={name}>{children}</UiSelect>
     </label>
   );
 }

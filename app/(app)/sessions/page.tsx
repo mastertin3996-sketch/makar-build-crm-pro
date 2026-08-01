@@ -28,7 +28,7 @@ export default async function SessionsPage() {
       <PageHeader
         title="Мій профіль та сесії"
         subtitle={`${me.fullName} · ${ROLE_LABELS[me.role]}`}
-        icon="🔐"
+        icon="sessions"
         action={
           <form action={terminateAllAction}>
             <Button type="submit" variant="danger">🚪 Завершити всі сесії</Button>
@@ -38,7 +38,7 @@ export default async function SessionsPage() {
 
       <div className="space-y-6 p-8">
         <Card className="p-6">
-          <h2 className="mb-4 text-base font-semibold text-slate-900">Обліковий запис</h2>
+          <h2 className="mb-4 text-base font-semibold text-foreground">Обліковий запис</h2>
           <dl className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm md:grid-cols-3">
             <Info label="ПІБ" value={me.fullName} />
             <Info label="Email" value={me.email} />
@@ -49,12 +49,12 @@ export default async function SessionsPage() {
         </Card>
 
         <Card>
-          <div className="border-b border-slate-100 px-6 py-4">
-            <h2 className="text-base font-semibold text-slate-900">Активні пристрої</h2>
+          <div className="border-b border-brand/10 px-6 py-4">
+            <h2 className="text-base font-semibold text-foreground">Активні пристрої</h2>
           </div>
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
+              <tr className="text-left text-xs uppercase tracking-wide text-muted">
                 <th className="px-6 py-3 font-medium">Пристрій / ОС</th>
                 <th className="px-6 py-3 font-medium">Браузер</th>
                 <th className="px-6 py-3 font-medium">IP</th>
@@ -63,15 +63,15 @@ export default async function SessionsPage() {
                 <th className="px-6 py-3 font-medium">Активність</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-brand/5">
               {sessions.map((s) => (
-                <tr key={s.id} className="hover:bg-slate-50">
-                  <td className="px-6 py-3 text-slate-700">{s.device ?? "—"}</td>
-                  <td className="px-6 py-3 text-slate-600">{s.browser ?? "—"}</td>
-                  <td className="px-6 py-3 text-slate-500">{s.ip ?? "—"}</td>
-                  <td className="px-6 py-3 text-slate-500">{s.location ?? "—"}</td>
-                  <td className="px-6 py-3 text-slate-500">{fmt(s.createdAt)}</td>
-                  <td className="px-6 py-3 text-slate-500">{fmt(s.lastSeenAt)}</td>
+                <tr key={s.id} className="hover:bg-white/5">
+                  <td className="px-6 py-3 text-[#cfc9ba]">{s.device ?? "—"}</td>
+                  <td className="px-6 py-3 text-[#cfc9ba]">{s.browser ?? "—"}</td>
+                  <td className="px-6 py-3 text-muted">{s.ip ?? "—"}</td>
+                  <td className="px-6 py-3 text-muted">{s.location ?? "—"}</td>
+                  <td className="px-6 py-3 text-muted">{fmt(s.createdAt)}</td>
+                  <td className="px-6 py-3 text-muted">{fmt(s.lastSeenAt)}</td>
                 </tr>
               ))}
               {sessions.length === 0 && (
@@ -82,7 +82,7 @@ export default async function SessionsPage() {
         </Card>
 
         <Card className="p-6">
-          <h2 className="mb-2 text-base font-semibold text-slate-900">Захист (наступний етап)</h2>
+          <h2 className="mb-2 text-base font-semibold text-foreground">Захист (наступний етап)</h2>
           <div className="flex flex-wrap gap-2">
             {[
               "2FA (Email / Telegram / Google Authenticator)",
@@ -91,7 +91,7 @@ export default async function SessionsPage() {
               "Автовихід після бездіяльності",
               "Захист від підбору пароля",
             ].map((x) => (
-              <span key={x} className="cursor-not-allowed rounded-lg bg-slate-100 px-3 py-1.5 text-xs text-slate-400">
+              <span key={x} className="cursor-not-allowed rounded-lg bg-white/5 px-3 py-1.5 text-xs text-muted">
                 {x}
               </span>
             ))}
@@ -105,8 +105,8 @@ export default async function SessionsPage() {
 function Info({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <dt className="text-xs text-slate-400">{label}</dt>
-      <dd className="mt-0.5 text-slate-700">{value}</dd>
+      <dt className="text-xs text-muted">{label}</dt>
+      <dd className="mt-0.5 text-[#cfc9ba]">{value}</dd>
     </div>
   );
 }

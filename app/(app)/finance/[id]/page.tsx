@@ -38,8 +38,8 @@ export default async function PaymentCardPage({
       <PageHeader
         title={`Оплата #${p.number}`}
         subtitle={`${PAYMENT_DIRECTION_LABELS[p.direction]} · ${PAYMENT_METHOD_LABELS[p.method]}`}
-        icon="💰"
-        action={<Link href="/finance" className="text-sm text-slate-500 hover:text-slate-700">← До списку</Link>}
+        icon="finance"
+        action={<Link href="/finance" className="text-sm text-muted hover:text-[#cfc9ba]">← До списку</Link>}
       />
 
       <div className="grid gap-6 p-8 lg:grid-cols-3">
@@ -49,7 +49,7 @@ export default async function PaymentCardPage({
               <Badge className={PAYMENT_STATUS_COLORS[p.status]}>
                 {PAYMENT_STATUS_LABELS[p.status]}
               </Badge>
-              <span className="text-2xl font-bold text-slate-900">
+              <span className="text-2xl font-bold text-foreground">
                 {p.direction === "EXPENSE" ? "−" : ""}{formatUAH(p.amount)}
               </span>
             </div>
@@ -66,10 +66,10 @@ export default async function PaymentCardPage({
             </dl>
 
             {p.payUrl && (
-              <div className="mt-5 rounded-lg bg-slate-50 p-4">
-                <div className="text-xs font-medium uppercase text-slate-400">Платіжне посилання</div>
-                <a href={p.payUrl} target="_blank" className="break-all text-sm text-teal-600 hover:underline">{p.payUrl}</a>
-                <p className="mt-1 text-xs text-slate-400">Демо-посилання. У проді — реальний чекаут провайдера; статус оновлюється через webhook.</p>
+              <div className="mt-5 rounded-lg bg-white/5 p-4">
+                <div className="text-xs font-medium uppercase text-muted">Платіжне посилання</div>
+                <a href={p.payUrl} target="_blank" className="break-all text-sm text-brand hover:underline">{p.payUrl}</a>
+                <p className="mt-1 text-xs text-muted">Демо-посилання. У проді — реальний чекаут провайдера; статус оновлюється через webhook.</p>
               </div>
             )}
           </Card>
@@ -77,7 +77,7 @@ export default async function PaymentCardPage({
 
         <div className="space-y-6">
           <Card className="p-6">
-            <h2 className="mb-3 text-base font-semibold text-slate-900">Дії</h2>
+            <h2 className="mb-3 text-base font-semibold text-foreground">Дії</h2>
             {canEdit ? (
               <div className="space-y-3">
                 {p.status !== "PAID" && (
@@ -106,7 +106,7 @@ export default async function PaymentCardPage({
                 )}
               </div>
             ) : (
-              <p className="text-sm text-slate-400">Немає прав на редагування</p>
+              <p className="text-sm text-muted">Немає прав на редагування</p>
             )}
           </Card>
         </div>
@@ -118,9 +118,9 @@ export default async function PaymentCardPage({
 function Info({ label, value, full = false, href }: { label: string; value?: string | null; full?: boolean; href?: string }) {
   return (
     <div className={full ? "col-span-2" : ""}>
-      <dt className="text-xs text-slate-400">{label}</dt>
-      <dd className="mt-0.5 text-slate-700">
-        {value ? (href ? <Link href={href} className="text-teal-600 hover:underline">{value}</Link> : value) : "—"}
+      <dt className="text-xs text-muted">{label}</dt>
+      <dd className="mt-0.5 text-[#cfc9ba]">
+        {value ? (href ? <Link href={href} className="text-brand hover:underline">{value}</Link> : value) : "—"}
       </dd>
     </div>
   );

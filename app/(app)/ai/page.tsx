@@ -24,7 +24,7 @@ export default async function AiPage() {
 
   return (
     <>
-      <PageHeader title="ШІ-помічник" subtitle="Генерація документів, автовідповіді, аналітика та рекомендації" icon="🤖" />
+      <PageHeader title="ШІ-помічник" subtitle="Генерація документів, автовідповіді, аналітика та рекомендації" icon="ai" />
       <div className="p-8">
         <AiConsole aiEnabled={aiEnabled()} sources={sources} />
       </div>

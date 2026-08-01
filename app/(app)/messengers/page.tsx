@@ -60,13 +60,13 @@ export default async function MessengersPage({
 
   return (
     <>
-      <PageHeader title="Месенджери" subtitle={`Єдине вікно комунікацій${totalUnread ? ` · ${totalUnread} непрочитаних` : ""}`} icon="💬" />
+      <PageHeader title="Месенджери" subtitle={`Єдине вікно комунікацій${totalUnread ? ` · ${totalUnread} непрочитаних` : ""}`} icon="messengers" />
 
       <div className="grid h-[calc(100vh-89px)] grid-cols-[340px_1fr]">
         {/* Ліва панель — діалоги */}
-        <div className="flex flex-col border-r border-slate-200 bg-white">
+        <div className="flex flex-col border-r border-brand/10 bg-surface">
           {/* фільтр каналів */}
-          <div className="flex flex-wrap gap-1.5 border-b border-slate-100 p-3">
+          <div className="flex flex-wrap gap-1.5 border-b border-brand/10 p-3">
             <ChipLink href="/messengers" active={!channelFilter} label="Усі" />
             {CHANNELS.map((ch) => (
               <ChipLink
@@ -80,8 +80,8 @@ export default async function MessengersPage({
           </div>
 
           {canWrite && (
-            <details className="border-b border-slate-100">
-              <summary className="cursor-pointer list-none px-4 py-2.5 text-sm font-medium text-teal-600">＋ Новий діалог</summary>
+            <details className="border-b border-brand/10">
+              <summary className="cursor-pointer list-none px-4 py-2.5 text-sm font-medium text-brand">＋ Новий діалог</summary>
               <form action={createConversation} className="space-y-2 px-4 pb-4">
                 <Select name="channel" defaultValue="TELEGRAM">
                   {CHANNELS.map((ch) => (<option key={ch} value={ch}>{CHANNEL_LABELS[ch]}</option>))}
@@ -105,22 +105,22 @@ export default async function MessengersPage({
                 <Link
                   key={cv.id}
                   href={`/messengers?c=${cv.id}`}
-                  className={`flex gap-3 border-b border-slate-50 px-4 py-3 transition-colors ${isActive ? "bg-teal-50" : "hover:bg-slate-50"}`}
+                  className={`flex gap-3 border-b border-brand/5 px-4 py-3 transition-colors ${isActive ? "bg-brand/10" : "hover:bg-white/5"}`}
                 >
                   <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-base ${CHANNEL_COLORS[cv.channel]}`}>
                     <PlatformIcon id={cv.channel} fallback={CHANNEL_ICONS[cv.channel]} size={18} />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="truncate text-sm font-medium text-slate-800">{cv.title}</span>
-                      <span className="shrink-0 text-[11px] text-slate-400">{fmtTime(cv.lastMessageAt)}</span>
+                      <span className="truncate text-sm font-medium text-foreground">{cv.title}</span>
+                      <span className="shrink-0 text-[11px] text-muted">{fmtTime(cv.lastMessageAt)}</span>
                     </div>
                     <div className="flex items-center justify-between gap-2">
-                      <span className="truncate text-xs text-slate-500">
+                      <span className="truncate text-xs text-muted">
                         {last ? (last.direction === "OUT" ? "Ви: " : "") + last.content : "—"}
                       </span>
                       {cv.unread > 0 && (
-                        <span className="ml-1 shrink-0 rounded-full bg-teal-600 px-1.5 text-[11px] font-medium text-white">{cv.unread}</span>
+                        <span className="ml-1 shrink-0 rounded-full bg-brand px-1.5 text-[11px] font-medium text-background">{cv.unread}</span>
                       )}
                     </div>
                   </div>
@@ -128,27 +128,27 @@ export default async function MessengersPage({
               );
             })}
             {conversations.length === 0 && (
-              <EmptyState icon="💬" title="Діалогів немає" />
+              <EmptyState icon="messengers" title="Діалогів немає" />
             )}
           </div>
         </div>
 
         {/* Права панель — листування */}
-        <div className="flex flex-col bg-slate-50">
+        <div className="flex flex-col bg-background">
           {selected ? (
             <>
-              <div className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-3">
+              <div className="flex items-center justify-between border-b border-brand/10 bg-surface px-6 py-3">
                 <div className="flex items-center gap-3">
                   <span className={`flex h-9 w-9 items-center justify-center rounded-full ${CHANNEL_COLORS[selected.channel]}`}>
                     <PlatformIcon id={selected.channel} fallback={CHANNEL_ICONS[selected.channel]} size={18} />
                   </span>
                   <div>
-                    <div className="text-sm font-semibold text-slate-900">
+                    <div className="text-sm font-semibold text-foreground">
                       {selected.client ? (
                         <Link href={`/clients/${selected.client.id}`} className="hover:underline">{selected.title}</Link>
                       ) : selected.title}
                     </div>
-                    <div className="text-xs text-slate-400">{CHANNEL_LABELS[selected.channel]}{selected.externalId ? ` · ${selected.externalId}` : ""}</div>
+                    <div className="text-xs text-muted">{CHANNEL_LABELS[selected.channel]}{selected.externalId ? ` · ${selected.externalId}` : ""}</div>
                   </div>
                 </div>
                 {canWrite && (
@@ -162,22 +162,22 @@ export default async function MessengersPage({
               <div className="flex-1 space-y-3 overflow-y-auto p-6">
                 {selected.messages.map((m) => (
                   <div key={m.id} className={`flex ${m.direction === "OUT" ? "justify-end" : "justify-start"}`}>
-                    <div className={`max-w-[70%] rounded-2xl px-4 py-2 text-sm ${m.direction === "OUT" ? "bg-teal-600 text-white" : "bg-white text-slate-800 ring-1 ring-slate-200"}`}>
-                      {m.attachment && <div className={`mb-1 text-xs ${m.direction === "OUT" ? "text-teal-100" : "text-slate-400"}`}>📎 {m.attachment}</div>}
+                    <div className={`max-w-[70%] rounded-2xl px-4 py-2 text-sm ${m.direction === "OUT" ? "bg-brand text-background" : "bg-surface text-foreground ring-1 ring-brand/10"}`}>
+                      {m.attachment && <div className={`mb-1 text-xs ${m.direction === "OUT" ? "text-background/70" : "text-muted"}`}>📎 {m.attachment}</div>}
                       <div className="whitespace-pre-wrap">{m.content}</div>
-                      <div className={`mt-1 text-[10px] ${m.direction === "OUT" ? "text-teal-100" : "text-slate-400"}`}>
+                      <div className={`mt-1 text-[10px] ${m.direction === "OUT" ? "text-background/70" : "text-muted"}`}>
                         {m.direction === "OUT" && m.author ? `${m.author.fullName} · ` : ""}{fmtTime(m.createdAt)}
                       </div>
                     </div>
                   </div>
                 ))}
                 {selected.messages.length === 0 && (
-                  <EmptyState icon="✉️" title="Повідомлень ще немає" />
+                  <EmptyState icon="inbox" title="Повідомлень ще немає" />
                 )}
               </div>
 
               {canWrite && (
-                <form action={sendMessage} className="border-t border-slate-200 bg-white p-3">
+                <form action={sendMessage} className="border-t border-brand/10 bg-surface p-3">
                   <input type="hidden" name="conversationId" value={selected.id} />
                   <div className="flex items-end gap-2">
                     <Input name="attachment" placeholder="📎 файл/фото (опц.)" className="w-40" />
@@ -188,7 +188,7 @@ export default async function MessengersPage({
               )}
             </>
           ) : (
-            <div className="flex flex-1 items-center justify-center text-sm text-slate-400">
+            <div className="flex flex-1 items-center justify-center text-sm text-muted">
               Оберіть діалог зі списку зліва
             </div>
           )}
@@ -204,7 +204,7 @@ function ChipLink({ href, active, label, title }: { href: string; active: boolea
       href={href}
       title={title}
       className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
-        active ? "bg-slate-800 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+        active ? "bg-brand text-background" : "bg-white/5 text-muted hover:bg-white/10"
       }`}
     >
       {label}

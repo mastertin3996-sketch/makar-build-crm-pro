@@ -38,24 +38,24 @@ export default async function CatalogPage({
 
   return (
     <>
-      <PageHeader title="Каталог товарів" subtitle={`Позицій: ${total}`} icon="📦" />
+      <PageHeader title="Каталог товарів" subtitle={`Позицій: ${total}`} icon="catalog" />
 
       <div className="p-8 space-y-6">
         {/* Додати товар */}
         <Card>
           <details className="group">
-            <summary className="flex cursor-pointer list-none items-center gap-2 px-6 py-4 text-sm font-medium text-teal-600">
+            <summary className="flex cursor-pointer list-none items-center gap-2 px-6 py-4 text-sm font-medium text-brand transition-colors hover:text-brand-light">
               <span className="text-lg leading-none">＋</span>
               Додати товар
             </summary>
             <form
               action={createProduct}
-              className="grid grid-cols-1 gap-4 border-t border-slate-100 px-6 py-5 md:grid-cols-3"
+              className="grid grid-cols-1 gap-4 border-t border-brand/10 px-6 py-5 md:grid-cols-3"
             >
               <Field name="name" label="Назва *" required className="md:col-span-2" />
               <Field name="sku" label="Артикул" />
               <label className="block">
-                <span className="mb-1 block text-xs font-medium text-slate-600">
+                <span className="mb-1 block text-xs font-medium text-muted">
                   Категорія
                 </span>
                 <Select name="category">
@@ -105,26 +105,26 @@ export default async function CatalogPage({
             return (
               <Card key={p.id} className="flex flex-col p-5">
                 <div className="flex items-start justify-between gap-2">
-                  <Badge className="bg-slate-100 text-slate-500">
+                  <Badge className="bg-white/5 text-muted">
                     {CATEGORY_LABELS[p.category]}
                   </Badge>
                   {p.sku && (
-                    <span className="text-xs text-slate-400">{p.sku}</span>
+                    <span className="text-xs text-muted">{p.sku}</span>
                   )}
                 </div>
-                <h3 className="mt-3 text-sm font-semibold text-slate-900">
+                <h3 className="mt-3 text-sm font-semibold text-foreground">
                   {p.name}
                 </h3>
                 {p.description && (
-                  <p className="mt-1 text-xs text-slate-500">{p.description}</p>
+                  <p className="mt-1 text-xs text-muted">{p.description}</p>
                 )}
                 <div className="mt-4 flex items-end justify-between">
                   <div>
-                    <div className="text-lg font-bold text-slate-900">
+                    <div className="text-lg font-bold text-foreground">
                       {formatUAH(p.price)}
                     </div>
                     {(showCost || showMargin) && (
-                      <div className="text-xs text-slate-400">
+                      <div className="text-xs text-muted">
                         {showCost && <>собів. {formatUAH(p.costPrice)}</>}
                         {showCost && showMargin && " · "}
                         {showMargin && <>маржа {margin}%</>}
@@ -134,7 +134,7 @@ export default async function CatalogPage({
                   {p.category !== "SERVICES" && (
                     <div
                       className={`text-right text-xs ${
-                        lowStock ? "text-red-600" : "text-slate-500"
+                        lowStock ? "text-red-400" : "text-muted"
                       }`}
                     >
                       <div className="font-medium">
@@ -172,8 +172,8 @@ function Chip({
       href={href}
       className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
         active
-          ? "bg-slate-800 text-white"
-          : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+          ? "bg-brand text-background"
+          : "bg-white/5 text-muted ring-1 ring-brand/15 hover:bg-white/10"
       }`}
     >
       {label}

@@ -30,26 +30,26 @@ export default async function EmployeesPage() {
 
   return (
     <>
-      <PageHeader title="Співробітники" subtitle={`Усього: ${users.length}`} icon="🛡️" />
+      <PageHeader title="Співробітники" subtitle={`Усього: ${users.length}`} icon="employees" />
 
       <div className="space-y-6 p-8">
         {canCreate && (
           <Card>
             <details className="group">
-              <summary className="flex cursor-pointer list-none items-center gap-2 px-6 py-4 text-sm font-medium text-teal-600">
+              <summary className="flex cursor-pointer list-none items-center gap-2 px-6 py-4 text-sm font-medium text-brand">
                 <span className="text-lg leading-none">＋</span>
                 Додати співробітника
               </summary>
               <form
                 action={createUser}
-                className="grid grid-cols-1 gap-4 border-t border-slate-100 px-6 py-5 md:grid-cols-2"
+                className="grid grid-cols-1 gap-4 border-t border-brand/10 px-6 py-5 md:grid-cols-2"
               >
                 <Field name="fullName" label="ПІБ *" required />
                 <Field name="email" label="Email *" type="email" required />
                 <Field name="login" label="Логін" />
                 <Field name="password" label="Пароль * (мін. 6)" type="password" required />
                 <label className="block">
-                  <span className="mb-1 block text-xs font-medium text-slate-600">Роль</span>
+                  <span className="mb-1 block text-xs font-medium text-muted">Роль</span>
                   <Select name="role" defaultValue="MANAGER">
                     {ROLES.filter((r) => r !== "OWNER" || me.role === "OWNER").map((r) => (
                       <option key={r} value={r}>{ROLE_LABELS[r]}</option>
@@ -57,7 +57,7 @@ export default async function EmployeesPage() {
                   </Select>
                 </label>
                 <label className="block">
-                  <span className="mb-1 block text-xs font-medium text-slate-600">Керівник</span>
+                  <span className="mb-1 block text-xs font-medium text-muted">Керівник</span>
                   <Select name="managerId" defaultValue="">
                     <option value="">— не призначено —</option>
                     {managers.map((m) => (
@@ -76,7 +76,7 @@ export default async function EmployeesPage() {
         <Card>
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
+              <tr className="text-left text-xs uppercase tracking-wide text-muted">
                 <th className="px-6 py-3 font-medium">ПІБ</th>
                 <th className="px-6 py-3 font-medium">Email</th>
                 <th className="px-6 py-3 font-medium">Роль</th>
@@ -85,27 +85,27 @@ export default async function EmployeesPage() {
                 <th className="px-6 py-3 font-medium">Останній вхід</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-brand/5">
               {users.map((u) => (
-                <tr key={u.id} className="hover:bg-slate-50">
+                <tr key={u.id} className="hover:bg-white/5">
                   <td className="px-6 py-3">
-                    <Link href={`/employees/${u.id}`} className="font-medium text-teal-600 hover:underline">
+                    <Link href={`/employees/${u.id}`} className="font-medium text-brand hover:underline">
                       {u.fullName}
                     </Link>
                   </td>
-                  <td className="px-6 py-3 text-slate-600">{u.email}</td>
+                  <td className="px-6 py-3 text-[#cfc9ba]">{u.email}</td>
                   <td className="px-6 py-3">
-                    <Badge className="bg-slate-100 text-slate-600">{ROLE_LABELS[u.role]}</Badge>
+                    <Badge className="bg-white/5 text-muted">{ROLE_LABELS[u.role]}</Badge>
                   </td>
-                  <td className="px-6 py-3 text-slate-500">{u.manager?.fullName ?? "—"}</td>
+                  <td className="px-6 py-3 text-muted">{u.manager?.fullName ?? "—"}</td>
                   <td className="px-6 py-3">
                     {u.isActive ? (
-                      <span className="text-xs font-medium text-emerald-600">● Активний</span>
+                      <span className="text-xs font-medium text-emerald-400">● Активний</span>
                     ) : (
-                      <span className="text-xs font-medium text-red-600">● Заблокований</span>
+                      <span className="text-xs font-medium text-red-400">● Заблокований</span>
                     )}
                   </td>
-                  <td className="px-6 py-3 text-slate-500">
+                  <td className="px-6 py-3 text-muted">
                     {u.lastLoginAt ? formatDate(u.lastLoginAt) : "—"}
                   </td>
                 </tr>

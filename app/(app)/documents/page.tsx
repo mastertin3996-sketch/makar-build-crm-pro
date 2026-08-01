@@ -49,19 +49,19 @@ export default async function DocumentsPage({
 
   return (
     <>
-      <PageHeader title="Документообіг" subtitle={`Документів: ${total}`} icon="📄" />
+      <PageHeader title="Документообіг" subtitle={`Документів: ${total}`} icon="documents" />
 
       <div className="space-y-6 p-8">
         {canCreate && (
           <Card>
             <details className="group">
-              <summary className="flex cursor-pointer list-none items-center gap-2 px-6 py-4 text-sm font-medium text-teal-600">
+              <summary className="flex cursor-pointer list-none items-center gap-2 px-6 py-4 text-sm font-medium text-brand transition-colors hover:text-brand-light">
                 <span className="text-lg leading-none">＋</span>
                 Створити документ
               </summary>
-              <form action={createDocument} className="grid grid-cols-1 gap-4 border-t border-slate-100 px-6 py-5 md:grid-cols-2">
+              <form action={createDocument} className="grid grid-cols-1 gap-4 border-t border-brand/10 px-6 py-5 md:grid-cols-2">
                 <label className="block">
-                  <span className="mb-1 block text-xs font-medium text-slate-600">Тип документа</span>
+                  <span className="mb-1 block text-xs font-medium text-muted">Тип документа</span>
                   <Select name="type" defaultValue="QUOTE">
                     {DOC_TYPES.map((t) => (
                       <option key={t} value={t}>{DOC_TYPE_LABELS[t]}</option>
@@ -69,7 +69,7 @@ export default async function DocumentsPage({
                   </Select>
                 </label>
                 <label className="block">
-                  <span className="mb-1 block text-xs font-medium text-slate-600">Джерело (автозаповнення позицій)</span>
+                  <span className="mb-1 block text-xs font-medium text-muted">Джерело (автозаповнення позицій)</span>
                   <Select name="source" defaultValue="">
                     <option value="">— вручну, без джерела —</option>
                     <optgroup label="Замовлення">
@@ -104,7 +104,7 @@ export default async function DocumentsPage({
         <Card>
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
+              <tr className="text-left text-xs uppercase tracking-wide text-muted">
                 <th className="px-6 py-3 font-medium">Номер</th>
                 <th className="px-6 py-3 font-medium">Тип</th>
                 <th className="px-6 py-3 font-medium">Назва</th>
@@ -114,22 +114,22 @@ export default async function DocumentsPage({
                 <th className="px-6 py-3 font-medium">Дата</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-brand/5">
               {docs.map((d) => (
-                <tr key={d.id} className="hover:bg-slate-50">
+                <tr key={d.id} className="hover:bg-white/5">
                   <td className="px-6 py-3">
-                    <Link href={`/documents/${d.id}`} className="font-medium text-teal-600 hover:underline">{d.number}</Link>
+                    <Link href={`/documents/${d.id}`} className="font-medium text-brand hover:underline">{d.number}</Link>
                   </td>
-                  <td className="px-6 py-3 text-slate-500">{DOC_TYPE_SHORT[d.type]}</td>
-                  <td className="px-6 py-3 text-slate-700">{d.title}</td>
-                  <td className="px-6 py-3 text-slate-500">{d.client?.fullName ?? "—"}</td>
+                  <td className="px-6 py-3 text-muted">{DOC_TYPE_SHORT[d.type]}</td>
+                  <td className="px-6 py-3 text-[#cfc9ba]">{d.title}</td>
+                  <td className="px-6 py-3 text-muted">{d.client?.fullName ?? "—"}</td>
                   <td className="px-6 py-3">
                     <Badge className={DOC_STATUS_COLORS[d.status]}>
                       {DOC_STATUS_LABELS[d.status]}
                     </Badge>
                   </td>
-                  <td className="px-6 py-3 text-right font-medium text-slate-700">{d.total ? formatUAH(d.total) : "—"}</td>
-                  <td className="px-6 py-3 text-slate-500">{formatDate(d.createdAt)}</td>
+                  <td className="px-6 py-3 text-right font-medium text-[#cfc9ba]">{d.total ? formatUAH(d.total) : "—"}</td>
+                  <td className="px-6 py-3 text-muted">{formatDate(d.createdAt)}</td>
                 </tr>
               ))}
               {docs.length === 0 && (
@@ -148,7 +148,7 @@ function Chip({ href, active, label }: { href: string; active: boolean; label: s
     <Link
       href={href}
       className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-        active ? "bg-slate-800 text-white" : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+        active ? "bg-brand text-background" : "bg-white/5 text-muted ring-1 ring-brand/15 hover:bg-white/10 hover:text-foreground"
       }`}
     >
       {label}

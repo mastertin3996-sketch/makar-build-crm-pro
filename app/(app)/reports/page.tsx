@@ -43,7 +43,7 @@ export default async function ReportsPage({
 
   return (
     <>
-      <PageHeader title="Звіти" subtitle="Аналітика продажів, фінансів та роботи команди" icon="📈" />
+      <PageHeader title="Звіти" subtitle="Аналітика продажів, фінансів та роботи команди" icon="reports" />
 
       <div className="space-y-6 p-8">
         <div className="flex flex-wrap gap-2">
@@ -52,7 +52,7 @@ export default async function ReportsPage({
               key={rep.key}
               href={`/reports?r=${rep.key}`}
               className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                active === rep.key ? "bg-slate-800 text-white" : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+                active === rep.key ? "bg-brand text-background" : "bg-white/5 text-muted ring-1 ring-brand/15 hover:bg-white/10"
               }`}
             >
               {rep.label}
@@ -79,22 +79,22 @@ function BarList({ rows }: { rows: { label: string; value: number; display: stri
     <div className="space-y-3">
       {rows.map((row) => (
         <div key={row.label} className="flex items-center gap-3">
-          <div className="w-40 shrink-0 truncate text-sm text-slate-600" title={row.label}>{row.label}</div>
-          <div className="h-5 flex-1 rounded bg-slate-100">
-            <div className="h-5 rounded bg-teal-500" style={{ width: `${(row.value / max) * 100}%` }} />
+          <div className="w-40 shrink-0 truncate text-sm text-muted" title={row.label}>{row.label}</div>
+          <div className="h-5 flex-1 rounded bg-white/5">
+            <div className="h-5 rounded bg-brand" style={{ width: `${(row.value / max) * 100}%` }} />
           </div>
-          <div className="w-28 text-right text-sm font-medium text-slate-700">{row.display}</div>
+          <div className="w-28 text-right text-sm font-medium text-[#cfc9ba]">{row.display}</div>
         </div>
       ))}
-      {rows.length === 0 && <p className="text-sm text-slate-400">Немає даних</p>}
+      {rows.length === 0 && <p className="text-sm text-muted">Немає даних</p>}
     </div>
   );
 }
 
-function Stat({ label, value, accent = "text-slate-700" }: { label: string; value: string; accent?: string }) {
+function Stat({ label, value, accent = "text-[#cfc9ba]" }: { label: string; value: string; accent?: string }) {
   return (
     <Card className="p-5">
-      <div className="text-sm text-slate-500">{label}</div>
+      <div className="text-sm text-muted">{label}</div>
       <div className={`mt-2 text-2xl font-bold ${accent}`}>{value}</div>
     </Card>
   );
@@ -121,13 +121,13 @@ async function SalesReport() {
   return (
     <>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <Stat label="Дохід (оплачено)" value={formatUAH(revenue)} accent="text-emerald-600" />
-        <Stat label="Сума замовлень" value={formatUAH(ordersSum)} accent="text-teal-600" />
-        <Stat label="Замовлень" value={String(orders.length)} accent="text-indigo-600" />
-        <Stat label="Середній чек" value={formatUAH(avg)} accent="text-violet-600" />
+        <Stat label="Дохід (оплачено)" value={formatUAH(revenue)} accent="text-emerald-400" />
+        <Stat label="Сума замовлень" value={formatUAH(ordersSum)} accent="text-brand" />
+        <Stat label="Замовлень" value={String(orders.length)} accent="text-indigo-400" />
+        <Stat label="Середній чек" value={formatUAH(avg)} accent="text-violet-400" />
       </div>
       <Card className="p-6">
-        <h2 className="mb-4 text-base font-semibold text-slate-900">Дохід по місяцях</h2>
+        <h2 className="mb-4 text-base font-semibold text-foreground">Дохід по місяцях</h2>
         <BarList rows={rows} />
       </Card>
     </>
@@ -161,12 +161,12 @@ async function ManagersReport() {
 
   return (
     <Card>
-      <div className="border-b border-slate-100 px-6 py-4">
-        <h2 className="text-base font-semibold text-slate-900">KPI менеджерів</h2>
+      <div className="border-b border-brand/10 px-6 py-4">
+        <h2 className="text-base font-semibold text-foreground">KPI менеджерів</h2>
       </div>
       <table className="w-full text-sm">
         <thead>
-          <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
+          <tr className="text-left text-xs uppercase tracking-wide text-muted">
             <th className="px-6 py-3 font-medium">Співробітник</th>
             <th className="px-6 py-3 font-medium">Роль</th>
             <th className="px-6 py-3 text-right font-medium">Заявок</th>
@@ -175,15 +175,15 @@ async function ManagersReport() {
             <th className="px-6 py-3 text-right font-medium">Отримано оплат</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100">
+        <tbody className="divide-y divide-brand/5">
           {rows.map((x) => (
-            <tr key={x.user.id} className="hover:bg-slate-50">
-              <td className="px-6 py-3 font-medium text-slate-700">{x.user.fullName}</td>
-              <td className="px-6 py-3 text-slate-500">{ROLE_LABELS[x.user.role]}</td>
-              <td className="px-6 py-3 text-right text-slate-600">{x.requests}</td>
-              <td className="px-6 py-3 text-right text-slate-600">{x.orders}</td>
-              <td className="px-6 py-3 text-right font-medium text-slate-700">{formatUAH(x.ordersSum)}</td>
-              <td className="px-6 py-3 text-right text-emerald-600">{formatUAH(x.paid)}</td>
+            <tr key={x.user.id} className="hover:bg-white/5">
+              <td className="px-6 py-3 font-medium text-[#cfc9ba]">{x.user.fullName}</td>
+              <td className="px-6 py-3 text-muted">{ROLE_LABELS[x.user.role]}</td>
+              <td className="px-6 py-3 text-right text-[#cfc9ba]">{x.requests}</td>
+              <td className="px-6 py-3 text-right text-[#cfc9ba]">{x.orders}</td>
+              <td className="px-6 py-3 text-right font-medium text-[#cfc9ba]">{formatUAH(x.ordersSum)}</td>
+              <td className="px-6 py-3 text-right text-emerald-400">{formatUAH(x.paid)}</td>
             </tr>
           ))}
           {rows.length === 0 && <EmptyRow colSpan={6}>Немає даних</EmptyRow>}
@@ -211,7 +211,7 @@ async function ProductsReport() {
 
   return (
     <Card className="p-6">
-      <h2 className="mb-4 text-base font-semibold text-slate-900">Топ товарів за виручкою</h2>
+      <h2 className="mb-4 text-base font-semibold text-foreground">Топ товарів за виручкою</h2>
       <BarList rows={top.map((t) => ({ label: t.name, value: t.revenue, display: `${formatUAH(t.revenue)} · ${t.qty} шт` }))} />
     </Card>
   );
@@ -234,7 +234,7 @@ async function CitiesReport() {
 
   return (
     <Card className="p-6">
-      <h2 className="mb-4 text-base font-semibold text-slate-900">Відправлення по містах</h2>
+      <h2 className="mb-4 text-base font-semibold text-foreground">Відправлення по містах</h2>
       <BarList rows={rows} />
     </Card>
   );
@@ -246,7 +246,7 @@ async function ProfitReport({ canSeeProfit }: { canSeeProfit: boolean }) {
     return (
       <Card className="p-10 text-center">
         <div className="text-3xl">🔒</div>
-        <p className="mt-2 text-sm text-slate-500">Немає права на перегляд прибутку</p>
+        <p className="mt-2 text-sm text-muted">Немає права на перегляд прибутку</p>
       </Card>
     );
   }
@@ -263,13 +263,13 @@ async function ProfitReport({ canSeeProfit }: { canSeeProfit: boolean }) {
   return (
     <>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <Stat label="Дохід" value={formatUAH(revenue)} accent="text-emerald-600" />
-        <Stat label="Собівартість (COGS)" value={formatUAH(cogs)} accent="text-orange-600" />
-        <Stat label="Валовий прибуток" value={formatUAH(gross)} accent="text-teal-600" />
-        <Stat label="Чистий прибуток" value={formatUAH(net)} accent={net >= 0 ? "text-green-600" : "text-red-600"} />
+        <Stat label="Дохід" value={formatUAH(revenue)} accent="text-emerald-400" />
+        <Stat label="Собівартість (COGS)" value={formatUAH(cogs)} accent="text-orange-400" />
+        <Stat label="Валовий прибуток" value={formatUAH(gross)} accent="text-brand" />
+        <Stat label="Чистий прибуток" value={formatUAH(net)} accent={net >= 0 ? "text-green-400" : "text-red-400"} />
       </div>
       <Card className="p-6">
-        <h2 className="mb-4 text-base font-semibold text-slate-900">Структура</h2>
+        <h2 className="mb-4 text-base font-semibold text-foreground">Структура</h2>
         <BarList rows={[
           { label: "Дохід", value: revenue, display: formatUAH(revenue) },
           { label: "Собівартість", value: cogs, display: formatUAH(cogs) },
@@ -298,13 +298,13 @@ async function ConversionReport() {
   return (
     <>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <Stat label="Усього заявок" value={String(total)} accent="text-indigo-600" />
-        <Stat label="Виграно" value={String(won)} accent="text-green-600" />
-        <Stat label="Втрачено" value={String(lost)} accent="text-red-600" />
-        <Stat label="Конверсія" value={`${rate}%`} accent="text-teal-600" />
+        <Stat label="Усього заявок" value={String(total)} accent="text-indigo-400" />
+        <Stat label="Виграно" value={String(won)} accent="text-green-400" />
+        <Stat label="Втрачено" value={String(lost)} accent="text-red-400" />
+        <Stat label="Конверсія" value={`${rate}%`} accent="text-brand" />
       </div>
       <Card className="p-6">
-        <h2 className="mb-4 text-base font-semibold text-slate-900">Воронка за статусами</h2>
+        <h2 className="mb-4 text-base font-semibold text-foreground">Воронка за статусами</h2>
         <BarList rows={rows} />
       </Card>
     </>
@@ -325,25 +325,25 @@ async function SourcesReport() {
 
   return (
     <Card>
-      <div className="border-b border-slate-100 px-6 py-4">
-        <h2 className="text-base font-semibold text-slate-900">Заявки за джерелами</h2>
+      <div className="border-b border-brand/10 px-6 py-4">
+        <h2 className="text-base font-semibold text-foreground">Заявки за джерелами</h2>
       </div>
       <table className="w-full text-sm">
         <thead>
-          <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
+          <tr className="text-left text-xs uppercase tracking-wide text-muted">
             <th className="px-6 py-3 font-medium">Джерело</th>
             <th className="px-6 py-3 text-right font-medium">Заявок</th>
             <th className="px-6 py-3 text-right font-medium">Виграно</th>
             <th className="px-6 py-3 text-right font-medium">Конверсія</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100">
+        <tbody className="divide-y divide-brand/5">
           {rows.map(([source, v]) => (
-            <tr key={source} className="hover:bg-slate-50">
-              <td className="px-6 py-3 text-slate-700">{SOURCE_LABELS[source as keyof typeof SOURCE_LABELS] ?? source}</td>
-              <td className="px-6 py-3 text-right text-slate-600">{v.total}</td>
-              <td className="px-6 py-3 text-right text-green-600">{v.won}</td>
-              <td className="px-6 py-3 text-right font-medium text-slate-700">{v.total ? Math.round((v.won / v.total) * 100) : 0}%</td>
+            <tr key={source} className="hover:bg-white/5">
+              <td className="px-6 py-3 text-[#cfc9ba]">{SOURCE_LABELS[source as keyof typeof SOURCE_LABELS] ?? source}</td>
+              <td className="px-6 py-3 text-right text-[#cfc9ba]">{v.total}</td>
+              <td className="px-6 py-3 text-right text-green-400">{v.won}</td>
+              <td className="px-6 py-3 text-right font-medium text-[#cfc9ba]">{v.total ? Math.round((v.won / v.total) * 100) : 0}%</td>
             </tr>
           ))}
           {rows.length === 0 && <EmptyRow colSpan={4}>Немає даних</EmptyRow>}

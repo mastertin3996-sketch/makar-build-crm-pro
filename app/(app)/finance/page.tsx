@@ -72,21 +72,21 @@ export default async function FinancePage({
   const totalDebt = debts.reduce((s, d) => s + d.debt, 0);
 
   const stats = [
-    { label: "Надходження (оплачено)", value: formatUAH(income), accent: "text-emerald-600" },
-    { label: "Очікувані оплати", value: formatUAH(pending), accent: "text-amber-600" },
-    { label: "Заборгованість клієнтів", value: formatUAH(totalDebt), accent: "text-red-600" },
-    ...(showProfit ? [{ label: "Чистий потік", value: formatUAH(income - expense), accent: "text-teal-600" }] : []),
+    { label: "Надходження (оплачено)", value: formatUAH(income), accent: "text-emerald-400" },
+    { label: "Очікувані оплати", value: formatUAH(pending), accent: "text-amber-400" },
+    { label: "Заборгованість клієнтів", value: formatUAH(totalDebt), accent: "text-red-400" },
+    ...(showProfit ? [{ label: "Чистий потік", value: formatUAH(income - expense), accent: "text-brand" }] : []),
   ];
 
   return (
     <>
-      <PageHeader title="Фінанси" subtitle="Облік оплат і контроль заборгованості" icon="💰" />
+      <PageHeader title="Фінанси" subtitle="Облік оплат і контроль заборгованості" icon="finance" />
 
       <div className="space-y-6 p-8">
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {stats.map((s) => (
             <Card key={s.label} className="p-5">
-              <div className="text-sm text-slate-500">{s.label}</div>
+              <div className="text-sm text-muted">{s.label}</div>
               <div className={`mt-2 text-2xl font-bold ${s.accent}`}>{s.value}</div>
             </Card>
           ))}
@@ -95,20 +95,20 @@ export default async function FinancePage({
         {canCreate && (
           <Card>
             <details className="group">
-              <summary className="flex cursor-pointer list-none items-center gap-2 px-6 py-4 text-sm font-medium text-teal-600">
+              <summary className="flex cursor-pointer list-none items-center gap-2 px-6 py-4 text-sm font-medium text-brand transition-colors hover:text-brand-light">
                 <span className="text-lg leading-none">＋</span>
                 Додати оплату
               </summary>
-              <form action={createPayment} className="grid grid-cols-1 gap-4 border-t border-slate-100 px-6 py-5 md:grid-cols-3">
+              <form action={createPayment} className="grid grid-cols-1 gap-4 border-t border-brand/10 px-6 py-5 md:grid-cols-3">
                 <label className="block">
-                  <span className="mb-1 block text-xs font-medium text-slate-600">Напрям</span>
+                  <span className="mb-1 block text-xs font-medium text-muted">Напрям</span>
                   <Select name="direction" defaultValue="INCOME">
                     <option value="INCOME">Надходження</option>
                     <option value="EXPENSE">Видаток</option>
                   </Select>
                 </label>
                 <label className="block">
-                  <span className="mb-1 block text-xs font-medium text-slate-600">Спосіб оплати</span>
+                  <span className="mb-1 block text-xs font-medium text-muted">Спосіб оплати</span>
                   <Select name="method" defaultValue="CASH">
                     {METHODS.map((m) => (
                       <option key={m} value={m}>{PAYMENT_METHOD_LABELS[m]}</option>
@@ -116,7 +116,7 @@ export default async function FinancePage({
                   </Select>
                 </label>
                 <label className="block">
-                  <span className="mb-1 block text-xs font-medium text-slate-600">Провайдер (для онлайн)</span>
+                  <span className="mb-1 block text-xs font-medium text-muted">Провайдер (для онлайн)</span>
                   <Select name="provider" defaultValue="LIQPAY">
                     {PROVIDERS.map((p) => (
                       <option key={p} value={p}>{PAYMENT_PROVIDER_LABELS[p]}</option>
@@ -125,7 +125,7 @@ export default async function FinancePage({
                 </label>
                 <Field name="amount" label="Сума, грн (порожньо = з джерела)" type="number" step="any" min="0" />
                 <label className="block md:col-span-2">
-                  <span className="mb-1 block text-xs font-medium text-slate-600">Джерело</span>
+                  <span className="mb-1 block text-xs font-medium text-muted">Джерело</span>
                   <Select name="source" defaultValue="">
                     <option value="">— без прив&apos;язки —</option>
                     <optgroup label="Рахунки">
@@ -148,7 +148,7 @@ export default async function FinancePage({
                 <Field name="comment" label="Коментар" className="md:col-span-3" />
                 <div className="md:col-span-3">
                   <Button type="submit">Зберегти оплату</Button>
-                  <span className="ml-3 text-xs text-slate-400">Онлайн-оплата створюється зі статусом «Очікує» + платіжне посилання.</span>
+                  <span className="ml-3 text-xs text-muted">Онлайн-оплата створюється зі статусом «Очікує» + платіжне посилання.</span>
                 </div>
               </form>
             </details>
@@ -167,7 +167,7 @@ export default async function FinancePage({
             <Card>
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
+                  <tr className="text-left text-xs uppercase tracking-wide text-muted">
                     <th className="px-5 py-3 font-medium">№</th>
                     <th className="px-5 py-3 font-medium">Клієнт</th>
                     <th className="px-5 py-3 font-medium">Спосіб</th>
@@ -176,14 +176,14 @@ export default async function FinancePage({
                     <th className="px-5 py-3 font-medium">Дата</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-brand/5">
                   {payments.map((p) => (
-                    <tr key={p.id} className="hover:bg-slate-50">
+                    <tr key={p.id} className="hover:bg-white/5">
                       <td className="px-5 py-3">
-                        <Link href={`/finance/${p.id}`} className="font-medium text-teal-600 hover:underline">#{p.number}</Link>
+                        <Link href={`/finance/${p.id}`} className="font-medium text-brand hover:underline">#{p.number}</Link>
                       </td>
-                      <td className="px-5 py-3 text-slate-600">{p.client?.fullName ?? "—"}</td>
-                      <td className="px-5 py-3 text-slate-500">
+                      <td className="px-5 py-3 text-[#cfc9ba]">{p.client?.fullName ?? "—"}</td>
+                      <td className="px-5 py-3 text-muted">
                         {PAYMENT_METHOD_LABELS[p.method]}
                         {p.provider ? ` · ${PAYMENT_PROVIDER_LABELS[p.provider]}` : ""}
                       </td>
@@ -192,10 +192,10 @@ export default async function FinancePage({
                           {PAYMENT_STATUS_LABELS[p.status]}
                         </Badge>
                       </td>
-                      <td className={`px-5 py-3 text-right font-medium ${p.direction === "EXPENSE" ? "text-red-600" : "text-slate-700"}`}>
+                      <td className={`px-5 py-3 text-right font-medium ${p.direction === "EXPENSE" ? "text-red-400" : "text-[#cfc9ba]"}`}>
                         {p.direction === "EXPENSE" ? "−" : ""}{formatUAH(p.amount)}
                       </td>
-                      <td className="px-5 py-3 text-slate-500">{formatDate(p.createdAt)}</td>
+                      <td className="px-5 py-3 text-muted">{formatDate(p.createdAt)}</td>
                     </tr>
                   ))}
                   {payments.length === 0 && (
@@ -208,16 +208,16 @@ export default async function FinancePage({
 
           {/* Заборгованість */}
           <Card className="p-6">
-            <h2 className="mb-1 text-base font-semibold text-slate-900">Контроль заборгованості</h2>
-            <p className="mb-4 text-xs text-slate-500">Сума замовлень мінус оплачені надходження</p>
+            <h2 className="mb-1 text-base font-semibold text-foreground">Контроль заборгованості</h2>
+            <p className="mb-4 text-xs text-muted">Сума замовлень мінус оплачені надходження</p>
             <div className="space-y-2">
               {debts.map(({ client, debt }) => (
-                <div key={client.id} className="flex items-center justify-between rounded-lg bg-red-50 px-3 py-2">
-                  <Link href={`/clients/${client.id}`} className="text-sm text-slate-700 hover:underline">{client.fullName}</Link>
-                  <span className="text-sm font-semibold text-red-600">{formatUAH(debt)}</span>
+                <div key={client.id} className="flex items-center justify-between rounded-lg bg-red-500/10 px-3 py-2">
+                  <Link href={`/clients/${client.id}`} className="text-sm text-[#cfc9ba] hover:underline">{client.fullName}</Link>
+                  <span className="text-sm font-semibold text-red-400">{formatUAH(debt)}</span>
                 </div>
               ))}
-              {debts.length === 0 && <p className="text-sm text-slate-400">Заборгованості немає 🎉</p>}
+              {debts.length === 0 && <p className="text-sm text-muted">Заборгованості немає 🎉</p>}
             </div>
           </Card>
         </div>
@@ -231,7 +231,7 @@ function Chip({ href, active, label }: { href: string; active: boolean; label: s
     <Link
       href={href}
       className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-        active ? "bg-slate-800 text-white" : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+        active ? "bg-brand text-background" : "bg-white/5 text-muted ring-1 ring-brand/15 hover:bg-white/10 hover:text-foreground"
       }`}
     >
       {label}

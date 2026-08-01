@@ -53,9 +53,9 @@ export default async function ShipmentCardPage({
       <PageHeader
         title={`ТТН ${s.ttn}`}
         subtitle={CARRIER_LABELS[s.carrier]}
-        icon="🚚"
+        icon="logistics"
         action={
-          <Link href="/logistics" className="text-sm text-slate-500 hover:text-slate-700">← До списку</Link>
+          <Link href="/logistics" className="text-sm text-muted hover:text-[#cfc9ba]">← До списку</Link>
         }
       />
 
@@ -94,23 +94,23 @@ export default async function ShipmentCardPage({
 
           {/* Історія відстеження */}
           <Card className="p-6">
-            <h2 className="mb-4 text-base font-semibold text-slate-900">Історія відстеження</h2>
-            <ol className="relative space-y-5 border-l-2 border-slate-100 pl-5">
+            <h2 className="mb-4 text-base font-semibold text-foreground">Історія відстеження</h2>
+            <ol className="relative space-y-5 border-l-2 border-brand/10 pl-5">
               {s.events.map((e, idx) => (
                 <li key={e.id} className="relative">
                   <span
                     className={`absolute -left-[27px] top-0.5 h-3 w-3 rounded-full ${
-                      idx === 0 ? "bg-teal-500 ring-4 ring-teal-100" : "bg-slate-300"
+                      idx === 0 ? "bg-brand ring-4 ring-brand/20" : "bg-white/15"
                     }`}
                   />
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-slate-800">
+                    <span className="text-sm font-medium text-foreground">
                       {SHIPMENT_STATUS_LABELS[e.status]}
                     </span>
-                    <span className="text-xs text-slate-400">{fmtDateTime(e.createdAt)}</span>
+                    <span className="text-xs text-muted">{fmtDateTime(e.createdAt)}</span>
                   </div>
-                  <p className="mt-0.5 text-sm text-slate-600">{e.description}</p>
-                  {e.location && <p className="text-xs text-slate-400">📍 {e.location}</p>}
+                  <p className="mt-0.5 text-sm text-[#cfc9ba]">{e.description}</p>
+                  {e.location && <p className="text-xs text-muted">📍 {e.location}</p>}
                 </li>
               ))}
             </ol>
@@ -120,8 +120,8 @@ export default async function ShipmentCardPage({
         {/* Дії */}
         <div className="space-y-6">
           <Card className="p-6">
-            <h2 className="mb-3 text-base font-semibold text-slate-900">Керування</h2>
-            <p className="mb-4 text-xs text-slate-500">
+            <h2 className="mb-3 text-base font-semibold text-foreground">Керування</h2>
+            <p className="mb-4 text-xs text-muted">
               «Оновити статус» імітує автоматичне відстеження перевізника (у проді —
               синхронізація через API Нової Пошти / Укрпошти).
             </p>
@@ -151,10 +151,10 @@ export default async function ShipmentCardPage({
                     </Button>
                   </form>
                 )}
-                {isFinal && <p className="text-sm text-slate-400">Відправлення завершено</p>}
+                {isFinal && <p className="text-sm text-muted">Відправлення завершено</p>}
               </div>
             ) : (
-              <p className="text-sm text-slate-400">Немає прав на редагування</p>
+              <p className="text-sm text-muted">Немає прав на редагування</p>
             )}
           </Card>
         </div>
@@ -176,11 +176,11 @@ function Info({
 }) {
   return (
     <div className={full ? "col-span-2" : ""}>
-      <dt className="text-xs text-slate-400">{label}</dt>
-      <dd className="mt-0.5 text-slate-700">
+      <dt className="text-xs text-muted">{label}</dt>
+      <dd className="mt-0.5 text-[#cfc9ba]">
         {value ? (
           href ? (
-            <Link href={href} className="text-teal-600 hover:underline">{value}</Link>
+            <Link href={href} className="text-brand hover:underline">{value}</Link>
           ) : (
             value
           )

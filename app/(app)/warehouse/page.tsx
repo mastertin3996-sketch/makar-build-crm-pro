@@ -59,23 +59,23 @@ export default async function WarehousePage() {
   ).length;
 
   const stats = [
-    { label: "Складів", value: String(warehouses.length), accent: "text-slate-700" },
-    { label: "Позицій на складах", value: String(items.length), accent: "text-indigo-600" },
-    { label: "Загальний залишок", value: String(totalQty), accent: "text-teal-600" },
-    { label: "Зарезервовано", value: String(totalReserved), accent: "text-amber-600" },
-    { label: "Дефіцитних позицій", value: String(lowCount), accent: "text-red-600" },
+    { label: "Складів", value: String(warehouses.length), accent: "text-[#cfc9ba]" },
+    { label: "Позицій на складах", value: String(items.length), accent: "text-indigo-400" },
+    { label: "Загальний залишок", value: String(totalQty), accent: "text-brand" },
+    { label: "Зарезервовано", value: String(totalReserved), accent: "text-amber-400" },
+    { label: "Дефіцитних позицій", value: String(lowCount), accent: "text-red-400" },
   ];
 
   return (
     <>
-      <PageHeader title="Складський облік" subtitle={`Складів: ${warehouses.length}`} icon="🏬" />
+      <PageHeader title="Складський облік" subtitle={`Складів: ${warehouses.length}`} icon="warehouse" />
 
       <div className="space-y-6 p-8">
         {/* KPI */}
         <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
           {stats.map((s) => (
             <Card key={s.label} className="p-5">
-              <div className="text-sm text-slate-500">{s.label}</div>
+              <div className="text-sm text-muted">{s.label}</div>
               <div className={`mt-2 text-2xl font-bold ${s.accent}`}>{s.value}</div>
             </Card>
           ))}
@@ -110,12 +110,12 @@ export default async function WarehousePage() {
 
         {/* Залишки */}
         <Card>
-          <div className="border-b border-slate-100 px-6 py-4">
-            <h2 className="text-base font-semibold text-slate-900">Залишки по складах</h2>
+          <div className="border-b border-brand/10 px-6 py-4">
+            <h2 className="text-base font-semibold text-foreground">Залишки по складах</h2>
           </div>
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
+              <tr className="text-left text-xs uppercase tracking-wide text-muted">
                 <th className="px-6 py-3 font-medium">Товар</th>
                 <th className="px-6 py-3 font-medium">Склад</th>
                 <th className="px-6 py-3 text-right font-medium">Залишок</th>
@@ -123,19 +123,19 @@ export default async function WarehousePage() {
                 <th className="px-6 py-3 text-right font-medium">Доступно</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-brand/5">
               {items.map((i) => {
                 const available = i.quantity - i.reserved;
                 const low = available <= 20 && i.product.category !== "SERVICES";
                 return (
-                  <tr key={i.id} className="hover:bg-slate-50">
-                    <td className="px-6 py-3 text-slate-700">{i.product.name}</td>
-                    <td className="px-6 py-3 text-slate-500">{i.warehouse.name}</td>
-                    <td className="px-6 py-3 text-right text-slate-700">
+                  <tr key={i.id} className="hover:bg-white/5">
+                    <td className="px-6 py-3 text-[#cfc9ba]">{i.product.name}</td>
+                    <td className="px-6 py-3 text-muted">{i.warehouse.name}</td>
+                    <td className="px-6 py-3 text-right text-[#cfc9ba]">
                       {i.quantity} {i.product.unit}
                     </td>
-                    <td className="px-6 py-3 text-right text-amber-600">{i.reserved || "—"}</td>
-                    <td className={`px-6 py-3 text-right font-medium ${low ? "text-red-600" : "text-slate-900"}`}>
+                    <td className="px-6 py-3 text-right text-amber-400">{i.reserved || "—"}</td>
+                    <td className={`px-6 py-3 text-right font-medium ${low ? "text-red-400" : "text-foreground"}`}>
                       {available} {low && "⚠"}
                     </td>
                   </tr>
@@ -150,12 +150,12 @@ export default async function WarehousePage() {
 
         {/* Журнал рухів */}
         <Card>
-          <div className="border-b border-slate-100 px-6 py-4">
-            <h2 className="text-base font-semibold text-slate-900">Журнал рухів</h2>
+          <div className="border-b border-brand/10 px-6 py-4">
+            <h2 className="text-base font-semibold text-foreground">Журнал рухів</h2>
           </div>
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
+              <tr className="text-left text-xs uppercase tracking-wide text-muted">
                 <th className="px-6 py-3 font-medium">Дата</th>
                 <th className="px-6 py-3 font-medium">Операція</th>
                 <th className="px-6 py-3 font-medium">Товар</th>
@@ -164,22 +164,22 @@ export default async function WarehousePage() {
                 <th className="px-6 py-3 font-medium">Примітка</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-brand/5">
               {movements.map((m) => (
-                <tr key={m.id} className="hover:bg-slate-50">
-                  <td className="whitespace-nowrap px-6 py-3 text-slate-500">{fmtDateTime(m.createdAt)}</td>
+                <tr key={m.id} className="hover:bg-white/5">
+                  <td className="whitespace-nowrap px-6 py-3 text-muted">{fmtDateTime(m.createdAt)}</td>
                   <td className="px-6 py-3">
                     <Badge className={MOVEMENT_COLORS[m.type]}>
                       {MOVEMENT_ICONS[m.type]} {MOVEMENT_LABELS[m.type]}
                     </Badge>
                   </td>
-                  <td className="px-6 py-3 text-slate-700">{m.product.name}</td>
-                  <td className="px-6 py-3 text-slate-500">
+                  <td className="px-6 py-3 text-[#cfc9ba]">{m.product.name}</td>
+                  <td className="px-6 py-3 text-muted">
                     {m.warehouse.name}
                     {m.toWarehouse ? ` → ${m.toWarehouse.name}` : ""}
                   </td>
-                  <td className="px-6 py-3 text-right text-slate-700">{m.quantity}</td>
-                  <td className="px-6 py-3 text-slate-400">{m.note ?? "—"}</td>
+                  <td className="px-6 py-3 text-right text-[#cfc9ba]">{m.quantity}</td>
+                  <td className="px-6 py-3 text-muted">{m.note ?? "—"}</td>
                 </tr>
               ))}
               {movements.length === 0 && (
@@ -206,11 +206,11 @@ function Op({ title, action, products, warehouses, withTarget, qtyLabel }: OpPro
   return (
     <Card>
       <details className="group">
-        <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 text-sm font-medium text-slate-800">
+        <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 text-sm font-medium text-[#cfc9ba]">
           {title}
-          <span className="text-slate-400 group-open:rotate-180">▾</span>
+          <span className="text-muted transition-transform group-open:rotate-180">▾</span>
         </summary>
-        <form action={action} className="space-y-3 border-t border-slate-100 px-5 py-4">
+        <form action={action} className="space-y-3 border-t border-brand/10 px-5 py-4">
           <Select name="productId" label="Товар">
             {products.map((p) => (
               <option key={p.id} value={p.id}>{p.name}</option>
@@ -229,13 +229,13 @@ function Op({ title, action, products, warehouses, withTarget, qtyLabel }: OpPro
             </Select>
           )}
           <label className="block">
-            <span className="mb-1 block text-xs font-medium text-slate-600">
+            <span className="mb-1 block text-xs font-medium text-muted">
               {qtyLabel ?? "Кількість"}
             </span>
             <Input name="qty" type="number" step="any" min="0" required />
           </label>
           <label className="block">
-            <span className="mb-1 block text-xs font-medium text-slate-600">Примітка</span>
+            <span className="mb-1 block text-xs font-medium text-muted">Примітка</span>
             <Input name="note" />
           </label>
           <Button type="submit" className="w-full">
@@ -260,7 +260,7 @@ function Select({
 }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-xs font-medium text-slate-600">{label}</span>
+      <span className="mb-1 block text-xs font-medium text-muted">{label}</span>
       <UiSelect name={name}>{children}</UiSelect>
     </label>
   );

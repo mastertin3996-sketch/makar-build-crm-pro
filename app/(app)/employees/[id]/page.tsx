@@ -56,9 +56,9 @@ export default async function EmployeeCardPage({
       <PageHeader
         title={user.fullName}
         subtitle={`${ROLE_LABELS[user.role]} · ${user.email}`}
-        icon="🛡️"
+        icon="employees"
         action={
-          <Link href="/employees" className="text-sm text-slate-500 hover:text-slate-700">
+          <Link href="/employees" className="text-sm text-muted hover:text-[#cfc9ba]">
             ← До списку
           </Link>
         }
@@ -68,7 +68,7 @@ export default async function EmployeeCardPage({
         {/* Ліворуч — швидкі дії */}
         <div className="space-y-6">
           <Card className="p-6">
-            <h2 className="mb-4 text-base font-semibold text-slate-900">Обліковий запис</h2>
+            <h2 className="mb-4 text-base font-semibold text-foreground">Обліковий запис</h2>
             <dl className="space-y-2 text-sm">
               <Row label="Статус" value={user.isActive ? "Активний" : "Заблокований"} />
               <Row label="Логін" value={user.login ?? "—"} />
@@ -81,7 +81,7 @@ export default async function EmployeeCardPage({
           {canEdit && (
             <>
               <Card className="p-6">
-                <h3 className="mb-3 text-sm font-semibold text-slate-900">Роль</h3>
+                <h3 className="mb-3 text-sm font-semibold text-foreground">Роль</h3>
                 <form action={changeRole} className="flex gap-2">
                   <input type="hidden" name="id" value={user.id} />
                   <Select name="role" defaultValue={user.role} className="flex-1">
@@ -94,7 +94,7 @@ export default async function EmployeeCardPage({
               </Card>
 
               <Card className="p-6">
-                <h3 className="mb-3 text-sm font-semibold text-slate-900">Керівник</h3>
+                <h3 className="mb-3 text-sm font-semibold text-foreground">Керівник</h3>
                 <form action={assignManager} className="flex gap-2">
                   <input type="hidden" name="id" value={user.id} />
                   <Select name="managerId" defaultValue={user.managerId ?? ""} className="flex-1">
@@ -108,7 +108,7 @@ export default async function EmployeeCardPage({
               </Card>
 
               <Card className="p-6">
-                <h3 className="mb-3 text-sm font-semibold text-slate-900">Скинути пароль</h3>
+                <h3 className="mb-3 text-sm font-semibold text-foreground">Скинути пароль</h3>
                 <form action={resetPassword} className="flex gap-2">
                   <input type="hidden" name="id" value={user.id} />
                   <Input name="password" type="text" placeholder="Новий пароль (мін. 6)" className="flex-1" />
@@ -118,7 +118,7 @@ export default async function EmployeeCardPage({
 
               {user.role !== "OWNER" && user.id !== me.id && (
                 <Card className="p-6">
-                  <h3 className="mb-3 text-sm font-semibold text-slate-900">Доступ</h3>
+                  <h3 className="mb-3 text-sm font-semibold text-foreground">Доступ</h3>
                   <form action={toggleBlock}>
                     <input type="hidden" name="id" value={user.id} />
                     <Button type="submit" variant={user.isActive ? "danger" : "primary"} className="w-full">
@@ -135,14 +135,14 @@ export default async function EmployeeCardPage({
         <div className="lg:col-span-2">
           <Card className="p-6">
             <div className="mb-1 flex items-center justify-between">
-              <h2 className="text-base font-semibold text-slate-900">
+              <h2 className="text-base font-semibold text-foreground">
                 Гнучке налаштування доступу
               </h2>
               {usingDefaults && (
-                <Badge className="bg-amber-100 text-amber-700">Дефолти ролі</Badge>
+                <Badge className="bg-amber-500/15 text-amber-300">Дефолти ролі</Badge>
               )}
             </div>
-            <p className="mb-4 text-xs text-slate-500">
+            <p className="mb-4 text-xs text-muted">
               Права за замовчуванням визначені роллю. Будь-яку клітинку можна перевизначити вручну.
             </p>
 
@@ -153,17 +153,17 @@ export default async function EmployeeCardPage({
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="text-xs uppercase tracking-wide text-slate-400">
+                    <tr className="text-xs uppercase tracking-wide text-muted">
                       <th className="px-2 py-2 text-left font-medium">Модуль</th>
                       {ACTIONS.map((a) => (
                         <th key={a.key} className="px-2 py-2 text-center font-medium">{a.label}</th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-brand/5">
                     {MODULES.map((m) => (
                       <tr key={m.key}>
-                        <td className="px-2 py-2 text-slate-700">{m.label}</td>
+                        <td className="px-2 py-2 text-[#cfc9ba]">{m.label}</td>
                         {ACTIONS.map((a) => (
                           <td key={a.key} className="px-2 py-2 text-center">
                             <input
@@ -171,7 +171,7 @@ export default async function EmployeeCardPage({
                               name={`perm.${m.key}.${a.key}`}
                               defaultChecked={matrix[m.key][a.key]}
                               disabled={!canEdit}
-                              className="h-4 w-4 accent-teal-600"
+                              className="h-4 w-4 accent-brand"
                             />
                           </td>
                         ))}
@@ -183,7 +183,7 @@ export default async function EmployeeCardPage({
 
               {/* Контроль заявок */}
               <div>
-                <h3 className="mb-2 text-sm font-semibold text-slate-900">Контроль заявок</h3>
+                <h3 className="mb-2 text-sm font-semibold text-foreground">Контроль заявок</h3>
                 <Select name="scope" defaultValue={user.requestScope} disabled={!canEdit} className="md:w-72">
                   {SCOPES.map((s) => (
                     <option key={s} value={s}>{SCOPE_LABELS[s]}</option>
@@ -193,16 +193,16 @@ export default async function EmployeeCardPage({
 
               {/* Фінансові права */}
               <div>
-                <h3 className="mb-2 text-sm font-semibold text-slate-900">Контроль фінансів</h3>
+                <h3 className="mb-2 text-sm font-semibold text-foreground">Контроль фінансів</h3>
                 <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
                   {FINANCE_PERMS.map((f) => (
-                    <label key={f.key} className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                    <label key={f.key} className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-sm text-[#cfc9ba]">
                       <input
                         type="checkbox"
                         name={`fin.${f.key}`}
                         defaultChecked={finance[f.key]}
                         disabled={!canEdit}
-                        className="h-4 w-4 accent-teal-600"
+                        className="h-4 w-4 accent-brand"
                       />
                       {f.label}
                     </label>
@@ -224,8 +224,8 @@ export default async function EmployeeCardPage({
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-3">
-      <dt className="text-slate-400">{label}</dt>
-      <dd className="text-right text-slate-700">{value}</dd>
+      <dt className="text-muted">{label}</dt>
+      <dd className="text-right text-[#cfc9ba]">{value}</dd>
     </div>
   );
 }

@@ -73,15 +73,15 @@ export function RequestsBoard({
             onDragLeave={() => setDragOverStatus((s) => (s === status ? null : s))}
             onDrop={(e) => handleDrop(e, status)}
             className={`w-72 flex-shrink-0 rounded-xl border transition-colors ${
-              isCancelled ? "border-slate-200 bg-slate-100/60" : "border-slate-200 bg-slate-50"
-            } ${dragOverStatus === status ? "ring-2 ring-teal-400" : ""}`}
+              isCancelled ? "border-brand/10 bg-white/[0.02]" : "border-brand/10 bg-white/5"
+            } ${dragOverStatus === status ? "ring-2 ring-brand" : ""}`}
           >
             <div
               className={`flex items-center justify-between rounded-t-xl px-4 py-3 ${
                 isCancelled ? "opacity-70" : ""
               }`}
             >
-              <span className={`text-xs font-semibold ${isCancelled ? "text-slate-500" : "text-slate-700"}`}>
+              <span className={`text-xs font-semibold ${isCancelled ? "text-muted" : "text-[#cfc9ba]"}`}>
                 {STATUS_LABELS[status]}
               </span>
               <span
@@ -102,21 +102,21 @@ export function RequestsBoard({
                   }}
                   className={`${canEdit ? "cursor-grab active:cursor-grabbing" : ""}`}
                 >
-                  <Card className="p-3 hover:shadow-md">
+                  <Card className="p-3 hover:shadow-card-hover">
                     <div className="mb-1.5 flex items-center justify-between gap-2">
                       <Link
                         href={`/requests/${r.id}`}
-                        className="font-medium text-teal-600 hover:underline"
+                        className="font-medium text-brand hover:underline"
                       >
                         #{r.number}
                       </Link>
-                      <span className="flex items-center gap-1 text-xs" title={SOURCE_LABELS[r.source]}>
+                      <span className="flex items-center gap-1 text-xs text-muted" title={SOURCE_LABELS[r.source]}>
                         <PlatformIcon id={r.source} fallback={SOURCE_ICONS[r.source]} size={13} />
                         {SOURCE_LABELS[r.source]}
                       </span>
                     </div>
-                    <p className="mb-2 line-clamp-2 text-sm text-slate-700">{r.title}</p>
-                    <div className="flex items-center justify-between text-xs text-slate-500">
+                    <p className="mb-2 line-clamp-2 text-sm text-[#cfc9ba]">{r.title}</p>
+                    <div className="flex items-center justify-between text-xs text-muted">
                       <span className="truncate">
                         {r.client ? (
                           <Link href={`/clients/${r.client.id}`} className="hover:underline">
@@ -126,16 +126,16 @@ export function RequestsBoard({
                           "— без клієнта —"
                         )}
                       </span>
-                      <span className="font-semibold text-slate-700">{formatUAH(r.amount)}</span>
+                      <span className="font-semibold text-[#cfc9ba]">{formatUAH(r.amount)}</span>
                     </div>
                     {r.manager && (
-                      <div className="mt-1.5 text-xs text-slate-400">👤 {r.manager}</div>
+                      <div className="mt-1.5 text-xs text-muted">👤 {r.manager}</div>
                     )}
                   </Card>
                 </div>
               ))}
               {columnItems.length === 0 && (
-                <div className="px-1 py-6 text-center text-xs text-slate-300">Порожньо</div>
+                <div className="px-1 py-6 text-center text-xs text-muted/60">Порожньо</div>
               )}
             </div>
           </div>

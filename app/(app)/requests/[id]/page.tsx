@@ -44,11 +44,11 @@ export default async function RequestCardPage({
       <PageHeader
         title={`Заявка #${request.number}`}
         subtitle={request.title}
-        icon="📋"
+        icon="requests"
         action={
           <Link
             href="/requests"
-            className="text-sm text-slate-500 hover:text-slate-700"
+            className="text-sm text-muted hover:text-[#cfc9ba]"
           >
             ← До списку
           </Link>
@@ -62,25 +62,25 @@ export default async function RequestCardPage({
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <StatusBadge status={request.status} />
-                <span className="flex items-center gap-1.5 text-sm text-slate-400">
+                <span className="flex items-center gap-1.5 text-sm text-muted">
                   Джерело:
                   <PlatformIcon id={request.source} fallback={SOURCE_ICONS[request.source]} size={14} />
                   {SOURCE_LABELS[request.source]}
                 </span>
               </div>
-              <div className="text-sm text-slate-500">
+              <div className="text-sm text-muted">
                 Створено: {formatDate(request.createdAt)}
               </div>
             </div>
 
             <dl className="mt-5 grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
               <div>
-                <dt className="text-xs text-slate-400">Клієнт</dt>
+                <dt className="text-xs text-muted">Клієнт</dt>
                 <dd className="mt-0.5">
                   {request.client ? (
                     <Link
                       href={`/clients/${request.client.id}`}
-                      className="text-teal-600 hover:underline"
+                      className="text-brand hover:underline"
                     >
                       {request.client.fullName}
                     </Link>
@@ -90,12 +90,12 @@ export default async function RequestCardPage({
                 </dd>
               </div>
               <div>
-                <dt className="text-xs text-slate-400">Менеджер</dt>
-                <dd className="mt-0.5 text-slate-700">{request.manager ?? "—"}</dd>
+                <dt className="text-xs text-muted">Менеджер</dt>
+                <dd className="mt-0.5 text-[#cfc9ba]">{request.manager ?? "—"}</dd>
               </div>
               <div>
-                <dt className="text-xs text-slate-400">Сума заявки</dt>
-                <dd className="mt-0.5 font-semibold text-slate-900">
+                <dt className="text-xs text-muted">Сума заявки</dt>
+                <dd className="mt-0.5 font-semibold text-foreground">
                   {formatUAH(request.amount)}
                 </dd>
               </div>
@@ -104,31 +104,31 @@ export default async function RequestCardPage({
 
           {/* Позиції / прорахунок */}
           <Card>
-            <div className="border-b border-slate-100 px-6 py-4">
-              <h2 className="text-base font-semibold text-slate-900">
+            <div className="border-b border-brand/10 px-6 py-4">
+              <h2 className="text-base font-semibold text-foreground">
                 Позиції (прорахунок)
               </h2>
             </div>
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
+                <tr className="text-left text-xs uppercase tracking-wide text-muted">
                   <th className="px-6 py-3 font-medium">Найменування</th>
                   <th className="px-6 py-3 text-right font-medium">К-сть</th>
                   <th className="px-6 py-3 text-right font-medium">Ціна</th>
                   <th className="px-6 py-3 text-right font-medium">Сума</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-brand/5">
                 {request.items.map((i) => (
                   <tr key={i.id}>
-                    <td className="px-6 py-3 text-slate-700">{i.name}</td>
-                    <td className="px-6 py-3 text-right text-slate-600">
+                    <td className="px-6 py-3 text-[#cfc9ba]">{i.name}</td>
+                    <td className="px-6 py-3 text-right text-[#cfc9ba]">
                       {i.quantity}
                     </td>
-                    <td className="px-6 py-3 text-right text-slate-600">
+                    <td className="px-6 py-3 text-right text-[#cfc9ba]">
                       {formatUAH(i.price)}
                     </td>
-                    <td className="px-6 py-3 text-right font-medium text-slate-700">
+                    <td className="px-6 py-3 text-right font-medium text-[#cfc9ba]">
                       {formatUAH(i.price * i.quantity)}
                     </td>
                   </tr>
@@ -139,11 +139,11 @@ export default async function RequestCardPage({
               </tbody>
               {request.items.length > 0 && (
                 <tfoot>
-                  <tr className="border-t border-slate-200">
-                    <td colSpan={3} className="px-6 py-3 text-right font-medium text-slate-500">
+                  <tr className="border-t border-brand/10">
+                    <td colSpan={3} className="px-6 py-3 text-right font-medium text-muted">
                       Разом:
                     </td>
-                    <td className="px-6 py-3 text-right text-base font-bold text-slate-900">
+                    <td className="px-6 py-3 text-right text-base font-bold text-foreground">
                       {formatUAH(itemsTotal)}
                     </td>
                   </tr>
@@ -157,7 +157,7 @@ export default async function RequestCardPage({
         <div className="space-y-6">
           {/* Зміна статусу */}
           <Card className="p-6">
-            <h2 className="mb-4 text-base font-semibold text-slate-900">
+            <h2 className="mb-4 text-base font-semibold text-foreground">
               Статус заявки
             </h2>
             <form action={updateStatus} className="space-y-3">
@@ -177,7 +177,7 @@ export default async function RequestCardPage({
 
           {/* Комунікації */}
           <Card className="p-6">
-            <h2 className="mb-4 text-base font-semibold text-slate-900">
+            <h2 className="mb-4 text-base font-semibold text-foreground">
               Комунікації з клієнтом
             </h2>
             <form action={addRequestInteraction} className="space-y-3">
@@ -206,7 +206,7 @@ export default async function RequestCardPage({
               </Button>
             </form>
 
-            <ol className="mt-5 space-y-4 border-t border-slate-100 pt-4">
+            <ol className="mt-5 space-y-4 border-t border-brand/10 pt-4">
               {request.interactions.map((i) => (
                 <li key={i.id} className="flex gap-3">
                   <div className="text-lg leading-none">
@@ -214,19 +214,19 @@ export default async function RequestCardPage({
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium text-slate-500">
+                      <span className="text-xs font-medium text-muted">
                         {INTERACTION_LABELS[i.type]}
                       </span>
-                      <span className="text-xs text-slate-400">
+                      <span className="text-xs text-muted">
                         {formatDate(i.createdAt)}
                       </span>
                     </div>
-                    <p className="mt-0.5 text-sm text-slate-700">{i.content}</p>
+                    <p className="mt-0.5 text-sm text-[#cfc9ba]">{i.content}</p>
                   </div>
                 </li>
               ))}
               {request.interactions.length === 0 && (
-                <li className="text-sm text-slate-400">Записів поки немає</li>
+                <li className="text-sm text-muted">Записів поки немає</li>
               )}
             </ol>
           </Card>

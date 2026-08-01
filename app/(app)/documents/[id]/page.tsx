@@ -46,8 +46,8 @@ export default async function DocumentCardPage({
       <PageHeader
         title={`${doc.number} · ${DOC_TYPE_LABELS[doc.type]}`}
         subtitle={doc.title}
-        icon="📄"
-        action={<Link href="/documents" className="text-sm text-slate-500 hover:text-slate-700">← До списку</Link>}
+        icon="documents"
+        action={<Link href="/documents" className="text-sm text-muted hover:text-[#cfc9ba]">← До списку</Link>}
       />
 
       <div className="grid gap-6 p-8 lg:grid-cols-3">
@@ -57,7 +57,7 @@ export default async function DocumentCardPage({
               <Badge className={DOC_STATUS_COLORS[doc.status]}>
                 {DOC_STATUS_LABELS[doc.status]}
               </Badge>
-              <span className="text-sm text-slate-400">Створено: {formatDate(doc.createdAt)}</span>
+              <span className="text-sm text-muted">Створено: {formatDate(doc.createdAt)}</span>
             </div>
             <dl className="mt-5 grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
               <Info label="Тип" value={DOC_TYPE_LABELS[doc.type]} />
@@ -72,25 +72,25 @@ export default async function DocumentCardPage({
 
           {withItems && (
             <Card>
-              <div className="border-b border-slate-100 px-6 py-4">
-                <h2 className="text-base font-semibold text-slate-900">Позиції</h2>
+              <div className="border-b border-brand/10 px-6 py-4">
+                <h2 className="text-base font-semibold text-foreground">Позиції</h2>
               </div>
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
+                  <tr className="text-left text-xs uppercase tracking-wide text-muted">
                     <th className="px-6 py-3 font-medium">Найменування</th>
                     <th className="px-6 py-3 text-right font-medium">К-сть</th>
                     <th className="px-6 py-3 text-right font-medium">Ціна</th>
                     <th className="px-6 py-3 text-right font-medium">Сума</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-brand/5">
                   {items.map((i, idx) => (
                     <tr key={idx}>
-                      <td className="px-6 py-3 text-slate-700">{i.name}</td>
-                      <td className="px-6 py-3 text-right text-slate-600">{i.quantity}</td>
-                      <td className="px-6 py-3 text-right text-slate-600">{formatUAH(i.price)}</td>
-                      <td className="px-6 py-3 text-right font-medium text-slate-700">{formatUAH(i.price * i.quantity)}</td>
+                      <td className="px-6 py-3 text-[#cfc9ba]">{i.name}</td>
+                      <td className="px-6 py-3 text-right text-[#cfc9ba]">{i.quantity}</td>
+                      <td className="px-6 py-3 text-right text-[#cfc9ba]">{formatUAH(i.price)}</td>
+                      <td className="px-6 py-3 text-right font-medium text-[#cfc9ba]">{formatUAH(i.price * i.quantity)}</td>
                     </tr>
                   ))}
                   {items.length === 0 && (
@@ -99,9 +99,9 @@ export default async function DocumentCardPage({
                 </tbody>
                 {items.length > 0 && (
                   <tfoot>
-                    <tr className="border-t border-slate-200">
-                      <td colSpan={3} className="px-6 py-3 text-right font-medium text-slate-500">Разом:</td>
-                      <td className="px-6 py-3 text-right text-base font-bold text-slate-900">{formatUAH(doc.total)}</td>
+                    <tr className="border-t border-brand/10">
+                      <td colSpan={3} className="px-6 py-3 text-right font-medium text-muted">Разом:</td>
+                      <td className="px-6 py-3 text-right text-base font-bold text-foreground">{formatUAH(doc.total)}</td>
                     </tr>
                   </tfoot>
                 )}
@@ -113,7 +113,7 @@ export default async function DocumentCardPage({
         {/* Дії */}
         <div className="space-y-6">
           <Card className="p-6">
-            <h2 className="mb-3 text-base font-semibold text-slate-900">Експорт</h2>
+            <h2 className="mb-3 text-base font-semibold text-foreground">Експорт</h2>
             <div className="space-y-2">
               {canPrint && (
                 <LinkButton href={`/doc/${doc.id}`} target="_blank" variant="secondary" className="w-full">
@@ -122,13 +122,13 @@ export default async function DocumentCardPage({
               )}
               <a
                 href={`/documents/${doc.id}/export?format=doc`}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-brand/25 bg-transparent px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-brand/10 hover:border-brand/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 📘 Експорт у Word
               </a>
               <a
                 href={`/documents/${doc.id}/export?format=xls`}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-brand/25 bg-transparent px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-brand/10 hover:border-brand/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 📗 Експорт у Excel
               </a>
@@ -137,7 +137,7 @@ export default async function DocumentCardPage({
 
           {canEdit && (
             <Card className="p-6">
-              <h2 className="mb-3 text-base font-semibold text-slate-900">Статус</h2>
+              <h2 className="mb-3 text-base font-semibold text-foreground">Статус</h2>
               <form action={setDocumentStatus} className="flex gap-2">
                 <input type="hidden" name="id" value={doc.id} />
                 <Select name="status" defaultValue={doc.status} className="flex-1">
@@ -169,9 +169,9 @@ export default async function DocumentCardPage({
 function Info({ label, value, full = false, href }: { label: string; value?: string | null; full?: boolean; href?: string }) {
   return (
     <div className={full ? "col-span-2" : ""}>
-      <dt className="text-xs text-slate-400">{label}</dt>
-      <dd className="mt-0.5 text-slate-700">
-        {value ? (href ? <Link href={href} className="text-teal-600 hover:underline">{value}</Link> : value) : "—"}
+      <dt className="text-xs text-muted">{label}</dt>
+      <dd className="mt-0.5 text-[#cfc9ba]">
+        {value ? (href ? <Link href={href} className="text-brand hover:underline">{value}</Link> : value) : "—"}
       </dd>
     </div>
   );

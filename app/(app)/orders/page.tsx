@@ -52,20 +52,20 @@ export default async function OrdersPage({
 
   return (
     <>
-      <PageHeader title="Замовлення" subtitle={`Усього: ${total} · Сума: ${formatUAH(revenue)}`} icon="🧾" />
+      <PageHeader title="Замовлення" subtitle={`Усього: ${total} · Сума: ${formatUAH(revenue)}`} icon="orders" />
 
       <div className="space-y-6 p-8">
         {canCreate && (
           <div className="flex flex-wrap items-stretch gap-4">
             <Card className="flex-1">
               <details className="group">
-                <summary className="flex cursor-pointer list-none items-center gap-2 px-6 py-4 text-sm font-medium text-teal-600">
+                <summary className="flex cursor-pointer list-none items-center gap-2 px-6 py-4 text-sm font-medium text-brand transition-colors hover:text-brand-light">
                   <span className="text-lg leading-none">＋</span>
                   Нове замовлення
                 </summary>
-                <form action={createOrder} className="grid grid-cols-1 gap-4 border-t border-slate-100 px-6 py-5 md:grid-cols-2">
+                <form action={createOrder} className="grid grid-cols-1 gap-4 border-t border-brand/10 px-6 py-5 md:grid-cols-2">
                   <label className="block">
-                    <span className="mb-1 block text-xs font-medium text-slate-600">Канал / джерело</span>
+                    <span className="mb-1 block text-xs font-medium text-muted">Канал / джерело</span>
                     <Select name="channel" defaultValue="MANUAL">
                       {CHANNELS.map((c) => (
                         <option key={c} value={c}>{SOURCE_LABELS[c]}</option>
@@ -73,7 +73,7 @@ export default async function OrdersPage({
                     </Select>
                   </label>
                   <label className="block">
-                    <span className="mb-1 block text-xs font-medium text-slate-600">Клієнт</span>
+                    <span className="mb-1 block text-xs font-medium text-muted">Клієнт</span>
                     <Select name="clientId" defaultValue="">
                       <option value="">— без клієнта —</option>
                       {clients.map((c) => (
@@ -82,7 +82,7 @@ export default async function OrdersPage({
                     </Select>
                   </label>
                   <label className="block">
-                    <span className="mb-1 block text-xs font-medium text-slate-600">Склад резервування</span>
+                    <span className="mb-1 block text-xs font-medium text-muted">Склад резервування</span>
                     <Select name="warehouseId" defaultValue="">
                       <option value="">Склад за замовчуванням</option>
                       {warehouses.map((w) => (
@@ -121,7 +121,7 @@ export default async function OrdersPage({
         <Card>
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
+              <tr className="text-left text-xs uppercase tracking-wide text-muted">
                 <th className="px-6 py-3 font-medium">№</th>
                 <th className="px-6 py-3 font-medium">Канал</th>
                 <th className="px-6 py-3 font-medium">Клієнт</th>
@@ -131,22 +131,22 @@ export default async function OrdersPage({
                 <th className="px-6 py-3 font-medium">Дата</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-brand/5">
               {orders.map((o) => (
-                <tr key={o.id} className="hover:bg-slate-50">
+                <tr key={o.id} className="hover:bg-white/5">
                   <td className="px-6 py-3">
-                    <Link href={`/orders/${o.id}`} className="font-medium text-teal-600 hover:underline">#{o.number}</Link>
+                    <Link href={`/orders/${o.id}`} className="font-medium text-brand hover:underline">#{o.number}</Link>
                   </td>
-                  <td className="px-6 py-3 text-slate-500">{SOURCE_LABELS[o.channel]}</td>
-                  <td className="px-6 py-3 text-slate-600">{o.client?.fullName ?? "—"}</td>
-                  <td className="px-6 py-3 text-slate-500">{o._count.items}</td>
+                  <td className="px-6 py-3 text-muted">{SOURCE_LABELS[o.channel]}</td>
+                  <td className="px-6 py-3 text-[#cfc9ba]">{o.client?.fullName ?? "—"}</td>
+                  <td className="px-6 py-3 text-muted">{o._count.items}</td>
                   <td className="px-6 py-3">
                     <Badge className={ORDER_STATUS_COLORS[o.status]}>
                       {ORDER_STATUS_LABELS[o.status]}
                     </Badge>
                   </td>
-                  <td className="px-6 py-3 text-right font-medium text-slate-700">{formatUAH(o.totalAmount)}</td>
-                  <td className="px-6 py-3 text-slate-500">{formatDate(o.createdAt)}</td>
+                  <td className="px-6 py-3 text-right font-medium text-[#cfc9ba]">{formatUAH(o.totalAmount)}</td>
+                  <td className="px-6 py-3 text-muted">{formatDate(o.createdAt)}</td>
                 </tr>
               ))}
               {orders.length === 0 && (
@@ -165,7 +165,7 @@ function Chip({ href, active, label }: { href: string; active: boolean; label: s
     <Link
       href={href}
       className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-        active ? "bg-slate-800 text-white" : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+        active ? "bg-brand text-background" : "bg-white/5 text-muted ring-1 ring-brand/15 hover:bg-white/10"
       }`}
     >
       {label}

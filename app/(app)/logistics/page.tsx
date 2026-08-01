@@ -53,21 +53,21 @@ export default async function LogisticsPage({
   const totalCost = shipments.reduce((s, sh) => s + (sh.cost ?? 0), 0);
 
   const stats = [
-    { label: "Усього відправлень", value: String(total), accent: "text-slate-700" },
-    { label: "У дорозі", value: String(inTransit), accent: "text-sky-600" },
-    { label: "Вручено", value: String(countOf("DELIVERED")), accent: "text-green-600" },
-    { label: "Вартість доставки", value: formatUAH(totalCost), accent: "text-teal-600" },
+    { label: "Усього відправлень", value: String(total), accent: "text-[#cfc9ba]" },
+    { label: "У дорозі", value: String(inTransit), accent: "text-sky-400" },
+    { label: "Вручено", value: String(countOf("DELIVERED")), accent: "text-green-400" },
+    { label: "Вартість доставки", value: formatUAH(totalCost), accent: "text-brand" },
   ];
 
   return (
     <>
-      <PageHeader title="Логістика" subtitle={`Відправлень: ${total}`} icon="🚚" />
+      <PageHeader title="Логістика" subtitle={`Відправлень: ${total}`} icon="logistics" />
 
       <div className="space-y-6 p-8">
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {stats.map((s) => (
             <Card key={s.label} className="p-5">
-              <div className="text-sm text-slate-500">{s.label}</div>
+              <div className="text-sm text-muted">{s.label}</div>
               <div className={`mt-2 text-2xl font-bold ${s.accent}`}>{s.value}</div>
             </Card>
           ))}
@@ -76,13 +76,13 @@ export default async function LogisticsPage({
         {canCreate && (
           <Card>
             <details className="group">
-              <summary className="flex cursor-pointer list-none items-center gap-2 px-6 py-4 text-sm font-medium text-teal-600">
+              <summary className="flex cursor-pointer list-none items-center gap-2 px-6 py-4 text-sm font-medium text-brand transition-colors hover:text-brand-light">
                 <span className="text-lg leading-none">＋</span>
                 Створити ТТН
               </summary>
-              <form action={createShipment} className="grid grid-cols-1 gap-4 border-t border-slate-100 px-6 py-5 md:grid-cols-3">
+              <form action={createShipment} className="grid grid-cols-1 gap-4 border-t border-brand/10 px-6 py-5 md:grid-cols-3">
                 <label className="block">
-                  <span className="mb-1 block text-xs font-medium text-slate-600">Перевізник</span>
+                  <span className="mb-1 block text-xs font-medium text-muted">Перевізник</span>
                   <Select name="carrier" defaultValue="NOVA_POSHTA">
                     {CARRIERS.map((c) => (
                       <option key={c} value={c}>{CARRIER_LABELS[c]}</option>
@@ -90,7 +90,7 @@ export default async function LogisticsPage({
                   </Select>
                 </label>
                 <label className="block md:col-span-2">
-                  <span className="mb-1 block text-xs font-medium text-slate-600">Замовлення (автозаповнення отримувача)</span>
+                  <span className="mb-1 block text-xs font-medium text-muted">Замовлення (автозаповнення отримувача)</span>
                   <Select name="orderId" defaultValue="">
                     <option value="">— без прив&apos;язки —</option>
                     {orders.map((o) => (
@@ -107,7 +107,7 @@ export default async function LogisticsPage({
                 <Field name="declaredValue" label="Оголошена вартість" type="number" step="any" />
                 <Field name="cost" label="Вартість доставки" type="number" step="any" />
                 <label className="block">
-                  <span className="mb-1 block text-xs font-medium text-slate-600">Платник</span>
+                  <span className="mb-1 block text-xs font-medium text-muted">Платник</span>
                   <Select name="payer" defaultValue="Отримувач">
                     <option value="Отримувач">Отримувач</option>
                     <option value="Відправник">Відправник</option>
@@ -131,7 +131,7 @@ export default async function LogisticsPage({
         <Card>
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
+              <tr className="text-left text-xs uppercase tracking-wide text-muted">
                 <th className="px-6 py-3 font-medium">ТТН</th>
                 <th className="px-6 py-3 font-medium">Перевізник</th>
                 <th className="px-6 py-3 font-medium">Отримувач</th>
@@ -141,22 +141,22 @@ export default async function LogisticsPage({
                 <th className="px-6 py-3 font-medium">Дата</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-brand/5">
               {shipments.map((s) => (
-                <tr key={s.id} className="hover:bg-slate-50">
+                <tr key={s.id} className="hover:bg-white/5">
                   <td className="px-6 py-3">
-                    <Link href={`/logistics/${s.id}`} className="font-mono text-xs font-medium text-teal-600 hover:underline">{s.ttn}</Link>
+                    <Link href={`/logistics/${s.id}`} className="font-mono text-xs font-medium text-brand hover:underline">{s.ttn}</Link>
                   </td>
-                  <td className="px-6 py-3 text-slate-600">{CARRIER_LABELS[s.carrier]}</td>
-                  <td className="px-6 py-3 text-slate-600">{s.recipientName}</td>
-                  <td className="px-6 py-3 text-slate-500">{s.cityFrom ?? "—"} → {s.cityTo ?? "—"}</td>
+                  <td className="px-6 py-3 text-[#cfc9ba]">{CARRIER_LABELS[s.carrier]}</td>
+                  <td className="px-6 py-3 text-[#cfc9ba]">{s.recipientName}</td>
+                  <td className="px-6 py-3 text-muted">{s.cityFrom ?? "—"} → {s.cityTo ?? "—"}</td>
                   <td className="px-6 py-3">
                     <Badge className={SHIPMENT_STATUS_COLORS[s.status]}>
                       {SHIPMENT_STATUS_LABELS[s.status]}
                     </Badge>
                   </td>
-                  <td className="px-6 py-3 text-right text-slate-700">{s.cost ? formatUAH(s.cost) : "—"}</td>
-                  <td className="px-6 py-3 text-slate-500">{formatDate(s.createdAt)}</td>
+                  <td className="px-6 py-3 text-right text-[#cfc9ba]">{s.cost ? formatUAH(s.cost) : "—"}</td>
+                  <td className="px-6 py-3 text-muted">{formatDate(s.createdAt)}</td>
                 </tr>
               ))}
               {shipments.length === 0 && (
@@ -175,7 +175,7 @@ function Chip({ href, active, label }: { href: string; active: boolean; label: s
     <Link
       href={href}
       className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-        active ? "bg-slate-800 text-white" : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+        active ? "bg-brand text-background" : "bg-white/5 text-muted ring-1 ring-brand/15 hover:bg-white/10 hover:text-foreground"
       }`}
     >
       {label}

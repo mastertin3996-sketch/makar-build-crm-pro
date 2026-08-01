@@ -29,15 +29,15 @@ export default async function PayLiqpayPage({
       <PageHeader
         title={`Оплата #${p.number}`}
         subtitle="Перенаправлення на LiqPay…"
-        icon="💰"
-        action={<Link href={`/finance/${id}`} className="text-sm text-slate-500 hover:text-slate-700">← Назад</Link>}
+        icon="finance"
+        action={<Link href={`/finance/${id}`} className="text-sm text-muted hover:text-[#cfc9ba]">← Назад</Link>}
       />
       <div className="p-8">
         <Card className="max-w-md p-6 text-center">
-          <p className="mb-4 text-sm text-slate-600">
+          <p className="mb-4 text-sm text-[#cfc9ba]">
             Сума до оплати: <span className="font-semibold">{formatUAH(p.amount)}</span>
           </p>
-          <p className="mb-4 text-xs text-slate-400">
+          <p className="mb-4 text-xs text-muted">
             Якщо перенаправлення не відбулося автоматично, натисніть кнопку нижче.
           </p>
           <form id="liqpay-form" method="POST" action="https://www.liqpay.ua/api/3/checkout" acceptCharset="utf-8">

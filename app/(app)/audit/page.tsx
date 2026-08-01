@@ -85,13 +85,13 @@ export default async function AuditPage() {
       <PageHeader
         title="Журнал дій користувачів"
         subtitle="Останні 200 подій"
-        icon="🧭"
+        icon="audit"
       />
       <div className="p-8">
         <Card>
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
+              <tr className="text-left text-xs uppercase tracking-wide text-muted">
                 <th className="px-6 py-3 font-medium">Дата і час</th>
                 <th className="px-6 py-3 font-medium">Користувач</th>
                 <th className="px-6 py-3 font-medium">Дія</th>
@@ -100,17 +100,17 @@ export default async function AuditPage() {
                 <th className="px-6 py-3 font-medium">Пристрій</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-brand/5">
               {logs.map((l) => (
-                <tr key={l.id} className="hover:bg-slate-50">
-                  <td className="whitespace-nowrap px-6 py-3 text-slate-600">{fmt(l.createdAt)}</td>
-                  <td className="px-6 py-3 text-slate-700">{l.user?.fullName ?? "—"}</td>
+                <tr key={l.id} className="hover:bg-white/5">
+                  <td className="whitespace-nowrap px-6 py-3 text-[#cfc9ba]">{fmt(l.createdAt)}</td>
+                  <td className="px-6 py-3 text-[#cfc9ba]">{l.user?.fullName ?? "—"}</td>
                   <td className="px-6 py-3">
-                    <Badge className="bg-slate-100 text-slate-600">{ACTION_LABELS[l.action] ?? l.action}</Badge>
+                    <Badge className="bg-white/5 text-muted">{ACTION_LABELS[l.action] ?? l.action}</Badge>
                   </td>
-                  <td className="px-6 py-3 text-slate-500">{l.details ?? "—"}</td>
-                  <td className="px-6 py-3 text-slate-500">{l.ip ?? "—"}</td>
-                  <td className="max-w-xs truncate px-6 py-3 text-slate-400" title={l.userAgent ?? ""}>
+                  <td className="px-6 py-3 text-muted">{l.details ?? "—"}</td>
+                  <td className="px-6 py-3 text-muted">{l.ip ?? "—"}</td>
+                  <td className="max-w-xs truncate px-6 py-3 text-muted" title={l.userAgent ?? ""}>
                     {l.userAgent ?? "—"}
                   </td>
                 </tr>

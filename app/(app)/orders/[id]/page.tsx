@@ -61,9 +61,9 @@ export default async function OrderCardPage({
       <PageHeader
         title={`Замовлення #${order.number}`}
         subtitle={`Канал: ${SOURCE_LABELS[order.channel]}`}
-        icon="🧾"
+        icon="orders"
         action={
-          <Link href="/orders" className="text-sm text-slate-500 hover:text-slate-700">← До списку</Link>
+          <Link href="/orders" className="text-sm text-muted hover:text-[#cfc9ba]">← До списку</Link>
         }
       />
 
@@ -74,33 +74,33 @@ export default async function OrderCardPage({
               <Badge className={ORDER_STATUS_COLORS[order.status]}>
                 {ORDER_STATUS_LABELS[order.status]}
               </Badge>
-              <span className="text-sm text-slate-400">Створено: {formatDate(order.createdAt)}</span>
+              <span className="text-sm text-muted">Створено: {formatDate(order.createdAt)}</span>
             </div>
             <dl className="mt-5 grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
               <div>
-                <dt className="text-xs text-slate-400">Клієнт</dt>
+                <dt className="text-xs text-muted">Клієнт</dt>
                 <dd className="mt-0.5">
                   {order.client ? (
-                    <Link href={`/clients/${order.client.id}`} className="text-teal-600 hover:underline">{order.client.fullName}</Link>
+                    <Link href={`/clients/${order.client.id}`} className="text-brand hover:underline">{order.client.fullName}</Link>
                   ) : "—"}
                 </dd>
               </div>
               <div>
-                <dt className="text-xs text-slate-400">Менеджер</dt>
-                <dd className="mt-0.5 text-slate-700">{order.owner?.fullName ?? "—"}</dd>
+                <dt className="text-xs text-muted">Менеджер</dt>
+                <dd className="mt-0.5 text-[#cfc9ba]">{order.owner?.fullName ?? "—"}</dd>
               </div>
               <div>
-                <dt className="text-xs text-slate-400">Склад резервування</dt>
-                <dd className="mt-0.5 text-slate-700">{order.warehouse?.name ?? "за замовчуванням"}</dd>
+                <dt className="text-xs text-muted">Склад резервування</dt>
+                <dd className="mt-0.5 text-[#cfc9ba]">{order.warehouse?.name ?? "за замовчуванням"}</dd>
               </div>
               <div>
-                <dt className="text-xs text-slate-400">Сума</dt>
-                <dd className="mt-0.5 font-semibold text-slate-900">{formatUAH(order.totalAmount)}</dd>
+                <dt className="text-xs text-muted">Сума</dt>
+                <dd className="mt-0.5 font-semibold text-foreground">{formatUAH(order.totalAmount)}</dd>
               </div>
               {order.comment && (
                 <div className="col-span-2">
-                  <dt className="text-xs text-slate-400">Коментар</dt>
-                  <dd className="mt-0.5 text-slate-700">{order.comment}</dd>
+                  <dt className="text-xs text-muted">Коментар</dt>
+                  <dd className="mt-0.5 text-[#cfc9ba]">{order.comment}</dd>
                 </div>
               )}
             </dl>
@@ -108,13 +108,13 @@ export default async function OrderCardPage({
 
           {/* Позиції */}
           <Card>
-            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-              <h2 className="text-base font-semibold text-slate-900">Позиції замовлення</h2>
-              <span className="text-xs text-slate-400">Зарезервовано одиниць: {totalReserved}</span>
+            <div className="flex items-center justify-between border-b border-brand/10 px-6 py-4">
+              <h2 className="text-base font-semibold text-foreground">Позиції замовлення</h2>
+              <span className="text-xs text-muted">Зарезервовано одиниць: {totalReserved}</span>
             </div>
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
+                <tr className="text-left text-xs uppercase tracking-wide text-muted">
                   <th className="px-6 py-3 font-medium">Найменування</th>
                   <th className="px-6 py-3 text-right font-medium">К-сть</th>
                   <th className="px-6 py-3 text-right font-medium">Резерв</th>
@@ -123,30 +123,30 @@ export default async function OrderCardPage({
                   {canEdit && isOpen && <th className="px-6 py-3"></th>}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-brand/5">
                 {order.items.map((i) => {
                   const short = i.productId && i.product?.category !== "SERVICES" && i.reservedQty < i.quantity;
                   return (
                     <tr key={i.id}>
-                      <td className="px-6 py-3 text-slate-700">{i.name}</td>
-                      <td className="px-6 py-3 text-right text-slate-600">{i.quantity}</td>
+                      <td className="px-6 py-3 text-[#cfc9ba]">{i.name}</td>
+                      <td className="px-6 py-3 text-right text-[#cfc9ba]">{i.quantity}</td>
                       <td className="px-6 py-3 text-right">
                         {i.product?.category === "SERVICES" || !i.productId ? (
-                          <span className="text-slate-300">—</span>
+                          <span className="text-muted/50">—</span>
                         ) : (
-                          <span className={short ? "text-red-600" : "text-emerald-600"}>
+                          <span className={short ? "text-red-400" : "text-emerald-400"}>
                             {i.reservedQty}
                             {short && " ⚠"}
                           </span>
                         )}
                       </td>
-                      <td className="px-6 py-3 text-right text-slate-600">{formatUAH(i.price)}</td>
-                      <td className="px-6 py-3 text-right font-medium text-slate-700">{formatUAH(i.price * i.quantity)}</td>
+                      <td className="px-6 py-3 text-right text-[#cfc9ba]">{formatUAH(i.price)}</td>
+                      <td className="px-6 py-3 text-right font-medium text-[#cfc9ba]">{formatUAH(i.price * i.quantity)}</td>
                       {canEdit && isOpen && (
                         <td className="px-6 py-3 text-right">
                           <form action={removeOrderItem}>
                             <input type="hidden" name="id" value={i.id} />
-                            <Button type="submit" variant="ghost" size="sm" className="text-red-500 hover:bg-red-50">видалити</Button>
+                            <Button type="submit" variant="ghost" size="sm" className="text-red-400 hover:bg-red-500/10">видалити</Button>
                           </form>
                         </td>
                       )}
@@ -160,10 +160,10 @@ export default async function OrderCardPage({
             </table>
 
             {canEdit && isOpen && (
-              <form action={addOrderItem} className="flex flex-wrap items-end gap-3 border-t border-slate-100 px-6 py-4">
+              <form action={addOrderItem} className="flex flex-wrap items-end gap-3 border-t border-brand/10 px-6 py-4">
                 <input type="hidden" name="orderId" value={order.id} />
                 <label className="block flex-1 min-w-[200px]">
-                  <span className="mb-1 block text-xs font-medium text-slate-600">Товар</span>
+                  <span className="mb-1 block text-xs font-medium text-muted">Товар</span>
                   <Select name="productId">
                     {products.map((p) => {
                       const av = availMap.get(p.id);
@@ -175,7 +175,7 @@ export default async function OrderCardPage({
                   </Select>
                 </label>
                 <label className="block w-24">
-                  <span className="mb-1 block text-xs font-medium text-slate-600">К-сть</span>
+                  <span className="mb-1 block text-xs font-medium text-muted">К-сть</span>
                   <Input name="qty" type="number" step="any" min="0" defaultValue={1} />
                 </label>
                 <Button type="submit">
@@ -189,8 +189,8 @@ export default async function OrderCardPage({
         {/* Дії */}
         <div className="space-y-6">
           <Card className="p-6">
-            <h2 className="mb-3 text-base font-semibold text-slate-900">Статус замовлення</h2>
-            <p className="mb-4 text-xs text-slate-500">
+            <h2 className="mb-3 text-base font-semibold text-foreground">Статус замовлення</h2>
+            <p className="mb-4 text-xs text-muted">
               При додаванні позицій товар автоматично резервується на складі. Відвантаження
               списує резерв зі складу; скасування — повертає резерв.
             </p>
@@ -238,7 +238,7 @@ export default async function OrderCardPage({
                 )}
               </div>
             ) : (
-              <p className="text-sm text-slate-400">Немає прав на редагування</p>
+              <p className="text-sm text-muted">Немає прав на редагування</p>
             )}
           </Card>
         </div>
