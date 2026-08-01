@@ -13,7 +13,7 @@ export function RadialMeter({ ratio, size = 168 }: { ratio: number; size?: numbe
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90">
-      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#e2e8f0" strokeWidth={stroke} />
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(212,175,55,0.12)" strokeWidth={stroke} />
       <circle
         cx={size / 2}
         cy={size / 2}
@@ -28,8 +28,8 @@ export function RadialMeter({ ratio, size = 168 }: { ratio: number; size?: numbe
       />
       <defs>
         <linearGradient id="radial-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#2dd4bf" />
-          <stop offset="100%" stopColor="#0d9488" />
+          <stop offset="0%" stopColor="#e2c465" />
+          <stop offset="100%" stopColor="#b8942c" />
         </linearGradient>
       </defs>
       <text
@@ -37,7 +37,7 @@ export function RadialMeter({ ratio, size = 168 }: { ratio: number; size?: numbe
         y="50%"
         textAnchor="middle"
         dominantBaseline="central"
-        className="fill-slate-900 text-2xl font-bold"
+        className="fill-[#f3efe6] text-2xl font-bold"
         style={{ transform: "rotate(90deg)", transformOrigin: "center", transformBox: "fill-box" }}
       >
         {Math.round(ratio * 100)}%

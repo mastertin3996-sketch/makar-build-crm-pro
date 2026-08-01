@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { Button, Field } from "@/components/ui";
+import { Icon } from "@/components/icons";
 import { loginAction, type LoginState } from "../actions";
 
 const initial: LoginState = {};
@@ -28,7 +29,7 @@ export function LoginForm() {
       />
 
       {state.error && (
-        <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+        <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-300">
           {state.error}
         </div>
       )}
@@ -40,13 +41,14 @@ export function LoginForm() {
       <div className="flex items-center justify-between pt-1 text-xs">
         <button
           type="button"
-          className="text-slate-400 hover:text-slate-600"
+          className="text-muted hover:text-foreground"
           title="У прототипі недоступно"
         >
           Забули пароль?
         </button>
-        <span className="text-slate-300" title="2FA — наступний етап">
-          🔐 2FA (скоро)
+        <span className="flex items-center gap-1 text-muted" title="2FA — наступний етап">
+          <Icon name="sessions" className="h-3.5 w-3.5" />
+          2FA (скоро)
         </span>
       </div>
     </form>

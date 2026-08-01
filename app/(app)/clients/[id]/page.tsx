@@ -37,7 +37,7 @@ export default async function ClientCardPage({
         title={client.fullName}
         subtitle={client.company ?? "Приватна особа"}
         action={
-          <Link href="/clients" className="text-sm text-slate-500 hover:text-slate-700">
+          <Link href="/clients" className="text-sm text-muted hover:text-[#cfc9ba]">
             ← До списку
           </Link>
         }
@@ -47,7 +47,7 @@ export default async function ClientCardPage({
         {/* Ліва колонка — дані + заявки */}
         <div className="space-y-6 lg:col-span-2">
           <Card className="p-6">
-            <h2 className="mb-4 text-base font-semibold text-slate-900">
+            <h2 className="mb-4 text-base font-semibold text-foreground">
               Контактні дані
             </h2>
             <dl className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
@@ -62,31 +62,31 @@ export default async function ClientCardPage({
           </Card>
 
           <Card>
-            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-              <h2 className="text-base font-semibold text-slate-900">
+            <div className="flex items-center justify-between border-b border-brand/10 px-6 py-4">
+              <h2 className="text-base font-semibold text-foreground">
                 Заявки клієнта
               </h2>
-              <span className="text-sm text-slate-500">
+              <span className="text-sm text-muted">
                 Сума: {formatUAH(totalValue)}
               </span>
             </div>
             <table className="w-full text-sm">
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-brand/5">
                 {client.requests.map((r) => (
-                  <tr key={r.id} className="hover:bg-slate-50">
+                  <tr key={r.id} className="hover:bg-white/5">
                     <td className="px-6 py-3">
                       <Link
                         href={`/requests/${r.id}`}
-                        className="font-medium text-teal-600 hover:underline"
+                        className="font-medium text-brand hover:underline"
                       >
                         #{r.number}
                       </Link>
                     </td>
-                    <td className="px-6 py-3 text-slate-700">{r.title}</td>
+                    <td className="px-6 py-3 text-[#cfc9ba]">{r.title}</td>
                     <td className="px-6 py-3">
                       <StatusBadge status={r.status} />
                     </td>
-                    <td className="px-6 py-3 text-right text-slate-700">
+                    <td className="px-6 py-3 text-right text-[#cfc9ba]">
                       {formatUAH(r.amount)}
                     </td>
                   </tr>
@@ -102,7 +102,7 @@ export default async function ClientCardPage({
         {/* Права колонка — комунікації */}
         <div className="space-y-6">
           <Card className="p-6">
-            <h2 className="mb-4 text-base font-semibold text-slate-900">
+            <h2 className="mb-4 text-base font-semibold text-foreground">
               Комунікації з клієнтом
             </h2>
 
@@ -128,8 +128,8 @@ export default async function ClientCardPage({
             </form>
 
             {/* Канали з ТЗ (демо) */}
-            <div className="mt-5 border-t border-slate-100 pt-4">
-              <div className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-400">
+            <div className="mt-5 border-t border-brand/10 pt-4">
+              <div className="mb-2 text-xs font-medium uppercase tracking-wide text-muted">
                 Документи (скоро)
               </div>
               <div className="flex flex-wrap gap-2">
@@ -137,7 +137,7 @@ export default async function ClientCardPage({
                   (d) => (
                     <span
                       key={d}
-                      className="cursor-not-allowed rounded-lg bg-slate-100 px-3 py-1.5 text-xs text-slate-400"
+                      className="cursor-not-allowed rounded-lg bg-white/5 px-3 py-1.5 text-xs text-muted"
                     >
                       {d}
                     </span>
@@ -148,7 +148,7 @@ export default async function ClientCardPage({
           </Card>
 
           <Card className="p-6">
-            <h2 className="mb-4 text-base font-semibold text-slate-900">
+            <h2 className="mb-4 text-base font-semibold text-foreground">
               Історія взаємодій
             </h2>
             <ol className="space-y-4">
@@ -159,19 +159,19 @@ export default async function ClientCardPage({
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium text-slate-500">
+                      <span className="text-xs font-medium text-muted">
                         {INTERACTION_LABELS[i.type]}
                       </span>
-                      <span className="text-xs text-slate-400">
+                      <span className="text-xs text-muted">
                         {formatDate(i.createdAt)}
                       </span>
                     </div>
-                    <p className="mt-0.5 text-sm text-slate-700">{i.content}</p>
+                    <p className="mt-0.5 text-sm text-[#cfc9ba]">{i.content}</p>
                   </div>
                 </li>
               ))}
               {client.interactions.length === 0 && (
-                <li className="text-sm text-slate-400">Записів поки немає</li>
+                <li className="text-sm text-muted">Записів поки немає</li>
               )}
             </ol>
           </Card>
@@ -192,8 +192,8 @@ function Info({
 }) {
   return (
     <div className={full ? "col-span-2" : ""}>
-      <dt className="text-xs text-slate-400">{label}</dt>
-      <dd className="mt-0.5 text-slate-700">{value || "—"}</dd>
+      <dt className="text-xs text-muted">{label}</dt>
+      <dd className="mt-0.5 text-[#cfc9ba]">{value || "—"}</dd>
     </div>
   );
 }

@@ -33,7 +33,7 @@ export default async function ClientsPage({
       <PageHeader
         title="Клієнти"
         subtitle={`Усього: ${clients.length}`}
-        icon="👥"
+        icon="clients"
       />
 
       <div className="p-8 space-y-6">
@@ -44,7 +44,7 @@ export default async function ClientsPage({
               name="q"
               defaultValue={query}
               placeholder="Пошук за ПІБ, телефоном, компанією…"
-              className="w-80 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none transition-colors placeholder:text-slate-400 focus:border-teal-500"
+              className="w-80 rounded-lg border border-brand/15 bg-black/25 px-3 py-2 text-sm text-foreground outline-none transition-colors placeholder:text-muted/70 focus:border-brand"
             />
             <Button type="submit" variant="secondary">
               Знайти
@@ -55,13 +55,13 @@ export default async function ClientsPage({
         {/* Додати клієнта */}
         <Card>
           <details className="group">
-            <summary className="flex cursor-pointer list-none items-center gap-2 px-6 py-4 text-sm font-medium text-teal-600 transition-colors hover:text-teal-700">
+            <summary className="flex cursor-pointer list-none items-center gap-2 px-6 py-4 text-sm font-medium text-brand transition-colors hover:text-brand-light">
               <span className="text-lg leading-none transition-transform group-open:rotate-45">＋</span>
               Додати клієнта
             </summary>
             <form
               action={createClient}
-              className="grid grid-cols-1 gap-4 border-t border-slate-100 px-6 py-5 md:grid-cols-2"
+              className="grid grid-cols-1 gap-4 border-t border-brand/10 px-6 py-5 md:grid-cols-2"
             >
               <Field name="fullName" label="ПІБ *" required />
               <Field name="phone" label="Телефон *" required placeholder="+380…" />
@@ -81,7 +81,7 @@ export default async function ClientsPage({
         <Card>
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
+              <tr className="text-left text-xs uppercase tracking-wide text-muted">
                 <th className="px-6 py-3 font-medium">ПІБ</th>
                 <th className="px-6 py-3 font-medium">Телефон</th>
                 <th className="px-6 py-3 font-medium">Компанія</th>
@@ -89,21 +89,21 @@ export default async function ClientsPage({
                 <th className="px-6 py-3 font-medium">Додано</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-brand/5">
               {clients.map((c) => (
-                <tr key={c.id} className="transition-colors hover:bg-slate-50">
+                <tr key={c.id} className="transition-colors hover:bg-white/5">
                   <td className="px-6 py-3">
                     <Link
                       href={`/clients/${c.id}`}
-                      className="font-medium text-teal-600 hover:underline"
+                      className="font-medium text-brand hover:underline"
                     >
                       {c.fullName}
                     </Link>
                   </td>
-                  <td className="px-6 py-3 text-slate-600">{c.phone}</td>
-                  <td className="px-6 py-3 text-slate-500">{c.company ?? "—"}</td>
-                  <td className="px-6 py-3 text-slate-600">{c._count.requests}</td>
-                  <td className="px-6 py-3 text-slate-500">
+                  <td className="px-6 py-3 text-[#cfc9ba]">{c.phone}</td>
+                  <td className="px-6 py-3 text-muted">{c.company ?? "—"}</td>
+                  <td className="px-6 py-3 text-[#cfc9ba]">{c._count.requests}</td>
+                  <td className="px-6 py-3 text-muted">
                     {formatDate(c.createdAt)}
                   </td>
                 </tr>

@@ -25,19 +25,19 @@ export const STATUS_LABELS: Record<RequestStatus, string> = {
 
 // tailwind-класи бейджів за статусом
 export const STATUS_COLORS: Record<RequestStatus, string> = {
-  NEW_LEAD: "bg-blue-100 text-blue-700",
-  CALL_BACK: "bg-amber-100 text-amber-700",
-  CALCULATION: "bg-indigo-100 text-indigo-700",
-  QUOTE_SENT: "bg-violet-100 text-violet-700",
-  APPROVAL: "bg-purple-100 text-purple-700",
-  INVOICED: "bg-cyan-100 text-cyan-700",
-  AWAITING_PAYMENT: "bg-orange-100 text-orange-700",
-  PAID: "bg-emerald-100 text-emerald-700",
-  PRODUCTION: "bg-teal-100 text-teal-700",
-  PICKING: "bg-sky-100 text-sky-700",
-  SHIPPED: "bg-lime-100 text-lime-700",
-  COMPLETED: "bg-green-100 text-green-700",
-  CANCELLED: "bg-red-100 text-red-700",
+  NEW_LEAD: "bg-blue-500/15 text-blue-300",
+  CALL_BACK: "bg-amber-500/15 text-amber-300",
+  CALCULATION: "bg-indigo-500/15 text-indigo-300",
+  QUOTE_SENT: "bg-violet-500/15 text-violet-300",
+  APPROVAL: "bg-purple-500/15 text-purple-300",
+  INVOICED: "bg-cyan-500/15 text-cyan-300",
+  AWAITING_PAYMENT: "bg-orange-500/15 text-orange-300",
+  PAID: "bg-emerald-500/15 text-emerald-300",
+  PRODUCTION: "bg-teal-500/15 text-teal-300",
+  PICKING: "bg-sky-500/15 text-sky-300",
+  SHIPPED: "bg-lime-500/15 text-lime-300",
+  COMPLETED: "bg-green-500/15 text-green-300",
+  CANCELLED: "bg-red-500/15 text-red-300",
 };
 
 export const STATUS_ORDER: RequestStatus[] = [
@@ -128,13 +128,13 @@ export const ORDER_STATUS_LABELS: Record<string, string> = {
 };
 
 export const ORDER_STATUS_COLORS: Record<string, string> = {
-  NEW: "bg-blue-100 text-blue-700",
-  CONFIRMED: "bg-indigo-100 text-indigo-700",
-  RESERVED: "bg-amber-100 text-amber-700",
-  PACKING: "bg-sky-100 text-sky-700",
-  SHIPPED: "bg-lime-100 text-lime-700",
-  COMPLETED: "bg-green-100 text-green-700",
-  CANCELLED: "bg-red-100 text-red-700",
+  NEW: "bg-blue-500/15 text-blue-300",
+  CONFIRMED: "bg-indigo-500/15 text-indigo-300",
+  RESERVED: "bg-amber-500/15 text-amber-300",
+  PACKING: "bg-sky-500/15 text-sky-300",
+  SHIPPED: "bg-lime-500/15 text-lime-300",
+  COMPLETED: "bg-green-500/15 text-green-300",
+  CANCELLED: "bg-red-500/15 text-red-300",
 };
 
 export const ORDER_STATUS_ORDER = [
@@ -170,9 +170,9 @@ export const CALL_STATUS_LABELS: Record<string, string> = {
 };
 
 export const CALL_STATUS_COLORS: Record<string, string> = {
-  ANSWERED: "bg-green-100 text-green-700",
-  MISSED: "bg-red-100 text-red-700",
-  NO_ANSWER: "bg-amber-100 text-amber-700",
+  ANSWERED: "bg-green-500/15 text-green-300",
+  MISSED: "bg-red-500/15 text-red-300",
+  NO_ANSWER: "bg-amber-500/15 text-amber-300",
 };
 
 export function formatDuration(seconds: number): string {
@@ -202,13 +202,13 @@ export const CHANNEL_ICONS: Record<string, string> = {
 };
 
 export const CHANNEL_COLORS: Record<string, string> = {
-  TELEGRAM: "bg-sky-100 text-sky-700",
-  VIBER: "bg-violet-100 text-violet-700",
-  WHATSAPP: "bg-green-100 text-green-700",
-  INSTAGRAM: "bg-pink-100 text-pink-700",
-  FACEBOOK: "bg-blue-100 text-blue-700",
-  EMAIL: "bg-amber-100 text-amber-700",
-  SMS: "bg-slate-100 text-slate-700",
+  TELEGRAM: "bg-sky-500/15 text-sky-300",
+  VIBER: "bg-violet-500/15 text-violet-300",
+  WHATSAPP: "bg-green-500/15 text-green-300",
+  INSTAGRAM: "bg-pink-500/15 text-pink-300",
+  FACEBOOK: "bg-blue-500/15 text-blue-300",
+  EMAIL: "bg-amber-500/15 text-amber-300",
+  SMS: "bg-slate-500/15 text-slate-300",
 };
 
 export const PAYMENT_METHOD_LABELS: Record<string, string> = {
@@ -234,10 +234,10 @@ export const PAYMENT_STATUS_LABELS: Record<string, string> = {
 };
 
 export const PAYMENT_STATUS_COLORS: Record<string, string> = {
-  PENDING: "bg-amber-100 text-amber-700",
-  PAID: "bg-green-100 text-green-700",
-  FAILED: "bg-red-100 text-red-700",
-  REFUNDED: "bg-orange-100 text-orange-700",
+  PENDING: "bg-amber-500/15 text-amber-300",
+  PAID: "bg-green-500/15 text-green-300",
+  FAILED: "bg-red-500/15 text-red-300",
+  REFUNDED: "bg-orange-500/15 text-orange-300",
 };
 
 export const PAYMENT_DIRECTION_LABELS: Record<string, string> = {
@@ -281,11 +281,11 @@ export const DOC_STATUS_LABELS: Record<string, string> = {
 };
 
 export const DOC_STATUS_COLORS: Record<string, string> = {
-  DRAFT: "bg-slate-100 text-slate-700",
-  SENT: "bg-blue-100 text-blue-700",
-  SIGNED: "bg-violet-100 text-violet-700",
-  PAID: "bg-green-100 text-green-700",
-  CANCELLED: "bg-red-100 text-red-700",
+  DRAFT: "bg-slate-500/15 text-slate-300",
+  SENT: "bg-blue-500/15 text-blue-300",
+  SIGNED: "bg-violet-500/15 text-violet-300",
+  PAID: "bg-green-500/15 text-green-300",
+  CANCELLED: "bg-red-500/15 text-red-300",
 };
 
 // Які типи документів мають таблицю позицій
@@ -310,13 +310,13 @@ export const SHIPMENT_STATUS_LABELS: Record<string, string> = {
 };
 
 export const SHIPMENT_STATUS_COLORS: Record<string, string> = {
-  CREATED: "bg-slate-100 text-slate-700",
-  ACCEPTED: "bg-indigo-100 text-indigo-700",
-  IN_TRANSIT: "bg-sky-100 text-sky-700",
-  ARRIVED: "bg-amber-100 text-amber-700",
-  DELIVERED: "bg-green-100 text-green-700",
-  RETURNED: "bg-orange-100 text-orange-700",
-  CANCELLED: "bg-red-100 text-red-700",
+  CREATED: "bg-slate-500/15 text-slate-300",
+  ACCEPTED: "bg-indigo-500/15 text-indigo-300",
+  IN_TRANSIT: "bg-sky-500/15 text-sky-300",
+  ARRIVED: "bg-amber-500/15 text-amber-300",
+  DELIVERED: "bg-green-500/15 text-green-300",
+  RETURNED: "bg-orange-500/15 text-orange-300",
+  CANCELLED: "bg-red-500/15 text-red-300",
 };
 
 // Послідовність авто-просування статусу доставки
@@ -350,13 +350,13 @@ export const MOVEMENT_ICONS: Record<string, string> = {
 
 // tailwind-класи бейджів за типом руху
 export const MOVEMENT_COLORS: Record<string, string> = {
-  RECEIPT: "bg-emerald-100 text-emerald-700",
-  WRITEOFF: "bg-red-100 text-red-700",
-  TRANSFER: "bg-sky-100 text-sky-700",
-  RESERVE: "bg-amber-100 text-amber-700",
-  UNRESERVE: "bg-lime-100 text-lime-700",
-  INVENTORY: "bg-violet-100 text-violet-700",
-  RETURN: "bg-teal-100 text-teal-700",
+  RECEIPT: "bg-emerald-500/15 text-emerald-300",
+  WRITEOFF: "bg-red-500/15 text-red-300",
+  TRANSFER: "bg-sky-500/15 text-sky-300",
+  RESERVE: "bg-amber-500/15 text-amber-300",
+  UNRESERVE: "bg-lime-500/15 text-lime-300",
+  INVENTORY: "bg-violet-500/15 text-violet-300",
+  RETURN: "bg-teal-500/15 text-teal-300",
 };
 
 export function formatUAH(value: number): string {

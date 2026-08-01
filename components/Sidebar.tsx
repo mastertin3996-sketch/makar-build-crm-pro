@@ -5,8 +5,9 @@ import { usePathname } from "next/navigation";
 import type { Role } from "@prisma/client";
 import { ROLE_LABELS } from "@/lib/permissions";
 import { logoutAction } from "@/app/(auth)/actions";
+import { Icon, type IconName } from "@/components/icons";
 
-export type NavItem = { href: string; label: string; icon: string };
+export type NavItem = { href: string; label: string; icon: IconName };
 
 export function Sidebar({
   items,
@@ -26,12 +27,12 @@ export function Sidebar({
     .join("");
 
   return (
-    <aside className="flex w-64 shrink-0 flex-col bg-slate-900 text-slate-100">
-      <div className="border-b border-slate-700/60 px-5 py-5">
-        <div className="text-lg font-bold leading-tight text-white">
+    <aside className="flex w-64 shrink-0 flex-col bg-[#0a0a0b] text-[#cfc9ba]">
+      <div className="border-b border-brand/10 px-5 py-5">
+        <div className="text-lg font-bold leading-tight text-foreground">
           MAKAR BUILD
         </div>
-        <div className="text-xs font-semibold tracking-widest text-teal-400">
+        <div className="text-xs font-semibold tracking-widest text-brand">
           CRM PRO
         </div>
       </div>
@@ -48,14 +49,14 @@ export function Sidebar({
               href={item.href}
               className={`relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                 active
-                  ? "bg-slate-800 text-white"
-                  : "text-slate-300 hover:bg-slate-800/60 hover:text-white"
+                  ? "bg-brand/10 text-brand"
+                  : "text-[#a9a190] hover:bg-white/5 hover:text-foreground"
               }`}
             >
               {active && (
-                <span className="absolute inset-y-1 left-0 w-0.5 rounded-full bg-teal-400" />
+                <span className="absolute inset-y-1 left-0 w-0.5 rounded-full bg-brand" />
               )}
-              <span className="text-base">{item.icon}</span>
+              <Icon name={item.icon} className="h-[18px] w-[18px] shrink-0" />
               {item.label}
             </Link>
           );
@@ -63,15 +64,15 @@ export function Sidebar({
 
         {soon.length > 0 && (
           <>
-            <div className="px-3 pb-2 pt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+            <div className="px-3 pb-2 pt-5 text-[11px] font-semibold uppercase tracking-wider text-muted/70">
               Скоро
             </div>
             {soon.map((label) => (
               <div
                 key={label}
-                className="flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-500"
+                className="flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted/60"
               >
-                <span className="text-base opacity-40">○</span>
+                <span className="h-[18px] w-[18px] shrink-0 rounded-full border border-current opacity-40" />
                 {label}
               </div>
             ))}
@@ -79,26 +80,27 @@ export function Sidebar({
         )}
       </nav>
 
-      <div className="border-t border-slate-700/60 px-4 py-4">
+      <div className="border-t border-brand/10 px-4 py-4">
         <Link
           href="/sessions"
-          className="flex items-center gap-2.5 rounded-lg px-1.5 py-1.5 transition-colors hover:bg-slate-800"
+          className="flex items-center gap-2.5 rounded-lg px-1.5 py-1.5 transition-colors hover:bg-white/5"
         >
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-600/90 text-xs font-semibold text-white">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand text-xs font-semibold text-background">
             {initials || "?"}
           </span>
           <span className="min-w-0">
-            <span className="block truncate text-sm font-medium text-white">
+            <span className="block truncate text-sm font-medium text-foreground">
               {user.fullName}
             </span>
-            <span className="block text-xs text-teal-400">
+            <span className="block text-xs text-brand">
               {ROLE_LABELS[user.role]}
             </span>
           </span>
         </Link>
         <form action={logoutAction} className="mt-3">
-          <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-800 px-3 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700">
-            🚪 Вийти
+          <button className="flex w-full items-center justify-center gap-2 rounded-lg border border-brand/15 bg-white/5 px-3 py-2 text-sm font-medium text-[#cfc9ba] transition-colors hover:bg-white/10 hover:text-foreground">
+            <Icon name="logout" className="h-4 w-4" />
+            Вийти
           </button>
         </form>
       </div>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
 import type { RequestStatus } from "@prisma/client";
 import { STATUS_LABELS, STATUS_COLORS } from "@/lib/labels";
+import { Icon, type IconName } from "@/components/icons";
 
 // ----------------------------------------------------------------------------
 // Іконки платформ (реальні бренд-логотипи замість емодзі, де це можливо)
@@ -14,7 +15,8 @@ const PLATFORM_ICON_SRC: Record<string, string> = {
   FACEBOOK: "/icons/facebook.svg",
 };
 
-// Рендерить реальний логотип бренду (Telegram/Viber/WhatsApp/Instagram/Facebook);
+// Рендерить реальний логотип бренду (Telegram/Viber/WhatsApp/Instagram/Facebook) —
+// автентичні бренд-кольори лишаються як є (не золотяться) заради впізнаваності;
 // для каналів без офіційного лого (Email, SMS, маркетплейси тощо) — фолбек-емодзі.
 export function PlatformIcon({
   id,
@@ -54,19 +56,19 @@ export function PageHeader({
   title: string;
   subtitle?: string;
   action?: ReactNode;
-  icon?: string;
+  icon?: IconName;
 }) {
   return (
-    <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-slate-200 bg-white/85 px-8 py-5 backdrop-blur-sm">
+    <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-brand/10 bg-background/90 px-8 py-5 backdrop-blur-sm">
       <div className="flex items-start gap-3">
         {icon && (
-          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-lg">
-            {icon}
+          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand/10">
+            <Icon name={icon} className="h-5 w-5 text-brand" />
           </span>
         )}
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">{title}</h1>
-          {subtitle && <p className="mt-1 text-sm text-slate-500">{subtitle}</p>}
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">{title}</h1>
+          {subtitle && <p className="mt-1 text-sm text-muted">{subtitle}</p>}
         </div>
       </div>
       {action}
@@ -88,8 +90,8 @@ export function Card({
 }) {
   return (
     <div
-      className={`rounded-xl border border-slate-200 bg-white shadow-card transition-shadow ${
-        hoverable ? "hover:shadow-card-hover" : ""
+      className={`rounded-xl border border-brand/10 bg-surface shadow-card transition-shadow ${
+        hoverable ? "hover:shadow-card-hover hover:border-brand/20" : ""
       } ${className}`}
     >
       {children}
@@ -98,19 +100,19 @@ export function Card({
 }
 
 export function EmptyState({
-  icon = "🗂️",
+  icon,
   title,
   hint,
 }: {
-  icon?: string;
+  icon?: IconName;
   title: string;
   hint?: string;
 }) {
   return (
     <div className="flex flex-col items-center justify-center gap-1 px-6 py-14 text-center">
-      <div className="mb-2 text-3xl opacity-60">{icon}</div>
-      <div className="text-sm font-medium text-slate-500">{title}</div>
-      {hint && <div className="text-xs text-slate-400">{hint}</div>}
+      {icon && <Icon name={icon} className="mb-2 h-8 w-8 text-brand/50" />}
+      <div className="text-sm font-medium text-muted">{title}</div>
+      {hint && <div className="text-xs text-muted/70">{hint}</div>}
     </div>
   );
 }
@@ -125,7 +127,7 @@ export function EmptyRow({
 }) {
   return (
     <tr>
-      <td colSpan={colSpan} className="px-6 py-14 text-center text-sm text-slate-400">
+      <td colSpan={colSpan} className="px-6 py-14 text-center text-sm text-muted">
         {children}
       </td>
     </tr>
@@ -169,14 +171,14 @@ type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 type ButtonSize = "sm" | "md";
 
 const BUTTON_BASE =
-  "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50";
 
 const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
-  primary: "bg-teal-600 text-white hover:bg-teal-700 focus-visible:ring-teal-500",
+  primary: "bg-brand text-background hover:bg-brand-light focus-visible:ring-brand shadow-[0_0_0_1px_rgba(212,175,55,0.4)]",
   secondary:
-    "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus-visible:ring-slate-400",
-  ghost: "text-slate-600 hover:bg-slate-100 focus-visible:ring-slate-400",
-  danger: "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500",
+    "border border-brand/25 bg-transparent text-foreground hover:bg-brand/10 hover:border-brand/40 focus-visible:ring-brand/50",
+  ghost: "text-muted hover:bg-white/5 hover:text-foreground focus-visible:ring-brand/40",
+  danger: "bg-red-600/90 text-white hover:bg-red-600 focus-visible:ring-red-500",
 };
 
 const BUTTON_SIZES: Record<ButtonSize, string> = {
@@ -229,7 +231,7 @@ export function LinkButton({
 // Форми
 // ----------------------------------------------------------------------------
 const FIELD_INPUT =
-  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-teal-500 disabled:bg-slate-50 disabled:text-slate-400";
+  "w-full rounded-lg border border-brand/15 bg-black/25 px-3 py-2 text-sm text-foreground outline-none transition-colors placeholder:text-muted/70 focus:border-brand disabled:bg-black/10 disabled:text-muted";
 
 export function Input({ className = "", ...props }: InputHTMLAttributes<HTMLInputElement>) {
   return <input className={`${FIELD_INPUT} ${className}`} {...props} />;
@@ -256,7 +258,7 @@ export function Field({
 } & Omit<InputHTMLAttributes<HTMLInputElement>, "name" | "className">) {
   return (
     <label className={`block ${className}`}>
-      <span className="mb-1 block text-xs font-medium text-slate-600">{label}</span>
+      <span className="mb-1 block text-xs font-medium text-muted">{label}</span>
       <Input name={name} {...inputProps} />
     </label>
   );

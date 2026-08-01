@@ -4,21 +4,21 @@ import { Sidebar, type NavItem } from "@/components/Sidebar";
 
 // Усі пункти меню з прив'язкою до модуля прав та статусу реалізації
 const NAV: (NavItem & { module: ModuleKey; implemented: boolean })[] = [
-  { href: "/", label: "Dashboard", icon: "📊", module: "dashboard", implemented: true },
-  { href: "/clients", label: "Клієнти", icon: "👥", module: "clients", implemented: true },
-  { href: "/requests", label: "Заявки", icon: "📋", module: "requests", implemented: true },
-  { href: "/catalog", label: "Каталог", icon: "📦", module: "catalog", implemented: true },
-  { href: "/warehouse", label: "Склад", icon: "🏬", module: "warehouse", implemented: true },
-  { href: "/orders", label: "Замовлення", icon: "🧾", module: "orders", implemented: true },
-  { href: "/logistics", label: "Логістика", icon: "🚚", module: "logistics", implemented: true },
-  { href: "/messengers", label: "Месенджери", icon: "💬", module: "messengers", implemented: true },
-  { href: "/telephony", label: "Телефонія", icon: "📞", module: "telephony", implemented: true },
-  { href: "/documents", label: "Документообіг", icon: "📄", module: "documents", implemented: true },
-  { href: "/finance", label: "Фінанси", icon: "💰", module: "finance", implemented: true },
-  { href: "/reports", label: "Звіти", icon: "📈", module: "reports", implemented: true },
-  { href: "/ai", label: "ШІ-помічник", icon: "🤖", module: "ai", implemented: true },
-  { href: "/employees", label: "Співробітники", icon: "🛡️", module: "employees", implemented: true },
-  { href: "/audit", label: "Журнал дій", icon: "🧭", module: "audit", implemented: true },
+  { href: "/", label: "Dashboard", icon: "dashboard", module: "dashboard", implemented: true },
+  { href: "/clients", label: "Клієнти", icon: "clients", module: "clients", implemented: true },
+  { href: "/requests", label: "Заявки", icon: "requests", module: "requests", implemented: true },
+  { href: "/catalog", label: "Каталог", icon: "catalog", module: "catalog", implemented: true },
+  { href: "/warehouse", label: "Склад", icon: "warehouse", module: "warehouse", implemented: true },
+  { href: "/orders", label: "Замовлення", icon: "orders", module: "orders", implemented: true },
+  { href: "/logistics", label: "Логістика", icon: "logistics", module: "logistics", implemented: true },
+  { href: "/messengers", label: "Месенджери", icon: "messengers", module: "messengers", implemented: true },
+  { href: "/telephony", label: "Телефонія", icon: "telephony", module: "telephony", implemented: true },
+  { href: "/documents", label: "Документообіг", icon: "documents", module: "documents", implemented: true },
+  { href: "/finance", label: "Фінанси", icon: "finance", module: "finance", implemented: true },
+  { href: "/reports", label: "Звіти", icon: "reports", module: "reports", implemented: true },
+  { href: "/ai", label: "ШІ-помічник", icon: "ai", module: "ai", implemented: true },
+  { href: "/employees", label: "Співробітники", icon: "employees", module: "employees", implemented: true },
+  { href: "/audit", label: "Журнал дій", icon: "audit", module: "audit", implemented: true },
 ];
 
 export default async function AppLayout({
