@@ -2,7 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireUser, requestScopeWhere } from "@/lib/auth";
 import { canFinance } from "@/lib/permissions";
-import { PageHeader, Card, StatusBadge } from "@/components/ui";
+import { PageHeader, Card, StatusBadge, PlatformIcon } from "@/components/ui";
 import { RadialMeter } from "@/components/RadialMeter";
 import {
   STATUS_LABELS,
@@ -68,6 +68,7 @@ export default async function DashboardPage() {
   const bySource = Object.entries(sourceCounts)
     .sort((a, b) => b[1] - a[1])
     .map(([source, count]) => ({
+      source: source as RequestSource,
       label: SOURCE_LABELS[source as RequestSource],
       value: count,
       icon: SOURCE_ICONS[source as RequestSource],
@@ -138,7 +139,9 @@ export default async function DashboardPage() {
                     <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-900 text-[11px] font-bold text-white">
                       {i + 1}
                     </div>
-                    <span className="w-5 shrink-0 text-center">{d.icon}</span>
+                    <span className="flex w-5 shrink-0 items-center justify-center">
+                      <PlatformIcon id={d.source} fallback={d.icon} size={16} />
+                    </span>
                     <div className="w-24 shrink-0 truncate text-sm text-slate-600" title={d.label}>
                       {d.label}
                     </div>

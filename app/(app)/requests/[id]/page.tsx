@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { PageHeader, Card, StatusBadge, Button, Select, Textarea, EmptyRow } from "@/components/ui";
+import { PageHeader, Card, StatusBadge, Button, Select, Textarea, EmptyRow, PlatformIcon } from "@/components/ui";
 import {
   STATUS_LABELS,
   STATUS_ORDER,
   SOURCE_LABELS,
+  SOURCE_ICONS,
   INTERACTION_LABELS,
   INTERACTION_ICONS,
   formatUAH,
@@ -61,8 +62,10 @@ export default async function RequestCardPage({
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <StatusBadge status={request.status} />
-                <span className="text-sm text-slate-400">
-                  Джерело: {SOURCE_LABELS[request.source]}
+                <span className="flex items-center gap-1.5 text-sm text-slate-400">
+                  Джерело:
+                  <PlatformIcon id={request.source} fallback={SOURCE_ICONS[request.source]} size={14} />
+                  {SOURCE_LABELS[request.source]}
                 </span>
               </div>
               <div className="text-sm text-slate-500">
@@ -207,7 +210,7 @@ export default async function RequestCardPage({
               {request.interactions.map((i) => (
                 <li key={i.id} className="flex gap-3">
                   <div className="text-lg leading-none">
-                    {INTERACTION_ICONS[i.type]}
+                    <PlatformIcon id={i.type} fallback={INTERACTION_ICONS[i.type]} size={20} />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">

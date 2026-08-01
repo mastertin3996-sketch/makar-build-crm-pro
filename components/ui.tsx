@@ -4,6 +4,45 @@ import type { RequestStatus } from "@prisma/client";
 import { STATUS_LABELS, STATUS_COLORS } from "@/lib/labels";
 
 // ----------------------------------------------------------------------------
+// Іконки платформ (реальні бренд-логотипи замість емодзі, де це можливо)
+// ----------------------------------------------------------------------------
+const PLATFORM_ICON_SRC: Record<string, string> = {
+  TELEGRAM: "/icons/telegram.svg",
+  VIBER: "/icons/viber.svg",
+  WHATSAPP: "/icons/whatsapp.svg",
+  INSTAGRAM: "/icons/instagram.svg",
+  FACEBOOK: "/icons/facebook.svg",
+};
+
+// Рендерить реальний логотип бренду (Telegram/Viber/WhatsApp/Instagram/Facebook);
+// для каналів без офіційного лого (Email, SMS, маркетплейси тощо) — фолбек-емодзі.
+export function PlatformIcon({
+  id,
+  fallback,
+  size = 18,
+  className = "",
+}: {
+  id: string;
+  fallback: ReactNode;
+  size?: number;
+  className?: string;
+}) {
+  const src = PLATFORM_ICON_SRC[id];
+  if (!src) return <>{fallback}</>;
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- маленька статична SVG-іконка, оптимізація Image тут зайва
+    <img
+      src={src}
+      alt=""
+      width={size}
+      height={size}
+      className={`inline-block shrink-0 align-middle ${className}`}
+      style={{ width: size, height: size }}
+    />
+  );
+}
+
+// ----------------------------------------------------------------------------
 // Layout
 // ----------------------------------------------------------------------------
 export function PageHeader({

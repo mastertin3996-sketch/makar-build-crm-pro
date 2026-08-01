@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useOptimistic, useState, useTransition } from "react";
 import type { RequestStatus, RequestSource } from "@prisma/client";
-import { Card } from "@/components/ui";
+import { Card, PlatformIcon } from "@/components/ui";
 import { STATUS_LABELS, STATUS_COLORS, STATUS_ORDER, SOURCE_LABELS, SOURCE_ICONS, formatUAH } from "@/lib/labels";
 import { updateStatus } from "./actions";
 
@@ -110,8 +110,9 @@ export function RequestsBoard({
                       >
                         #{r.number}
                       </Link>
-                      <span className="text-xs" title={SOURCE_LABELS[r.source]}>
-                        {SOURCE_ICONS[r.source]} {SOURCE_LABELS[r.source]}
+                      <span className="flex items-center gap-1 text-xs" title={SOURCE_LABELS[r.source]}>
+                        <PlatformIcon id={r.source} fallback={SOURCE_ICONS[r.source]} size={13} />
+                        {SOURCE_LABELS[r.source]}
                       </span>
                     </div>
                     <p className="mb-2 line-clamp-2 text-sm text-slate-700">{r.title}</p>

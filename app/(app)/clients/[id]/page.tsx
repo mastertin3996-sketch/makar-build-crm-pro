@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { PageHeader, Card, StatusBadge, Button, Select, Textarea, EmptyRow } from "@/components/ui";
+import { PageHeader, Card, StatusBadge, Button, Select, Textarea, EmptyRow, PlatformIcon } from "@/components/ui";
 import {
   INTERACTION_LABELS,
   INTERACTION_ICONS,
@@ -155,7 +155,7 @@ export default async function ClientCardPage({
               {client.interactions.map((i) => (
                 <li key={i.id} className="flex gap-3">
                   <div className="text-lg leading-none">
-                    {INTERACTION_ICONS[i.type]}
+                    <PlatformIcon id={i.type} fallback={INTERACTION_ICONS[i.type]} size={20} />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
