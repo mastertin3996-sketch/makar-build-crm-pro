@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { PageHeader, Card, StatusBadge } from "@/components/ui";
+import { PageHeader, Card, StatusBadge, Button, Select, Textarea, EmptyRow } from "@/components/ui";
 import {
   INTERACTION_LABELS,
   INTERACTION_ICONS,
@@ -92,11 +92,7 @@ export default async function ClientCardPage({
                   </tr>
                 ))}
                 {client.requests.length === 0 && (
-                  <tr>
-                    <td className="px-6 py-8 text-center text-slate-400">
-                      Заявок поки немає
-                    </td>
-                  </tr>
+                  <EmptyRow colSpan={4}>Заявок поки немає</EmptyRow>
                 )}
               </tbody>
             </table>
@@ -112,28 +108,23 @@ export default async function ClientCardPage({
 
             <form action={addInteraction} className="space-y-3">
               <input type="hidden" name="clientId" value={client.id} />
-              <select
-                name="type"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
-                defaultValue="NOTE"
-              >
+              <Select name="type" defaultValue="NOTE">
                 {Object.entries(INTERACTION_LABELS).map(([value, label]) => (
                   <option key={value} value={value}>
                     {INTERACTION_ICONS[value as keyof typeof INTERACTION_ICONS]}{" "}
                     {label}
                   </option>
                 ))}
-              </select>
-              <textarea
+              </Select>
+              <Textarea
                 name="content"
                 required
                 rows={3}
                 placeholder="Текст повідомлення / нотатки…"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
               />
-              <button className="w-full rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700">
+              <Button type="submit" className="w-full">
                 Додати запис
-              </button>
+              </Button>
             </form>
 
             {/* Канали з ТЗ (демо) */}

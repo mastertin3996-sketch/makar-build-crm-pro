@@ -18,6 +18,12 @@ export function Sidebar({
   user: { fullName: string; role: Role };
 }) {
   const pathname = usePathname();
+  const initials = user.fullName
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase())
+    .join("");
 
   return (
     <aside className="flex w-64 shrink-0 flex-col bg-slate-900 text-slate-100">
@@ -30,7 +36,7 @@ export function Sidebar({
         </div>
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+      <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-4">
         {items.map((item) => {
           const active =
             item.href === "/"
@@ -40,12 +46,15 @@ export function Sidebar({
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+              className={`relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                 active
-                  ? "bg-teal-600 text-white"
-                  : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  ? "bg-slate-800 text-white"
+                  : "text-slate-300 hover:bg-slate-800/60 hover:text-white"
               }`}
             >
+              {active && (
+                <span className="absolute inset-y-1 left-0 w-0.5 rounded-full bg-teal-400" />
+              )}
               <span className="text-base">{item.icon}</span>
               {item.label}
             </Link>
@@ -73,12 +82,19 @@ export function Sidebar({
       <div className="border-t border-slate-700/60 px-4 py-4">
         <Link
           href="/sessions"
-          className="block rounded-lg px-1 py-1 transition-colors hover:bg-slate-800"
+          className="flex items-center gap-2.5 rounded-lg px-1.5 py-1.5 transition-colors hover:bg-slate-800"
         >
-          <div className="truncate text-sm font-medium text-white">
-            {user.fullName}
-          </div>
-          <div className="text-xs text-teal-400">{ROLE_LABELS[user.role]}</div>
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-600/90 text-xs font-semibold text-white">
+            {initials || "?"}
+          </span>
+          <span className="min-w-0">
+            <span className="block truncate text-sm font-medium text-white">
+              {user.fullName}
+            </span>
+            <span className="block text-xs text-teal-400">
+              {ROLE_LABELS[user.role]}
+            </span>
+          </span>
         </Link>
         <form action={logoutAction} className="mt-3">
           <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-800 px-3 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700">

@@ -5,8 +5,15 @@ export const metadata: Metadata = { title: "Вхід — MAKAR BUILD CRM PRO" };
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-900 px-4">
-      <div className="w-full max-w-sm">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-900 px-4">
+      <div
+        className="pointer-events-none absolute inset-0 opacity-40"
+        style={{
+          background:
+            "radial-gradient(600px circle at 20% 15%, rgba(20,184,166,0.18), transparent 60%), radial-gradient(500px circle at 85% 85%, rgba(20,184,166,0.12), transparent 60%)",
+        }}
+      />
+      <div className="relative w-full max-w-sm">
         <div className="mb-8 text-center">
           <div className="text-2xl font-bold text-white">MAKAR BUILD</div>
           <div className="text-sm font-semibold tracking-widest text-teal-400">
@@ -14,7 +21,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl bg-white p-7 shadow-xl">
+        <div className="rounded-2xl bg-white p-7 shadow-popover">
           <h1 className="mb-1 text-lg font-bold text-slate-900">Вхід у систему</h1>
           <p className="mb-5 text-sm text-slate-500">
             Введіть дані облікового запису
