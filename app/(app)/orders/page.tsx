@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { can } from "@/lib/permissions";
-import { PageHeader, Card } from "@/components/ui";
+import { PageHeader, Card, Button, Select, Field, Badge, EmptyRow } from "@/components/ui";
 import {
   SOURCE_LABELS,
   ORDER_STATUS_LABELS,
@@ -52,7 +52,7 @@ export default async function OrdersPage({
 
   return (
     <>
-      <PageHeader title="Замовлення" subtitle={`Усього: ${total} · Сума: ${formatUAH(revenue)}`} />
+      <PageHeader title="Замовлення" subtitle={`Усього: ${total} · Сума: ${formatUAH(revenue)}`} icon="🧾" />
 
       <div className="space-y-6 p-8">
         {canCreate && (
@@ -66,38 +66,35 @@ export default async function OrdersPage({
                 <form action={createOrder} className="grid grid-cols-1 gap-4 border-t border-slate-100 px-6 py-5 md:grid-cols-2">
                   <label className="block">
                     <span className="mb-1 block text-xs font-medium text-slate-600">Канал / джерело</span>
-                    <select name="channel" defaultValue="MANUAL" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+                    <Select name="channel" defaultValue="MANUAL">
                       {CHANNELS.map((c) => (
                         <option key={c} value={c}>{SOURCE_LABELS[c]}</option>
                       ))}
-                    </select>
+                    </Select>
                   </label>
                   <label className="block">
                     <span className="mb-1 block text-xs font-medium text-slate-600">Клієнт</span>
-                    <select name="clientId" defaultValue="" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+                    <Select name="clientId" defaultValue="">
                       <option value="">— без клієнта —</option>
                       {clients.map((c) => (
                         <option key={c.id} value={c.id}>{c.fullName}</option>
                       ))}
-                    </select>
+                    </Select>
                   </label>
                   <label className="block">
                     <span className="mb-1 block text-xs font-medium text-slate-600">Склад резервування</span>
-                    <select name="warehouseId" defaultValue="" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+                    <Select name="warehouseId" defaultValue="">
                       <option value="">Склад за замовчуванням</option>
                       {warehouses.map((w) => (
                         <option key={w.id} value={w.id}>{w.name}</option>
                       ))}
-                    </select>
+                    </Select>
                   </label>
-                  <label className="block">
-                    <span className="mb-1 block text-xs font-medium text-slate-600">Коментар</span>
-                    <input name="comment" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500" />
-                  </label>
+                  <Field name="comment" label="Коментар" />
                   <div className="md:col-span-2">
-                    <button className="rounded-lg bg-teal-600 px-5 py-2 text-sm font-medium text-white hover:bg-teal-700">
+                    <Button type="submit">
                       Створити (позиції додасте на картці)
-                    </button>
+                    </Button>
                   </div>
                 </form>
               </details>
@@ -105,9 +102,9 @@ export default async function OrdersPage({
 
             <Card className="flex items-center px-6 py-4">
               <form action={importDemoOrder}>
-                <button className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-900" title="Імітація автоматичного імпорту з маркетплейсу">
+                <Button type="submit" variant="secondary" title="Імітація автоматичного імпорту з маркетплейсу">
                   ⚡ Імпорт з каналу (демо)
-                </button>
+                </Button>
               </form>
             </Card>
           </div>
@@ -144,18 +141,16 @@ export default async function OrdersPage({
                   <td className="px-6 py-3 text-slate-600">{o.client?.fullName ?? "—"}</td>
                   <td className="px-6 py-3 text-slate-500">{o._count.items}</td>
                   <td className="px-6 py-3">
-                    <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${ORDER_STATUS_COLORS[o.status]}`}>
+                    <Badge className={ORDER_STATUS_COLORS[o.status]}>
                       {ORDER_STATUS_LABELS[o.status]}
-                    </span>
+                    </Badge>
                   </td>
                   <td className="px-6 py-3 text-right font-medium text-slate-700">{formatUAH(o.totalAmount)}</td>
                   <td className="px-6 py-3 text-slate-500">{formatDate(o.createdAt)}</td>
                 </tr>
               ))}
               {orders.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="px-6 py-10 text-center text-slate-400">Замовлень не знайдено</td>
-                </tr>
+                <EmptyRow colSpan={7}>Замовлень не знайдено</EmptyRow>
               )}
             </tbody>
           </table>

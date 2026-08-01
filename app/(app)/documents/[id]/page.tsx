@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { can } from "@/lib/permissions";
-import { PageHeader, Card } from "@/components/ui";
+import { PageHeader, Card, Badge, Button, LinkButton, Select, EmptyRow } from "@/components/ui";
 import {
   DOC_TYPE_LABELS,
   DOC_STATUS_LABELS,
@@ -46,6 +46,7 @@ export default async function DocumentCardPage({
       <PageHeader
         title={`${doc.number} · ${DOC_TYPE_LABELS[doc.type]}`}
         subtitle={doc.title}
+        icon="📄"
         action={<Link href="/documents" className="text-sm text-slate-500 hover:text-slate-700">← До списку</Link>}
       />
 
@@ -53,9 +54,9 @@ export default async function DocumentCardPage({
         <div className="space-y-6 lg:col-span-2">
           <Card className="p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${DOC_STATUS_COLORS[doc.status]}`}>
+              <Badge className={DOC_STATUS_COLORS[doc.status]}>
                 {DOC_STATUS_LABELS[doc.status]}
-              </span>
+              </Badge>
               <span className="text-sm text-slate-400">Створено: {formatDate(doc.createdAt)}</span>
             </div>
             <dl className="mt-5 grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
@@ -93,7 +94,7 @@ export default async function DocumentCardPage({
                     </tr>
                   ))}
                   {items.length === 0 && (
-                    <tr><td colSpan={4} className="px-6 py-8 text-center text-slate-400">Позицій немає</td></tr>
+                    <EmptyRow colSpan={4}>Позицій немає</EmptyRow>
                   )}
                 </tbody>
                 {items.length > 0 && (
@@ -115,14 +116,20 @@ export default async function DocumentCardPage({
             <h2 className="mb-3 text-base font-semibold text-slate-900">Експорт</h2>
             <div className="space-y-2">
               {canPrint && (
-                <Link href={`/doc/${doc.id}`} target="_blank" className="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-900">
+                <LinkButton href={`/doc/${doc.id}`} target="_blank" variant="secondary" className="w-full">
                   🖨 Друк / PDF
-                </Link>
+                </LinkButton>
               )}
-              <a href={`/documents/${doc.id}/export?format=doc`} className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
+              <a
+                href={`/documents/${doc.id}/export?format=doc`}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
+              >
                 📘 Експорт у Word
               </a>
-              <a href={`/documents/${doc.id}/export?format=xls`} className="flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700">
+              <a
+                href={`/documents/${doc.id}/export?format=xls`}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
+              >
                 📗 Експорт у Excel
               </a>
             </div>
@@ -133,12 +140,12 @@ export default async function DocumentCardPage({
               <h2 className="mb-3 text-base font-semibold text-slate-900">Статус</h2>
               <form action={setDocumentStatus} className="flex gap-2">
                 <input type="hidden" name="id" value={doc.id} />
-                <select name="status" defaultValue={doc.status} className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+                <Select name="status" defaultValue={doc.status} className="flex-1">
                   {STATUSES.map((s) => (
                     <option key={s} value={s}>{DOC_STATUS_LABELS[s]}</option>
                   ))}
-                </select>
-                <button className="rounded-lg bg-slate-800 px-3 py-2 text-sm font-medium text-white hover:bg-slate-900">OK</button>
+                </Select>
+                <Button type="submit">OK</Button>
               </form>
             </Card>
           )}
@@ -147,9 +154,9 @@ export default async function DocumentCardPage({
             <Card className="p-6">
               <form action={deleteDocument}>
                 <input type="hidden" name="id" value={doc.id} />
-                <button className="w-full rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700">
+                <Button type="submit" variant="danger" className="w-full">
                   🗑 Видалити документ
-                </button>
+                </Button>
               </form>
             </Card>
           )}

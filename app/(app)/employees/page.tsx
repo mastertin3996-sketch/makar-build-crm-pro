@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { can, ROLE_LABELS } from "@/lib/permissions";
-import { PageHeader, Card } from "@/components/ui";
+import { PageHeader, Card, Button, Field, Select, Badge } from "@/components/ui";
 import { formatDate } from "@/lib/labels";
 import type { Role } from "@prisma/client";
 import { createUser } from "./actions";
@@ -30,7 +30,7 @@ export default async function EmployeesPage() {
 
   return (
     <>
-      <PageHeader title="Співробітники" subtitle={`Усього: ${users.length}`} />
+      <PageHeader title="Співробітники" subtitle={`Усього: ${users.length}`} icon="🛡️" />
 
       <div className="space-y-6 p-8">
         {canCreate && (
@@ -50,25 +50,23 @@ export default async function EmployeesPage() {
                 <Field name="password" label="Пароль * (мін. 6)" type="password" required />
                 <label className="block">
                   <span className="mb-1 block text-xs font-medium text-slate-600">Роль</span>
-                  <select name="role" defaultValue="MANAGER" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+                  <Select name="role" defaultValue="MANAGER">
                     {ROLES.filter((r) => r !== "OWNER" || me.role === "OWNER").map((r) => (
                       <option key={r} value={r}>{ROLE_LABELS[r]}</option>
                     ))}
-                  </select>
+                  </Select>
                 </label>
                 <label className="block">
                   <span className="mb-1 block text-xs font-medium text-slate-600">Керівник</span>
-                  <select name="managerId" defaultValue="" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+                  <Select name="managerId" defaultValue="">
                     <option value="">— не призначено —</option>
                     {managers.map((m) => (
                       <option key={m.id} value={m.id}>{m.fullName}</option>
                     ))}
-                  </select>
+                  </Select>
                 </label>
                 <div className="md:col-span-2">
-                  <button className="rounded-lg bg-teal-600 px-5 py-2 text-sm font-medium text-white hover:bg-teal-700">
-                    Створити співробітника
-                  </button>
+                  <Button type="submit">Створити співробітника</Button>
                 </div>
               </form>
             </details>
@@ -97,9 +95,7 @@ export default async function EmployeesPage() {
                   </td>
                   <td className="px-6 py-3 text-slate-600">{u.email}</td>
                   <td className="px-6 py-3">
-                    <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
-                      {ROLE_LABELS[u.role]}
-                    </span>
+                    <Badge className="bg-slate-100 text-slate-600">{ROLE_LABELS[u.role]}</Badge>
                   </td>
                   <td className="px-6 py-3 text-slate-500">{u.manager?.fullName ?? "—"}</td>
                   <td className="px-6 py-3">
@@ -119,23 +115,5 @@ export default async function EmployeesPage() {
         </Card>
       </div>
     </>
-  );
-}
-
-function Field({
-  name, label, type = "text", required = false,
-}: {
-  name: string; label: string; type?: string; required?: boolean;
-}) {
-  return (
-    <label className="block">
-      <span className="mb-1 block text-xs font-medium text-slate-600">{label}</span>
-      <input
-        name={name}
-        type={type}
-        required={required}
-        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
-      />
-    </label>
   );
 }

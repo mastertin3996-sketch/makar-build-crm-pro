@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { PageHeader, Card, StatusBadge } from "@/components/ui";
+import { PageHeader, Card, StatusBadge, Button, Select, Textarea, EmptyRow } from "@/components/ui";
 import {
   STATUS_LABELS,
   STATUS_ORDER,
@@ -43,6 +43,7 @@ export default async function RequestCardPage({
       <PageHeader
         title={`Заявка #${request.number}`}
         subtitle={request.title}
+        icon="📋"
         action={
           <Link
             href="/requests"
@@ -130,11 +131,7 @@ export default async function RequestCardPage({
                   </tr>
                 ))}
                 {request.items.length === 0 && (
-                  <tr>
-                    <td colSpan={4} className="px-6 py-8 text-center text-slate-400">
-                      Позиції ще не додані
-                    </td>
-                  </tr>
+                  <EmptyRow colSpan={4}>Позиції ще не додані</EmptyRow>
                 )}
               </tbody>
               {request.items.length > 0 && (
@@ -162,20 +159,16 @@ export default async function RequestCardPage({
             </h2>
             <form action={updateStatus} className="space-y-3">
               <input type="hidden" name="id" value={request.id} />
-              <select
-                name="status"
-                defaultValue={request.status}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
-              >
+              <Select name="status" defaultValue={request.status}>
                 {STATUS_ORDER.map((s) => (
                   <option key={s} value={s}>
                     {STATUS_LABELS[s]}
                   </option>
                 ))}
-              </select>
-              <button className="w-full rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-900">
+              </Select>
+              <Button type="submit" className="w-full">
                 Оновити статус
-              </button>
+              </Button>
             </form>
           </Card>
 
@@ -191,28 +184,23 @@ export default async function RequestCardPage({
                 name="clientId"
                 value={request.clientId ?? ""}
               />
-              <select
-                name="type"
-                defaultValue="NOTE"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
-              >
+              <Select name="type" defaultValue="NOTE">
                 {Object.entries(INTERACTION_LABELS).map(([value, label]) => (
                   <option key={value} value={value}>
                     {INTERACTION_ICONS[value as keyof typeof INTERACTION_ICONS]}{" "}
                     {label}
                   </option>
                 ))}
-              </select>
-              <textarea
+              </Select>
+              <Textarea
                 name="content"
                 required
                 rows={3}
                 placeholder="Текст повідомлення / нотатки…"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
               />
-              <button className="w-full rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700">
+              <Button type="submit" className="w-full">
                 Додати запис
-              </button>
+              </Button>
             </form>
 
             <ol className="mt-5 space-y-4 border-t border-slate-100 pt-4">

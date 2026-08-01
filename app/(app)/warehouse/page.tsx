@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { can } from "@/lib/permissions";
-import { PageHeader, Card } from "@/components/ui";
+import { PageHeader, Card, Button, Select as UiSelect, Input, Badge, EmptyRow } from "@/components/ui";
 import {
   MOVEMENT_LABELS,
   MOVEMENT_ICONS,
@@ -68,7 +68,7 @@ export default async function WarehousePage() {
 
   return (
     <>
-      <PageHeader title="Складський облік" subtitle={`Складів: ${warehouses.length}`} />
+      <PageHeader title="Складський облік" subtitle={`Складів: ${warehouses.length}`} icon="🏬" />
 
       <div className="space-y-6 p-8">
         {/* KPI */}
@@ -142,11 +142,7 @@ export default async function WarehousePage() {
                 );
               })}
               {items.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="px-6 py-10 text-center text-slate-400">
-                    Залишків немає
-                  </td>
-                </tr>
+                <EmptyRow colSpan={5}>Залишків немає</EmptyRow>
               )}
             </tbody>
           </table>
@@ -173,9 +169,9 @@ export default async function WarehousePage() {
                 <tr key={m.id} className="hover:bg-slate-50">
                   <td className="whitespace-nowrap px-6 py-3 text-slate-500">{fmtDateTime(m.createdAt)}</td>
                   <td className="px-6 py-3">
-                    <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${MOVEMENT_COLORS[m.type]}`}>
+                    <Badge className={MOVEMENT_COLORS[m.type]}>
                       {MOVEMENT_ICONS[m.type]} {MOVEMENT_LABELS[m.type]}
-                    </span>
+                    </Badge>
                   </td>
                   <td className="px-6 py-3 text-slate-700">{m.product.name}</td>
                   <td className="px-6 py-3 text-slate-500">
@@ -187,11 +183,7 @@ export default async function WarehousePage() {
                 </tr>
               ))}
               {movements.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="px-6 py-10 text-center text-slate-400">
-                    Рухів ще не було
-                  </td>
-                </tr>
+                <EmptyRow colSpan={6}>Рухів ще не було</EmptyRow>
               )}
             </tbody>
           </table>
@@ -240,31 +232,23 @@ function Op({ title, action, products, warehouses, withTarget, qtyLabel }: OpPro
             <span className="mb-1 block text-xs font-medium text-slate-600">
               {qtyLabel ?? "Кількість"}
             </span>
-            <input
-              name="qty"
-              type="number"
-              step="any"
-              min="0"
-              required
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
-            />
+            <Input name="qty" type="number" step="any" min="0" required />
           </label>
           <label className="block">
             <span className="mb-1 block text-xs font-medium text-slate-600">Примітка</span>
-            <input
-              name="note"
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
-            />
+            <Input name="note" />
           </label>
-          <button className="w-full rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700">
+          <Button type="submit" className="w-full">
             Виконати
-          </button>
+          </Button>
         </form>
       </details>
     </Card>
   );
 }
 
+// Локальна обгортка "підписаний select" — у спільному UI-кіті немає готового
+// LabeledSelect, тож лишаємо тонку обгортку навколо базового Select із @/components/ui.
 function Select({
   name,
   label,
@@ -277,12 +261,7 @@ function Select({
   return (
     <label className="block">
       <span className="mb-1 block text-xs font-medium text-slate-600">{label}</span>
-      <select
-        name={name}
-        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
-      >
-        {children}
-      </select>
+      <UiSelect name={name}>{children}</UiSelect>
     </label>
   );
 }

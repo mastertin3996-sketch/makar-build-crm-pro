@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { Card } from "@/components/ui";
+import { Card, Badge, Button, Select, Textarea } from "@/components/ui";
 import { genDocument, genReply, genAnalysis, genRecommendations, type AiState } from "./actions";
 
 const initial: AiState = {};
@@ -9,9 +9,9 @@ const initial: AiState = {};
 function SourceBadge({ source }: { source?: AiState["source"] }) {
   if (!source) return null;
   return source === "claude" ? (
-    <span className="rounded-full bg-violet-100 px-2.5 py-1 text-xs font-medium text-violet-700">✦ Claude (claude-opus-4-8)</span>
+    <Badge className="bg-violet-100 text-violet-700">✦ Claude (claude-opus-4-8)</Badge>
   ) : (
-    <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-500">демо-шаблон (без API-ключа)</span>
+    <Badge className="bg-slate-100 text-slate-500">демо-шаблон (без API-ключа)</Badge>
   );
 }
 
@@ -56,22 +56,22 @@ export function AiConsole({
           <form action={docAction} className="space-y-3">
             <label className="block">
               <span className="mb-1 block text-xs font-medium text-slate-600">Тип</span>
-              <select name="docType" defaultValue="QUOTE" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+              <Select name="docType" defaultValue="QUOTE">
                 <option value="QUOTE">Комерційна пропозиція</option>
                 <option value="INVOICE">Рахунок</option>
                 <option value="CONTRACT">Договір</option>
-              </select>
+              </Select>
             </label>
             <label className="block">
               <span className="mb-1 block text-xs font-medium text-slate-600">Джерело даних</span>
-              <select name="source" defaultValue="" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+              <Select name="source" defaultValue="">
                 <option value="">— без даних —</option>
                 {sources.map((s) => (<option key={s.value} value={s.value}>{s.label}</option>))}
-              </select>
+              </Select>
             </label>
-            <button disabled={docPending} className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-60">
+            <Button type="submit" disabled={docPending}>
               {docPending ? "Генерую…" : "✦ Згенерувати"}
-            </button>
+            </Button>
           </form>
           <Result state={docState} pending={docPending} />
         </Card>
@@ -81,18 +81,18 @@ export function AiConsole({
           <h2 className="text-base font-semibold text-slate-900">💬 Автоматична відповідь клієнту</h2>
           <p className="mb-4 text-xs text-slate-500">Чернетка відповіді на повідомлення клієнта</p>
           <form action={replyAction} className="space-y-3">
-            <textarea name="message" rows={3} placeholder="Вставте повідомлення клієнта…" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500" />
+            <Textarea name="message" rows={3} placeholder="Вставте повідомлення клієнта…" />
             <label className="block">
               <span className="mb-1 block text-xs font-medium text-slate-600">Тон</span>
-              <select name="tone" defaultValue="дружній" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+              <Select name="tone" defaultValue="дружній">
                 <option value="дружній">Дружній</option>
                 <option value="офіційний">Офіційний</option>
                 <option value="лаконічний">Лаконічний</option>
-              </select>
+              </Select>
             </label>
-            <button disabled={replyPending} className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-60">
+            <Button type="submit" disabled={replyPending}>
               {replyPending ? "Генерую…" : "✦ Запропонувати відповідь"}
-            </button>
+            </Button>
           </form>
           <Result state={replyState} pending={replyPending} />
         </Card>
@@ -102,9 +102,9 @@ export function AiConsole({
           <h2 className="text-base font-semibold text-slate-900">📈 Аналіз продажів</h2>
           <p className="mb-4 text-xs text-slate-500">Висновки та інсайти на основі даних CRM</p>
           <form action={anAction}>
-            <button disabled={anPending} className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-900 disabled:opacity-60">
+            <Button type="submit" variant="secondary" disabled={anPending}>
               {anPending ? "Аналізую…" : "✦ Проаналізувати"}
-            </button>
+            </Button>
           </form>
           <Result state={anState} pending={anPending} />
         </Card>
@@ -114,9 +114,9 @@ export function AiConsole({
           <h2 className="text-base font-semibold text-slate-900">🤖 Рекомендації менеджерам</h2>
           <p className="mb-4 text-xs text-slate-500">Що зробити прямо зараз — за даними CRM</p>
           <form action={recAction}>
-            <button disabled={recPending} className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-900 disabled:opacity-60">
+            <Button type="submit" variant="secondary" disabled={recPending}>
               {recPending ? "Готую…" : "✦ Отримати рекомендації"}
-            </button>
+            </Button>
           </form>
           <Result state={recState} pending={recPending} />
         </Card>

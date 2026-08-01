@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { can } from "@/lib/permissions";
-import { PageHeader, Card } from "@/components/ui";
+import { PageHeader, Card, Button, Field, Select, Badge, EmptyRow } from "@/components/ui";
 import {
   CALL_PROVIDER_LABELS,
   CALL_DIRECTION_LABELS,
@@ -74,7 +74,7 @@ export default async function TelephonyPage({
 
   return (
     <>
-      <PageHeader title="Телефонія" subtitle="Binotel · Ringostat · UniTalk" />
+      <PageHeader title="Телефонія" subtitle="Binotel · Ringostat · UniTalk" icon="📞" />
 
       <div className="space-y-6 p-8">
         <div className="grid grid-cols-2 gap-4 md:grid-cols-6">
@@ -99,26 +99,26 @@ export default async function TelephonyPage({
                   <Sel name="status" label="Статус" opts={STATUSES.map((s) => [s, CALL_STATUS_LABELS[s]])} />
                   <Field name="fromNumber" label="Від кого" placeholder="+380..." />
                   <Field name="toNumber" label="Кому" placeholder="+380..." />
-                  <Field name="duration" label="Тривалість, сек" type="number" />
+                  <Field name="duration" label="Тривалість, сек" type="number" step="1" />
                   <label className="block">
                     <span className="mb-1 block text-xs font-medium text-slate-600">Клієнт</span>
-                    <select name="clientId" defaultValue="" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+                    <Select name="clientId" defaultValue="">
                       <option value="">— невідомий —</option>
                       {clients.map((c) => (<option key={c.id} value={c.id}>{c.fullName}</option>))}
-                    </select>
+                    </Select>
                   </label>
                   <Field name="recordingUrl" label="Посилання на запис" className="md:col-span-2" />
                   <div className="md:col-span-3">
-                    <button className="rounded-lg bg-teal-600 px-5 py-2 text-sm font-medium text-white hover:bg-teal-700">Зберегти</button>
+                    <Button type="submit">Зберегти</Button>
                   </div>
                 </form>
               </details>
             </Card>
             <Card className="flex items-center px-6 py-4">
               <form action={simulateIncomingCall}>
-                <button className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-900" title="Імітація вхідного дзвінка з авто-створенням ліда">
+                <Button type="submit" variant="secondary" title="Імітація вхідного дзвінка з авто-створенням ліда">
                   📞 Вхідний дзвінок (демо)
-                </button>
+                </Button>
               </form>
             </Card>
           </div>
@@ -155,7 +155,7 @@ export default async function TelephonyPage({
                           {c.client ? <Link href={`/clients/${c.client.id}`} className="text-teal-600 hover:underline">{c.client.fullName}</Link> : <span className="font-mono text-xs">{number}</span>}
                         </td>
                         <td className="px-5 py-3 text-slate-500">{CALL_PROVIDER_LABELS[c.provider]}</td>
-                        <td className="px-5 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-medium ${CALL_STATUS_COLORS[c.status]}`}>{CALL_STATUS_LABELS[c.status]}</span></td>
+                        <td className="px-5 py-3"><Badge className={CALL_STATUS_COLORS[c.status]}>{CALL_STATUS_LABELS[c.status]}</Badge></td>
                         <td className="px-5 py-3 text-right text-slate-600">{c.duration ? formatDuration(c.duration) : "—"}</td>
                         <td className="px-5 py-3">{c.recordingUrl ? <a href={c.recordingUrl} target="_blank" className="text-teal-600 hover:underline">▶</a> : "—"}</td>
                         <td className="px-5 py-3">
@@ -164,7 +164,7 @@ export default async function TelephonyPage({
                           ) : canCreate ? (
                             <form action={createLeadFromCall}>
                               <input type="hidden" name="callId" value={c.id} />
-                              <button className="text-xs text-teal-600 hover:underline">+ лід</button>
+                              <Button type="submit" variant="ghost" size="sm" className="px-0 py-0 text-teal-600 hover:underline">+ лід</Button>
                             </form>
                           ) : "—"}
                         </td>
@@ -172,7 +172,7 @@ export default async function TelephonyPage({
                       </tr>
                     );
                   })}
-                  {calls.length === 0 && (<tr><td colSpan={8} className="px-5 py-10 text-center text-slate-400">Дзвінків не знайдено</td></tr>)}
+                  {calls.length === 0 && (<EmptyRow colSpan={8}>Дзвінків не знайдено</EmptyRow>)}
                 </tbody>
               </table>
             </Card>
@@ -209,22 +209,13 @@ function Chip({ href, active, label }: { href: string; active: boolean; label: s
   );
 }
 
-function Field({ name, label, type = "text", placeholder, className = "" }: { name: string; label: string; type?: string; placeholder?: string; className?: string }) {
-  return (
-    <label className={`block ${className}`}>
-      <span className="mb-1 block text-xs font-medium text-slate-600">{label}</span>
-      <input name={name} type={type} step={type === "number" ? "1" : undefined} placeholder={placeholder} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500" />
-    </label>
-  );
-}
-
 function Sel({ name, label, opts }: { name: string; label: string; opts: [string, string][] }) {
   return (
     <label className="block">
       <span className="mb-1 block text-xs font-medium text-slate-600">{label}</span>
-      <select name={name} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+      <Select name={name}>
         {opts.map(([v, l]) => (<option key={v} value={v}>{l}</option>))}
-      </select>
+      </Select>
     </label>
   );
 }

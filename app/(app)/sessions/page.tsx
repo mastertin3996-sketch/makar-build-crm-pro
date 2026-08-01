@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { ROLE_LABELS } from "@/lib/permissions";
-import { PageHeader, Card } from "@/components/ui";
+import { PageHeader, Card, Button, EmptyRow } from "@/components/ui";
 import { terminateAllAction } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -28,11 +28,10 @@ export default async function SessionsPage() {
       <PageHeader
         title="Мій профіль та сесії"
         subtitle={`${me.fullName} · ${ROLE_LABELS[me.role]}`}
+        icon="🔐"
         action={
           <form action={terminateAllAction}>
-            <button className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700">
-              🚪 Завершити всі сесії
-            </button>
+            <Button type="submit" variant="danger">🚪 Завершити всі сесії</Button>
           </form>
         }
       />
@@ -76,11 +75,7 @@ export default async function SessionsPage() {
                 </tr>
               ))}
               {sessions.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="px-6 py-10 text-center text-slate-400">
-                    Активних сесій немає
-                  </td>
-                </tr>
+                <EmptyRow colSpan={6}>Активних сесій немає</EmptyRow>
               )}
             </tbody>
           </table>

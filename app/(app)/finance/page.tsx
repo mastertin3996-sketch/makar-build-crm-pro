@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { can, canFinance } from "@/lib/permissions";
-import { PageHeader, Card } from "@/components/ui";
+import { PageHeader, Card, Button, Field, Select, Badge, EmptyRow } from "@/components/ui";
 import {
   PAYMENT_METHOD_LABELS,
   PAYMENT_PROVIDER_LABELS,
@@ -80,7 +80,7 @@ export default async function FinancePage({
 
   return (
     <>
-      <PageHeader title="Фінанси" subtitle="Облік оплат і контроль заборгованості" />
+      <PageHeader title="Фінанси" subtitle="Облік оплат і контроль заборгованості" icon="💰" />
 
       <div className="space-y-6 p-8">
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -102,35 +102,32 @@ export default async function FinancePage({
               <form action={createPayment} className="grid grid-cols-1 gap-4 border-t border-slate-100 px-6 py-5 md:grid-cols-3">
                 <label className="block">
                   <span className="mb-1 block text-xs font-medium text-slate-600">Напрям</span>
-                  <select name="direction" defaultValue="INCOME" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+                  <Select name="direction" defaultValue="INCOME">
                     <option value="INCOME">Надходження</option>
                     <option value="EXPENSE">Видаток</option>
-                  </select>
+                  </Select>
                 </label>
                 <label className="block">
                   <span className="mb-1 block text-xs font-medium text-slate-600">Спосіб оплати</span>
-                  <select name="method" defaultValue="CASH" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+                  <Select name="method" defaultValue="CASH">
                     {METHODS.map((m) => (
                       <option key={m} value={m}>{PAYMENT_METHOD_LABELS[m]}</option>
                     ))}
-                  </select>
+                  </Select>
                 </label>
                 <label className="block">
                   <span className="mb-1 block text-xs font-medium text-slate-600">Провайдер (для онлайн)</span>
-                  <select name="provider" defaultValue="LIQPAY" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+                  <Select name="provider" defaultValue="LIQPAY">
                     {PROVIDERS.map((p) => (
                       <option key={p} value={p}>{PAYMENT_PROVIDER_LABELS[p]}</option>
                     ))}
-                  </select>
+                  </Select>
                 </label>
-                <label className="block">
-                  <span className="mb-1 block text-xs font-medium text-slate-600">Сума, грн (порожньо = з джерела)</span>
-                  <input name="amount" type="number" step="any" min="0" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500" />
-                </label>
+                <Field name="amount" label="Сума, грн (порожньо = з джерела)" type="number" step="any" min="0" />
                 <label className="block md:col-span-2">
                   <span className="mb-1 block text-xs font-medium text-slate-600">Джерело</span>
-                  <select name="source" defaultValue="" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
-                    <option value="">— без прив'язки —</option>
+                  <Select name="source" defaultValue="">
+                    <option value="">— без прив&apos;язки —</option>
                     <optgroup label="Рахунки">
                       {documents.map((d) => (
                         <option key={d.id} value={`document:${d.id}`}>{d.number} · {d.client?.fullName ?? "—"} · {formatUAH(d.total)}</option>
@@ -146,16 +143,11 @@ export default async function FinancePage({
                         <option key={c.id} value={`client:${c.id}`}>{c.fullName}</option>
                       ))}
                     </optgroup>
-                  </select>
+                  </Select>
                 </label>
-                <label className="block md:col-span-3">
-                  <span className="mb-1 block text-xs font-medium text-slate-600">Коментар</span>
-                  <input name="comment" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500" />
-                </label>
+                <Field name="comment" label="Коментар" className="md:col-span-3" />
                 <div className="md:col-span-3">
-                  <button className="rounded-lg bg-teal-600 px-5 py-2 text-sm font-medium text-white hover:bg-teal-700">
-                    Зберегти оплату
-                  </button>
+                  <Button type="submit">Зберегти оплату</Button>
                   <span className="ml-3 text-xs text-slate-400">Онлайн-оплата створюється зі статусом «Очікує» + платіжне посилання.</span>
                 </div>
               </form>
@@ -196,9 +188,9 @@ export default async function FinancePage({
                         {p.provider ? ` · ${PAYMENT_PROVIDER_LABELS[p.provider]}` : ""}
                       </td>
                       <td className="px-5 py-3">
-                        <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${PAYMENT_STATUS_COLORS[p.status]}`}>
+                        <Badge className={PAYMENT_STATUS_COLORS[p.status]}>
                           {PAYMENT_STATUS_LABELS[p.status]}
-                        </span>
+                        </Badge>
                       </td>
                       <td className={`px-5 py-3 text-right font-medium ${p.direction === "EXPENSE" ? "text-red-600" : "text-slate-700"}`}>
                         {p.direction === "EXPENSE" ? "−" : ""}{formatUAH(p.amount)}
@@ -207,7 +199,7 @@ export default async function FinancePage({
                     </tr>
                   ))}
                   {payments.length === 0 && (
-                    <tr><td colSpan={6} className="px-5 py-10 text-center text-slate-400">Оплат не знайдено</td></tr>
+                    <EmptyRow colSpan={6}>Оплат не знайдено</EmptyRow>
                   )}
                 </tbody>
               </table>

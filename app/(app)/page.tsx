@@ -95,6 +95,7 @@ export default async function DashboardPage() {
       <PageHeader
         title="Dashboard"
         subtitle="Ключові показники компанії в реальному часі"
+        icon="📊"
       />
 
       <div className="p-8 space-y-8">

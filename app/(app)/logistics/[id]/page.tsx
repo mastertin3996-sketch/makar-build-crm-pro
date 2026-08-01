@@ -3,15 +3,14 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { can } from "@/lib/permissions";
-import { PageHeader, Card } from "@/components/ui";
+import { PageHeader, Card, Badge, Button, LinkButton } from "@/components/ui";
 import {
   CARRIER_LABELS,
   SHIPMENT_STATUS_LABELS,
   SHIPMENT_STATUS_COLORS,
   formatUAH,
 } from "@/lib/labels";
-import { advanceStatus, returnShipment, cancelShipment, syncShipmentStatus } from "../actions";
-import { novaPoshtaEnabled } from "@/lib/novaposhta";
+import { advanceStatus, returnShipment, cancelShipment } from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -48,13 +47,13 @@ export default async function ShipmentCardPage({
   if (!s) notFound();
 
   const isFinal = s.status === "DELIVERED" || s.status === "CANCELLED" || s.status === "RETURNED";
-  const npAvailable = s.carrier === "NOVA_POSHTA" && novaPoshtaEnabled();
 
   return (
     <>
       <PageHeader
         title={`ТТН ${s.ttn}`}
         subtitle={CARRIER_LABELS[s.carrier]}
+        icon="🚚"
         action={
           <Link href="/logistics" className="text-sm text-slate-500 hover:text-slate-700">← До списку</Link>
         }
@@ -64,17 +63,13 @@ export default async function ShipmentCardPage({
         <div className="space-y-6 lg:col-span-2">
           <Card className="p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${SHIPMENT_STATUS_COLORS[s.status]}`}>
+              <Badge className={SHIPMENT_STATUS_COLORS[s.status]}>
                 {SHIPMENT_STATUS_LABELS[s.status]}
-              </span>
+              </Badge>
               {canPrint && (
-                <Link
-                  href={`/ttn/${s.id}`}
-                  target="_blank"
-                  className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-900"
-                >
+                <LinkButton href={`/ttn/${s.id}`} target="_blank" variant="secondary">
                   🖨 Друк ТТН
-                </Link>
+                </LinkButton>
               )}
             </div>
 
@@ -127,43 +122,33 @@ export default async function ShipmentCardPage({
           <Card className="p-6">
             <h2 className="mb-3 text-base font-semibold text-slate-900">Керування</h2>
             <p className="mb-4 text-xs text-slate-500">
-              «Оновити статус» імітує автоматичне відстеження перевізника (демо-режим).
-              {npAvailable
-                ? " Для цього ТТН доступна реальна синхронізація через API Нової Пошти."
-                : " Реальна синхронізація через API Нової Пошти вимикається без NOVA_POSHTA_API_KEY і доступна лише для перевізника «Нова Пошта»."}
+              «Оновити статус» імітує автоматичне відстеження перевізника (у проді —
+              синхронізація через API Нової Пошти / Укрпошти).
             </p>
             {canEdit ? (
               <div className="space-y-3">
-                {npAvailable && !isFinal && (
-                  <form action={syncShipmentStatus}>
-                    <input type="hidden" name="id" value={s.id} />
-                    <button className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
-                      📡 Оновити статус (Нова Пошта)
-                    </button>
-                  </form>
-                )}
                 {!isFinal && (
                   <form action={advanceStatus}>
                     <input type="hidden" name="id" value={s.id} />
-                    <button className="w-full rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700">
-                      🔄 Оновити статус (демо)
-                    </button>
+                    <Button type="submit" className="w-full">
+                      🔄 Оновити статус
+                    </Button>
                   </form>
                 )}
                 {!isFinal && s.status !== "CREATED" && (
                   <form action={returnShipment}>
                     <input type="hidden" name="id" value={s.id} />
-                    <button className="w-full rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600">
+                    <Button type="submit" variant="danger" className="w-full">
                       ↩ Оформити повернення
-                    </button>
+                    </Button>
                   </form>
                 )}
                 {s.status !== "DELIVERED" && s.status !== "CANCELLED" && (
                   <form action={cancelShipment}>
                     <input type="hidden" name="id" value={s.id} />
-                    <button className="w-full rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700">
+                    <Button type="submit" variant="danger" className="w-full">
                       ✖ Скасувати ТТН
-                    </button>
+                    </Button>
                   </form>
                 )}
                 {isFinal && <p className="text-sm text-slate-400">Відправлення завершено</p>}

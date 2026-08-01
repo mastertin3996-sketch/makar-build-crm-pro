@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { can, canFinance, ROLE_LABELS } from "@/lib/permissions";
-import { PageHeader, Card } from "@/components/ui";
+import { PageHeader, Card, EmptyRow } from "@/components/ui";
 import {
   STATUS_LABELS,
   STATUS_ORDER,
@@ -43,7 +43,7 @@ export default async function ReportsPage({
 
   return (
     <>
-      <PageHeader title="Звіти" subtitle="Аналітика продажів, фінансів та роботи команди" />
+      <PageHeader title="Звіти" subtitle="Аналітика продажів, фінансів та роботи команди" icon="📈" />
 
       <div className="space-y-6 p-8">
         <div className="flex flex-wrap gap-2">
@@ -186,7 +186,7 @@ async function ManagersReport() {
               <td className="px-6 py-3 text-right text-emerald-600">{formatUAH(x.paid)}</td>
             </tr>
           ))}
-          {rows.length === 0 && <tr><td colSpan={6} className="px-6 py-10 text-center text-slate-400">Немає даних</td></tr>}
+          {rows.length === 0 && <EmptyRow colSpan={6}>Немає даних</EmptyRow>}
         </tbody>
       </table>
     </Card>
@@ -346,7 +346,7 @@ async function SourcesReport() {
               <td className="px-6 py-3 text-right font-medium text-slate-700">{v.total ? Math.round((v.won / v.total) * 100) : 0}%</td>
             </tr>
           ))}
-          {rows.length === 0 && <tr><td colSpan={4} className="px-6 py-10 text-center text-slate-400">Немає даних</td></tr>}
+          {rows.length === 0 && <EmptyRow colSpan={4}>Немає даних</EmptyRow>}
         </tbody>
       </table>
     </Card>

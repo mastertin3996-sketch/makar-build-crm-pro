@@ -2,7 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { canFinance } from "@/lib/permissions";
-import { PageHeader, Card } from "@/components/ui";
+import { PageHeader, Card, Button, Select, Field, Badge, EmptyState } from "@/components/ui";
 import { CATEGORY_LABELS, formatUAH } from "@/lib/labels";
 import type { ProductCategory } from "@prisma/client";
 import { createProduct } from "./actions";
@@ -38,7 +38,7 @@ export default async function CatalogPage({
 
   return (
     <>
-      <PageHeader title="Каталог товарів" subtitle={`Позицій: ${total}`} />
+      <PageHeader title="Каталог товарів" subtitle={`Позицій: ${total}`} icon="📦" />
 
       <div className="p-8 space-y-6">
         {/* Додати товар */}
@@ -58,27 +58,24 @@ export default async function CatalogPage({
                 <span className="mb-1 block text-xs font-medium text-slate-600">
                   Категорія
                 </span>
-                <select
-                  name="category"
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
-                >
+                <Select name="category">
                   {CATEGORY_KEYS.map((c) => (
                     <option key={c} value={c}>
                       {CATEGORY_LABELS[c]}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
               <Field name="unit" label="Одиниця" placeholder="шт" />
-              <Field name="stock" label="Залишок" type="number" />
-              <Field name="costPrice" label="Собівартість" type="number" />
-              <Field name="price" label="Ціна продажу" type="number" />
-              <Field name="minPrice" label="Мінімальна ціна" type="number" />
+              <Field name="stock" label="Залишок" type="number" step="any" />
+              <Field name="costPrice" label="Собівартість" type="number" step="any" />
+              <Field name="price" label="Ціна продажу" type="number" step="any" />
+              <Field name="minPrice" label="Мінімальна ціна" type="number" step="any" />
               <Field name="description" label="Опис" className="md:col-span-3" />
               <div className="md:col-span-3">
-                <button className="rounded-lg bg-teal-600 px-5 py-2 text-sm font-medium text-white hover:bg-teal-700">
+                <Button type="submit">
                   Зберегти товар
-                </button>
+                </Button>
               </div>
             </form>
           </details>
@@ -108,9 +105,9 @@ export default async function CatalogPage({
             return (
               <Card key={p.id} className="flex flex-col p-5">
                 <div className="flex items-start justify-between gap-2">
-                  <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500">
+                  <Badge className="bg-slate-100 text-slate-500">
                     {CATEGORY_LABELS[p.category]}
-                  </span>
+                  </Badge>
                   {p.sku && (
                     <span className="text-xs text-slate-400">{p.sku}</span>
                   )}
@@ -151,8 +148,8 @@ export default async function CatalogPage({
             );
           })}
           {products.length === 0 && (
-            <div className="col-span-full rounded-xl border border-dashed border-slate-300 py-12 text-center text-slate-400">
-              Товарів не знайдено
+            <div className="col-span-full">
+              <EmptyState title="Товарів не знайдено" />
             </div>
           )}
         </div>
@@ -181,37 +178,5 @@ function Chip({
     >
       {label}
     </Link>
-  );
-}
-
-function Field({
-  name,
-  label,
-  type = "text",
-  required = false,
-  placeholder,
-  className = "",
-}: {
-  name: string;
-  label: string;
-  type?: string;
-  required?: boolean;
-  placeholder?: string;
-  className?: string;
-}) {
-  return (
-    <label className={`block ${className}`}>
-      <span className="mb-1 block text-xs font-medium text-slate-600">
-        {label}
-      </span>
-      <input
-        name={name}
-        type={type}
-        step={type === "number" ? "any" : undefined}
-        required={required}
-        placeholder={placeholder}
-        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
-      />
-    </label>
   );
 }

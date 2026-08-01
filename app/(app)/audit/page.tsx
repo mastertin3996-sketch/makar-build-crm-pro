@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { can } from "@/lib/permissions";
-import { PageHeader, Card } from "@/components/ui";
+import { PageHeader, Card, Badge, EmptyRow } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -85,6 +85,7 @@ export default async function AuditPage() {
       <PageHeader
         title="Журнал дій користувачів"
         subtitle="Останні 200 подій"
+        icon="🧭"
       />
       <div className="p-8">
         <Card>
@@ -105,9 +106,7 @@ export default async function AuditPage() {
                   <td className="whitespace-nowrap px-6 py-3 text-slate-600">{fmt(l.createdAt)}</td>
                   <td className="px-6 py-3 text-slate-700">{l.user?.fullName ?? "—"}</td>
                   <td className="px-6 py-3">
-                    <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
-                      {ACTION_LABELS[l.action] ?? l.action}
-                    </span>
+                    <Badge className="bg-slate-100 text-slate-600">{ACTION_LABELS[l.action] ?? l.action}</Badge>
                   </td>
                   <td className="px-6 py-3 text-slate-500">{l.details ?? "—"}</td>
                   <td className="px-6 py-3 text-slate-500">{l.ip ?? "—"}</td>
@@ -117,11 +116,7 @@ export default async function AuditPage() {
                 </tr>
               ))}
               {logs.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="px-6 py-10 text-center text-slate-400">
-                    Журнал порожній
-                  </td>
-                </tr>
+                <EmptyRow colSpan={6}>Журнал порожній</EmptyRow>
               )}
             </tbody>
           </table>

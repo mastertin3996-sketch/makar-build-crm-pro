@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { can } from "@/lib/permissions";
-import { PageHeader, Card } from "@/components/ui";
+import { PageHeader, Card, Badge, Button } from "@/components/ui";
 import {
   PAYMENT_METHOD_LABELS,
   PAYMENT_PROVIDER_LABELS,
@@ -38,6 +38,7 @@ export default async function PaymentCardPage({
       <PageHeader
         title={`Оплата #${p.number}`}
         subtitle={`${PAYMENT_DIRECTION_LABELS[p.direction]} · ${PAYMENT_METHOD_LABELS[p.method]}`}
+        icon="💰"
         action={<Link href="/finance" className="text-sm text-slate-500 hover:text-slate-700">← До списку</Link>}
       />
 
@@ -45,9 +46,9 @@ export default async function PaymentCardPage({
         <div className="space-y-6 lg:col-span-2">
           <Card className="p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${PAYMENT_STATUS_COLORS[p.status]}`}>
+              <Badge className={PAYMENT_STATUS_COLORS[p.status]}>
                 {PAYMENT_STATUS_LABELS[p.status]}
-              </span>
+              </Badge>
               <span className="text-2xl font-bold text-slate-900">
                 {p.direction === "EXPENSE" ? "−" : ""}{formatUAH(p.amount)}
               </span>
@@ -64,13 +65,6 @@ export default async function PaymentCardPage({
               {p.comment && <Info label="Коментар" value={p.comment} full />}
             </dl>
 
-            {p.liqpayData && p.liqpaySignature && p.status === "PENDING" && (
-              <div className="mt-5 rounded-lg bg-slate-50 p-4">
-                <div className="text-xs font-medium uppercase text-slate-400">Оплата LiqPay</div>
-                <Link href={`/finance/${p.id}/pay`} className="text-sm text-teal-600 hover:underline">Перейти до оплати →</Link>
-                <p className="mt-1 text-xs text-slate-400">Реальний чекаут LiqPay. Статус оновиться автоматично через webhook після оплати.</p>
-              </div>
-            )}
             {p.payUrl && (
               <div className="mt-5 rounded-lg bg-slate-50 p-4">
                 <div className="text-xs font-medium uppercase text-slate-400">Платіжне посилання</div>
@@ -89,25 +83,25 @@ export default async function PaymentCardPage({
                 {p.status !== "PAID" && (
                   <form action={markPaid}>
                     <input type="hidden" name="id" value={p.id} />
-                    <button className="w-full rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700">
+                    <Button type="submit" className="w-full">
                       ✅ Підтвердити оплату
-                    </button>
+                    </Button>
                   </form>
                 )}
                 {p.status === "PAID" && (
                   <form action={refundPayment}>
                     <input type="hidden" name="id" value={p.id} />
-                    <button className="w-full rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600">
+                    <Button type="submit" variant="danger" className="w-full">
                       ↩ Повернути кошти
-                    </button>
+                    </Button>
                   </form>
                 )}
                 {p.status === "PENDING" && (
                   <form action={failPayment}>
                     <input type="hidden" name="id" value={p.id} />
-                    <button className="w-full rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700">
+                    <Button type="submit" variant="danger" className="w-full">
                       ✖ Позначити відхиленою
-                    </button>
+                    </Button>
                   </form>
                 )}
               </div>

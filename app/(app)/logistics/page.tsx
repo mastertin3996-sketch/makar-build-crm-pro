@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { can } from "@/lib/permissions";
-import { PageHeader, Card } from "@/components/ui";
+import { PageHeader, Card, Button, Field, Select, Badge, EmptyRow } from "@/components/ui";
 import {
   CARRIER_LABELS,
   SHIPMENT_STATUS_LABELS,
@@ -61,7 +61,7 @@ export default async function LogisticsPage({
 
   return (
     <>
-      <PageHeader title="Логістика" subtitle={`Відправлень: ${total}`} />
+      <PageHeader title="Логістика" subtitle={`Відправлень: ${total}`} icon="🚚" />
 
       <div className="space-y-6 p-8">
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -83,40 +83,38 @@ export default async function LogisticsPage({
               <form action={createShipment} className="grid grid-cols-1 gap-4 border-t border-slate-100 px-6 py-5 md:grid-cols-3">
                 <label className="block">
                   <span className="mb-1 block text-xs font-medium text-slate-600">Перевізник</span>
-                  <select name="carrier" defaultValue="NOVA_POSHTA" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+                  <Select name="carrier" defaultValue="NOVA_POSHTA">
                     {CARRIERS.map((c) => (
                       <option key={c} value={c}>{CARRIER_LABELS[c]}</option>
                     ))}
-                  </select>
+                  </Select>
                 </label>
                 <label className="block md:col-span-2">
                   <span className="mb-1 block text-xs font-medium text-slate-600">Замовлення (автозаповнення отримувача)</span>
-                  <select name="orderId" defaultValue="" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
-                    <option value="">— без прив'язки —</option>
+                  <Select name="orderId" defaultValue="">
+                    <option value="">— без прив&apos;язки —</option>
                     {orders.map((o) => (
                       <option key={o.id} value={o.id}>#{o.number} · {o.client?.fullName ?? "без клієнта"}</option>
                     ))}
-                  </select>
+                  </Select>
                 </label>
                 <Field name="recipientName" label="Отримувач (ПІБ)" />
                 <Field name="recipientPhone" label="Телефон" />
                 <Field name="cityFrom" label="Місто відправлення" placeholder="Київ" />
                 <Field name="cityTo" label="Місто призначення" />
                 <Field name="address" label="Адреса / відділення" className="md:col-span-2" />
-                <Field name="weight" label="Вага, кг" type="number" />
-                <Field name="declaredValue" label="Оголошена вартість" type="number" />
-                <Field name="cost" label="Вартість доставки" type="number" />
+                <Field name="weight" label="Вага, кг" type="number" step="any" />
+                <Field name="declaredValue" label="Оголошена вартість" type="number" step="any" />
+                <Field name="cost" label="Вартість доставки" type="number" step="any" />
                 <label className="block">
                   <span className="mb-1 block text-xs font-medium text-slate-600">Платник</span>
-                  <select name="payer" defaultValue="Отримувач" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+                  <Select name="payer" defaultValue="Отримувач">
                     <option value="Отримувач">Отримувач</option>
                     <option value="Відправник">Відправник</option>
-                  </select>
+                  </Select>
                 </label>
                 <div className="md:col-span-3">
-                  <button className="rounded-lg bg-teal-600 px-5 py-2 text-sm font-medium text-white hover:bg-teal-700">
-                    Створити ТТН
-                  </button>
+                  <Button type="submit">Створити ТТН</Button>
                 </div>
               </form>
             </details>
@@ -153,18 +151,16 @@ export default async function LogisticsPage({
                   <td className="px-6 py-3 text-slate-600">{s.recipientName}</td>
                   <td className="px-6 py-3 text-slate-500">{s.cityFrom ?? "—"} → {s.cityTo ?? "—"}</td>
                   <td className="px-6 py-3">
-                    <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${SHIPMENT_STATUS_COLORS[s.status]}`}>
+                    <Badge className={SHIPMENT_STATUS_COLORS[s.status]}>
                       {SHIPMENT_STATUS_LABELS[s.status]}
-                    </span>
+                    </Badge>
                   </td>
                   <td className="px-6 py-3 text-right text-slate-700">{s.cost ? formatUAH(s.cost) : "—"}</td>
                   <td className="px-6 py-3 text-slate-500">{formatDate(s.createdAt)}</td>
                 </tr>
               ))}
               {shipments.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="px-6 py-10 text-center text-slate-400">Відправлень не знайдено</td>
-                </tr>
+                <EmptyRow colSpan={7}>Відправлень не знайдено</EmptyRow>
               )}
             </tbody>
           </table>
@@ -184,24 +180,5 @@ function Chip({ href, active, label }: { href: string; active: boolean; label: s
     >
       {label}
     </Link>
-  );
-}
-
-function Field({
-  name, label, type = "text", placeholder, className = "",
-}: {
-  name: string; label: string; type?: string; placeholder?: string; className?: string;
-}) {
-  return (
-    <label className={`block ${className}`}>
-      <span className="mb-1 block text-xs font-medium text-slate-600">{label}</span>
-      <input
-        name={name}
-        type={type}
-        step={type === "number" ? "any" : undefined}
-        placeholder={placeholder}
-        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
-      />
-    </label>
   );
 }

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { can } from "@/lib/permissions";
-import { PageHeader, Card } from "@/components/ui";
+import { PageHeader, Card, Button, Field, Select, Badge, EmptyRow } from "@/components/ui";
 import {
   DOC_TYPE_LABELS,
   DOC_TYPE_SHORT,
@@ -49,7 +49,7 @@ export default async function DocumentsPage({
 
   return (
     <>
-      <PageHeader title="Документообіг" subtitle={`Документів: ${total}`} />
+      <PageHeader title="Документообіг" subtitle={`Документів: ${total}`} icon="📄" />
 
       <div className="space-y-6 p-8">
         {canCreate && (
@@ -62,15 +62,15 @@ export default async function DocumentsPage({
               <form action={createDocument} className="grid grid-cols-1 gap-4 border-t border-slate-100 px-6 py-5 md:grid-cols-2">
                 <label className="block">
                   <span className="mb-1 block text-xs font-medium text-slate-600">Тип документа</span>
-                  <select name="type" defaultValue="QUOTE" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+                  <Select name="type" defaultValue="QUOTE">
                     {DOC_TYPES.map((t) => (
                       <option key={t} value={t}>{DOC_TYPE_LABELS[t]}</option>
                     ))}
-                  </select>
+                  </Select>
                 </label>
                 <label className="block">
                   <span className="mb-1 block text-xs font-medium text-slate-600">Джерело (автозаповнення позицій)</span>
-                  <select name="source" defaultValue="" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+                  <Select name="source" defaultValue="">
                     <option value="">— вручну, без джерела —</option>
                     <optgroup label="Замовлення">
                       {orders.map((o) => (
@@ -82,20 +82,12 @@ export default async function DocumentsPage({
                         <option key={r.id} value={`request:${r.id}`}>Заявка #{r.number} · {r.client?.fullName ?? "—"}</option>
                       ))}
                     </optgroup>
-                  </select>
+                  </Select>
                 </label>
-                <label className="block md:col-span-2">
-                  <span className="mb-1 block text-xs font-medium text-slate-600">Назва (необов'язково)</span>
-                  <input name="title" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500" />
-                </label>
-                <label className="block md:col-span-2">
-                  <span className="mb-1 block text-xs font-medium text-slate-600">Примітки</span>
-                  <input name="notes" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500" />
-                </label>
+                <Field name="title" label="Назва (необов'язково)" className="md:col-span-2" />
+                <Field name="notes" label="Примітки" className="md:col-span-2" />
                 <div className="md:col-span-2">
-                  <button className="rounded-lg bg-teal-600 px-5 py-2 text-sm font-medium text-white hover:bg-teal-700">
-                    Згенерувати документ
-                  </button>
+                  <Button type="submit">Згенерувати документ</Button>
                 </div>
               </form>
             </details>
@@ -132,18 +124,16 @@ export default async function DocumentsPage({
                   <td className="px-6 py-3 text-slate-700">{d.title}</td>
                   <td className="px-6 py-3 text-slate-500">{d.client?.fullName ?? "—"}</td>
                   <td className="px-6 py-3">
-                    <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${DOC_STATUS_COLORS[d.status]}`}>
+                    <Badge className={DOC_STATUS_COLORS[d.status]}>
                       {DOC_STATUS_LABELS[d.status]}
-                    </span>
+                    </Badge>
                   </td>
                   <td className="px-6 py-3 text-right font-medium text-slate-700">{d.total ? formatUAH(d.total) : "—"}</td>
                   <td className="px-6 py-3 text-slate-500">{formatDate(d.createdAt)}</td>
                 </tr>
               ))}
               {docs.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="px-6 py-10 text-center text-slate-400">Документів не знайдено</td>
-                </tr>
+                <EmptyRow colSpan={7}>Документів не знайдено</EmptyRow>
               )}
             </tbody>
           </table>

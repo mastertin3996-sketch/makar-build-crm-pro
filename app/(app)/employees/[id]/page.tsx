@@ -12,7 +12,7 @@ import {
   effectiveMatrix,
   effectiveFinance,
 } from "@/lib/permissions";
-import { PageHeader, Card } from "@/components/ui";
+import { PageHeader, Card, Button, Select, Input, Badge } from "@/components/ui";
 import { formatDate } from "@/lib/labels";
 import type { Role, RequestScope } from "@prisma/client";
 import {
@@ -56,6 +56,7 @@ export default async function EmployeeCardPage({
       <PageHeader
         title={user.fullName}
         subtitle={`${ROLE_LABELS[user.role]} · ${user.email}`}
+        icon="🛡️"
         action={
           <Link href="/employees" className="text-sm text-slate-500 hover:text-slate-700">
             ← До списку
@@ -83,12 +84,12 @@ export default async function EmployeeCardPage({
                 <h3 className="mb-3 text-sm font-semibold text-slate-900">Роль</h3>
                 <form action={changeRole} className="flex gap-2">
                   <input type="hidden" name="id" value={user.id} />
-                  <select name="role" defaultValue={user.role} className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+                  <Select name="role" defaultValue={user.role} className="flex-1">
                     {ROLES.filter((r) => r !== "OWNER" || me.role === "OWNER").map((r) => (
                       <option key={r} value={r}>{ROLE_LABELS[r]}</option>
                     ))}
-                  </select>
-                  <button className="rounded-lg bg-slate-800 px-3 py-2 text-sm font-medium text-white hover:bg-slate-900">OK</button>
+                  </Select>
+                  <Button type="submit" variant="secondary">OK</Button>
                 </form>
               </Card>
 
@@ -96,13 +97,13 @@ export default async function EmployeeCardPage({
                 <h3 className="mb-3 text-sm font-semibold text-slate-900">Керівник</h3>
                 <form action={assignManager} className="flex gap-2">
                   <input type="hidden" name="id" value={user.id} />
-                  <select name="managerId" defaultValue={user.managerId ?? ""} className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500">
+                  <Select name="managerId" defaultValue={user.managerId ?? ""} className="flex-1">
                     <option value="">— не призначено —</option>
                     {managers.map((m) => (
                       <option key={m.id} value={m.id}>{m.fullName}</option>
                     ))}
-                  </select>
-                  <button className="rounded-lg bg-slate-800 px-3 py-2 text-sm font-medium text-white hover:bg-slate-900">OK</button>
+                  </Select>
+                  <Button type="submit" variant="secondary">OK</Button>
                 </form>
               </Card>
 
@@ -110,8 +111,8 @@ export default async function EmployeeCardPage({
                 <h3 className="mb-3 text-sm font-semibold text-slate-900">Скинути пароль</h3>
                 <form action={resetPassword} className="flex gap-2">
                   <input type="hidden" name="id" value={user.id} />
-                  <input name="password" type="text" placeholder="Новий пароль (мін. 6)" className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500" />
-                  <button className="rounded-lg bg-slate-800 px-3 py-2 text-sm font-medium text-white hover:bg-slate-900">Скинути</button>
+                  <Input name="password" type="text" placeholder="Новий пароль (мін. 6)" className="flex-1" />
+                  <Button type="submit" variant="secondary">Скинути</Button>
                 </form>
               </Card>
 
@@ -120,9 +121,9 @@ export default async function EmployeeCardPage({
                   <h3 className="mb-3 text-sm font-semibold text-slate-900">Доступ</h3>
                   <form action={toggleBlock}>
                     <input type="hidden" name="id" value={user.id} />
-                    <button className={`w-full rounded-lg px-4 py-2 text-sm font-medium text-white ${user.isActive ? "bg-red-600 hover:bg-red-700" : "bg-emerald-600 hover:bg-emerald-700"}`}>
+                    <Button type="submit" variant={user.isActive ? "danger" : "primary"} className="w-full">
                       {user.isActive ? "🔒 Заблокувати" : "🔓 Розблокувати"}
-                    </button>
+                    </Button>
                   </form>
                 </Card>
               )}
@@ -138,9 +139,7 @@ export default async function EmployeeCardPage({
                 Гнучке налаштування доступу
               </h2>
               {usingDefaults && (
-                <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-700">
-                  Дефолти ролі
-                </span>
+                <Badge className="bg-amber-100 text-amber-700">Дефолти ролі</Badge>
               )}
             </div>
             <p className="mb-4 text-xs text-slate-500">
@@ -185,11 +184,11 @@ export default async function EmployeeCardPage({
               {/* Контроль заявок */}
               <div>
                 <h3 className="mb-2 text-sm font-semibold text-slate-900">Контроль заявок</h3>
-                <select name="scope" defaultValue={user.requestScope} disabled={!canEdit} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500 md:w-72">
+                <Select name="scope" defaultValue={user.requestScope} disabled={!canEdit} className="md:w-72">
                   {SCOPES.map((s) => (
                     <option key={s} value={s}>{SCOPE_LABELS[s]}</option>
                   ))}
-                </select>
+                </Select>
               </div>
 
               {/* Фінансові права */}
@@ -212,9 +211,7 @@ export default async function EmployeeCardPage({
               </div>
 
               {canEdit && (
-                <button className="rounded-lg bg-teal-600 px-5 py-2 text-sm font-medium text-white hover:bg-teal-700">
-                  Зберегти права доступу
-                </button>
+                <Button type="submit">Зберегти права доступу</Button>
               )}
             </form>
           </Card>
