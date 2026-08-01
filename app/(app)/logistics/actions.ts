@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { requireUser, audit } from "@/lib/auth";
 import { can } from "@/lib/permissions";
 import { SHIPMENT_FLOW, CARRIER_LABELS } from "@/lib/labels";
+import { novaPoshtaEnabled, trackDocuments, mapToShipmentStatus } from "@/lib/novaposhta";
 import type { Carrier, ShipmentStatus } from "@prisma/client";
 
 async function guard(action: "create" | "edit") {
@@ -119,6 +120,54 @@ export async function advanceStatus(formData: FormData) {
     data: { shipmentId: id, status: next, description: d.text, location: d.loc },
   });
   await audit("SHIPMENT_STATUS", { userId: me.id, entity: "Shipment", entityId: id, details: next });
+  revalidatePath(`/logistics/${id}`);
+  revalidatePath("/logistics");
+}
+
+// Реальна синхронізація статусу через API Нової Пошти (TrackingDocument.getStatusDocuments).
+// Працює лише для перевізника NOVA_POSHTA і лише якщо налаштовано NOVA_POSHTA_API_KEY —
+// інакше кнопка в UI не показується, і демо-симуляція advanceStatus() лишається
+// єдиним шляхом оновлення статусу (як і раніше, для всіх, хто не налаштував ключ).
+export async function syncShipmentStatus(formData: FormData) {
+  const me = await guard("edit");
+  const id = String(formData.get("id") ?? "");
+  const s = await prisma.shipment.findUnique({ where: { id } });
+  if (!s) return;
+  if (s.carrier !== "NOVA_POSHTA" || !novaPoshtaEnabled()) return;
+
+  try {
+    const phones = s.recipientPhone ? { [s.ttn]: s.recipientPhone } : undefined;
+    const [tracked] = await trackDocuments([s.ttn], phones);
+    if (!tracked) {
+      throw new Error("Нова Пошта не повернула дані для цього ТТН");
+    }
+
+    const mapped = mapToShipmentStatus(tracked.statusDescription ?? "", s.status);
+    const description = tracked.statusDescription || "Статус синхронізовано з Новою Поштою";
+    const location = tracked.warehouseRecipient ?? s.cityTo ?? null;
+
+    if (mapped && mapped !== s.status) {
+      await prisma.shipment.update({ where: { id }, data: { status: mapped } });
+    }
+    await prisma.trackingEvent.create({
+      data: { shipmentId: id, status: mapped ?? s.status, description, location },
+    });
+    await audit("SHIPMENT_STATUS_SYNCED", {
+      userId: me.id,
+      entity: "Shipment",
+      entityId: id,
+      details: `Нова Пошта: ${description}`,
+    });
+  } catch (err) {
+    console.error("Nova Poshta sync error:", err);
+    await audit("SHIPMENT_SYNC_FAILED", {
+      userId: me.id,
+      entity: "Shipment",
+      entityId: id,
+      details: err instanceof Error ? err.message : String(err),
+    });
+  }
+
   revalidatePath(`/logistics/${id}`);
   revalidatePath("/logistics");
 }

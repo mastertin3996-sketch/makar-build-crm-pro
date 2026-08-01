@@ -10,7 +10,8 @@ import {
   SHIPMENT_STATUS_COLORS,
   formatUAH,
 } from "@/lib/labels";
-import { advanceStatus, returnShipment, cancelShipment } from "../actions";
+import { advanceStatus, returnShipment, cancelShipment, syncShipmentStatus } from "../actions";
+import { novaPoshtaEnabled } from "@/lib/novaposhta";
 
 export const dynamic = "force-dynamic";
 
@@ -47,6 +48,7 @@ export default async function ShipmentCardPage({
   if (!s) notFound();
 
   const isFinal = s.status === "DELIVERED" || s.status === "CANCELLED" || s.status === "RETURNED";
+  const npAvailable = s.carrier === "NOVA_POSHTA" && novaPoshtaEnabled();
 
   return (
     <>
@@ -125,16 +127,26 @@ export default async function ShipmentCardPage({
           <Card className="p-6">
             <h2 className="mb-3 text-base font-semibold text-slate-900">Керування</h2>
             <p className="mb-4 text-xs text-slate-500">
-              «Оновити статус» імітує автоматичне відстеження перевізника (у проді —
-              синхронізація через API Нової Пошти / Укрпошти).
+              «Оновити статус» імітує автоматичне відстеження перевізника (демо-режим).
+              {npAvailable
+                ? " Для цього ТТН доступна реальна синхронізація через API Нової Пошти."
+                : " Реальна синхронізація через API Нової Пошти вимикається без NOVA_POSHTA_API_KEY і доступна лише для перевізника «Нова Пошта»."}
             </p>
             {canEdit ? (
               <div className="space-y-3">
+                {npAvailable && !isFinal && (
+                  <form action={syncShipmentStatus}>
+                    <input type="hidden" name="id" value={s.id} />
+                    <button className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
+                      📡 Оновити статус (Нова Пошта)
+                    </button>
+                  </form>
+                )}
                 {!isFinal && (
                   <form action={advanceStatus}>
                     <input type="hidden" name="id" value={s.id} />
                     <button className="w-full rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700">
-                      🔄 Оновити статус
+                      🔄 Оновити статус (демо)
                     </button>
                   </form>
                 )}
