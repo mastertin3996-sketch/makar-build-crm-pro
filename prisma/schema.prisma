@@ -491,7 +491,9 @@ model Payment {
   method    PaymentMethod
   provider  PaymentProvider?
   status    PaymentStatus    @default(PENDING)
-  payUrl    String? // посилання на онлайн-оплату (демо)
+  payUrl    String? // посилання на онлайн-оплату (демо-режим, без ключів LiqPay)
+  liqpayData      String? // base64 payload для чекауту LiqPay (реальна інтеграція)
+  liqpaySignature String? // підпис до liqpayData
   comment   String?
   paidAt    DateTime?
   createdAt DateTime         @default(now())

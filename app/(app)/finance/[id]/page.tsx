@@ -64,6 +64,13 @@ export default async function PaymentCardPage({
               {p.comment && <Info label="Коментар" value={p.comment} full />}
             </dl>
 
+            {p.liqpayData && p.liqpaySignature && p.status === "PENDING" && (
+              <div className="mt-5 rounded-lg bg-slate-50 p-4">
+                <div className="text-xs font-medium uppercase text-slate-400">Оплата LiqPay</div>
+                <Link href={`/finance/${p.id}/pay`} className="text-sm text-teal-600 hover:underline">Перейти до оплати →</Link>
+                <p className="mt-1 text-xs text-slate-400">Реальний чекаут LiqPay. Статус оновиться автоматично через webhook після оплати.</p>
+              </div>
+            )}
             {p.payUrl && (
               <div className="mt-5 rounded-lg bg-slate-50 p-4">
                 <div className="text-xs font-medium uppercase text-slate-400">Платіжне посилання</div>

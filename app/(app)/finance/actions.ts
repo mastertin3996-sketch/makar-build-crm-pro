@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { requireUser, audit } from "@/lib/auth";
 import { can } from "@/lib/permissions";
 import { PAYMENT_PROVIDER_LABELS } from "@/lib/labels";
+import { liqpayEnabled, buildCheckout } from "@/lib/liqpay";
 import type { PaymentMethod, PaymentProvider, PaymentDirection } from "@prisma/client";
 
 async function guard(action: "create" | "edit") {
@@ -53,11 +54,14 @@ export async function createPayment(formData: FormData) {
   }
   if (amount <= 0) return;
 
-  // Онлайн-оплата: очікує підтвердження (імітація платіжного шлюзу)
   const isOnline = method === "ONLINE";
-  const payUrl = isOnline
-    ? `https://pay.${(provider ?? "LIQPAY").toLowerCase()}.ua/inv/${randomBytes(6).toString("hex")}`
-    : null;
+  const useRealLiqpay = isOnline && provider === "LIQPAY" && liqpayEnabled();
+
+  // Демо-режим (без ключів LiqPay): фейкове посилання, ручне підтвердження оплати
+  const payUrl =
+    isOnline && !useRealLiqpay
+      ? `https://pay.${(provider ?? "LIQPAY").toLowerCase()}.ua/inv/${randomBytes(6).toString("hex")}`
+      : null;
 
   const payment = await prisma.payment.create({
     data: {
@@ -76,6 +80,20 @@ export async function createPayment(formData: FormData) {
       ownerId: me.id,
     },
   });
+
+  // Реальний LiqPay: генеруємо data/signature для чекауту й зберігаємо їх —
+  // payUrl лишається порожнім, бо чекаут вимагає POST-форми, а не GET-посилання.
+  if (useRealLiqpay) {
+    const { data, signature } = buildCheckout({
+      paymentId: payment.id,
+      amount,
+      description: `Оплата #${payment.number}`,
+    });
+    await prisma.payment.update({
+      where: { id: payment.id },
+      data: { liqpayData: data, liqpaySignature: signature },
+    });
+  }
 
   await audit("PAYMENT_CREATED", {
     userId: me.id,
