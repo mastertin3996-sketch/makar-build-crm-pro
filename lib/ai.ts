@@ -10,7 +10,7 @@ export function aiEnabled(): boolean {
 export type AiResult = { text: string; source: "claude" | "fallback" };
 
 /**
- * Генерація тексту через Claude (Anthropic SDK), модель claude-opus-4-8.
+ * Генерація тексту через Claude (Anthropic SDK), модель claude-sonnet-5.
  * Якщо ключ відсутній або стався збій — повертає локальний фолбек.
  */
 export async function generate(
@@ -24,9 +24,8 @@ export async function generate(
   try {
     const client = new Anthropic();
     const resp = await client.messages.create({
-      model: "claude-opus-4-8",
+      model: "claude-sonnet-5",
       max_tokens: 8000,
-      thinking: { type: "adaptive" },
       system,
       messages: [{ role: "user", content: user }],
     });
