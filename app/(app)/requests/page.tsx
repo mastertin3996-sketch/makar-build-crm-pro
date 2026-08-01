@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireUser, requestScopeWhere } from "@/lib/auth";
-import { SCOPE_LABELS } from "@/lib/permissions";
+import { can, SCOPE_LABELS } from "@/lib/permissions";
 import { PageHeader, Card, StatusBadge } from "@/components/ui";
 import {
   STATUS_LABELS,
@@ -12,27 +12,32 @@ import {
 } from "@/lib/labels";
 import type { RequestStatus } from "@prisma/client";
 import { createRequest } from "./actions";
+import { RequestsBoard } from "./RequestsBoard";
 
 export const dynamic = "force-dynamic";
 
 export default async function RequestsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; q?: string }>;
+  searchParams: Promise<{ status?: string; q?: string; view?: string }>;
 }) {
   const me = await requireUser();
   const scopeWhere = await requestScopeWhere(me);
-  const { status, q } = await searchParams;
+  const { status, q, view } = await searchParams;
   const query = (q ?? "").trim();
   const statusFilter = STATUS_ORDER.includes(status as RequestStatus)
     ? (status as RequestStatus)
     : undefined;
+  const isBoard = view === "board";
+  const canEditRequests = can(me, "requests", "edit");
 
   const [requests, clients, counts] = await Promise.all([
     prisma.request.findMany({
       where: {
         ...scopeWhere,
-        status: statusFilter,
+        // На дошці показуємо всі статуси одразу (кожен — окрема колонка),
+        // тому фільтр за статусом застосовуємо лише в табличному вигляді.
+        status: isBoard ? undefined : statusFilter,
         ...(query
           ? {
               OR: [
@@ -53,11 +58,40 @@ export default async function RequestsPage({
     counts.find((c) => c.status === s)?._count ?? 0;
   const totalCount = counts.reduce((sum, c) => sum + c._count, 0);
 
+  const viewHref = (v: "table" | "board") => {
+    const params = new URLSearchParams();
+    if (status) params.set("status", status);
+    if (q) params.set("q", q);
+    if (v !== "table") params.set("view", v);
+    const qs = params.toString();
+    return `/requests${qs ? `?${qs}` : ""}`;
+  };
+
   return (
     <>
       <PageHeader
         title="Заявки"
         subtitle={`Усього: ${totalCount} · Видимість: ${SCOPE_LABELS[me.requestScope]}`}
+        action={
+          <div className="flex gap-1 rounded-lg bg-slate-100 p-1">
+            <Link
+              href={viewHref("table")}
+              className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                !isBoard ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
+              }`}
+            >
+              ☰ Таблиця
+            </Link>
+            <Link
+              href={viewHref("board")}
+              className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                isBoard ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
+              }`}
+            >
+              ▤ Дошка
+            </Link>
+          </div>
+        }
       />
 
       <div className="p-8 space-y-6">
@@ -140,82 +174,88 @@ export default async function RequestsPage({
           </details>
         </Card>
 
-        {/* Фільтр за статусами */}
-        <div className="flex flex-wrap gap-2">
-          <FilterChip href="/requests" active={!statusFilter} label={`Усі (${totalCount})`} />
-          {STATUS_ORDER.filter((s) => countOf(s) > 0).map((s) => (
-            <FilterChip
-              key={s}
-              href={`/requests?status=${s}`}
-              active={statusFilter === s}
-              label={`${STATUS_LABELS[s]} (${countOf(s)})`}
-            />
-          ))}
-        </div>
-
-        <Card>
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
-                <th className="px-6 py-3 font-medium">№</th>
-                <th className="px-6 py-3 font-medium">Опис</th>
-                <th className="px-6 py-3 font-medium">Клієнт</th>
-                <th className="px-6 py-3 font-medium">Джерело</th>
-                <th className="px-6 py-3 font-medium">Менеджер</th>
-                <th className="px-6 py-3 font-medium">Статус</th>
-                <th className="px-6 py-3 text-right font-medium">Сума</th>
-                <th className="px-6 py-3 font-medium">Дата</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {requests.map((r) => (
-                <tr key={r.id} className="hover:bg-slate-50">
-                  <td className="px-6 py-3">
-                    <Link
-                      href={`/requests/${r.id}`}
-                      className="font-medium text-teal-600 hover:underline"
-                    >
-                      #{r.number}
-                    </Link>
-                  </td>
-                  <td className="px-6 py-3 text-slate-700">{r.title}</td>
-                  <td className="px-6 py-3 text-slate-500">
-                    {r.client ? (
-                      <Link
-                        href={`/clients/${r.client.id}`}
-                        className="hover:underline"
-                      >
-                        {r.client.fullName}
-                      </Link>
-                    ) : (
-                      "—"
-                    )}
-                  </td>
-                  <td className="px-6 py-3 text-slate-500">
-                    {SOURCE_LABELS[r.source]}
-                  </td>
-                  <td className="px-6 py-3 text-slate-500">{r.manager ?? "—"}</td>
-                  <td className="px-6 py-3">
-                    <StatusBadge status={r.status} />
-                  </td>
-                  <td className="px-6 py-3 text-right font-medium text-slate-700">
-                    {formatUAH(r.amount)}
-                  </td>
-                  <td className="px-6 py-3 text-slate-500">
-                    {formatDate(r.createdAt)}
-                  </td>
-                </tr>
+        {isBoard ? (
+          <RequestsBoard requests={requests} canEdit={canEditRequests} />
+        ) : (
+          <>
+            {/* Фільтр за статусами */}
+            <div className="flex flex-wrap gap-2">
+              <FilterChip href="/requests" active={!statusFilter} label={`Усі (${totalCount})`} />
+              {STATUS_ORDER.filter((s) => countOf(s) > 0).map((s) => (
+                <FilterChip
+                  key={s}
+                  href={`/requests?status=${s}`}
+                  active={statusFilter === s}
+                  label={`${STATUS_LABELS[s]} (${countOf(s)})`}
+                />
               ))}
-              {requests.length === 0 && (
-                <tr>
-                  <td colSpan={8} className="px-6 py-10 text-center text-slate-400">
-                    Заявок не знайдено
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </Card>
+            </div>
+
+            <Card>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
+                    <th className="px-6 py-3 font-medium">№</th>
+                    <th className="px-6 py-3 font-medium">Опис</th>
+                    <th className="px-6 py-3 font-medium">Клієнт</th>
+                    <th className="px-6 py-3 font-medium">Джерело</th>
+                    <th className="px-6 py-3 font-medium">Менеджер</th>
+                    <th className="px-6 py-3 font-medium">Статус</th>
+                    <th className="px-6 py-3 text-right font-medium">Сума</th>
+                    <th className="px-6 py-3 font-medium">Дата</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {requests.map((r) => (
+                    <tr key={r.id} className="hover:bg-slate-50">
+                      <td className="px-6 py-3">
+                        <Link
+                          href={`/requests/${r.id}`}
+                          className="font-medium text-teal-600 hover:underline"
+                        >
+                          #{r.number}
+                        </Link>
+                      </td>
+                      <td className="px-6 py-3 text-slate-700">{r.title}</td>
+                      <td className="px-6 py-3 text-slate-500">
+                        {r.client ? (
+                          <Link
+                            href={`/clients/${r.client.id}`}
+                            className="hover:underline"
+                          >
+                            {r.client.fullName}
+                          </Link>
+                        ) : (
+                          "—"
+                        )}
+                      </td>
+                      <td className="px-6 py-3 text-slate-500">
+                        {SOURCE_LABELS[r.source]}
+                      </td>
+                      <td className="px-6 py-3 text-slate-500">{r.manager ?? "—"}</td>
+                      <td className="px-6 py-3">
+                        <StatusBadge status={r.status} />
+                      </td>
+                      <td className="px-6 py-3 text-right font-medium text-slate-700">
+                        {formatUAH(r.amount)}
+                      </td>
+                      <td className="px-6 py-3 text-slate-500">
+                        {formatDate(r.createdAt)}
+                      </td>
+                    </tr>
+                  ))}
+                  {requests.length === 0 && (
+                    <tr>
+                      <td colSpan={8} className="px-6 py-10 text-center text-slate-400">
+                        Заявок не знайдено
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </Card>
+          </>
+        )}
       </div>
     </>
   );
