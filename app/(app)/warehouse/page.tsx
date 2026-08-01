@@ -204,13 +204,13 @@ type OpProps = {
 
 function Op({ title, action, products, warehouses, withTarget, qtyLabel }: OpProps) {
   return (
-    <Card>
-      <details className="group">
-        <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 text-sm font-medium text-[#cfc9ba]">
-          {title}
-          <span className="text-muted transition-transform group-open:rotate-180">▾</span>
-        </summary>
-        <form action={action} className="space-y-3 border-t border-brand/10 px-5 py-4">
+    <details className="group">
+      <summary className="gold-metal flex cursor-pointer list-none items-center justify-between rounded-full px-5 py-2.5 text-sm font-semibold">
+        {title}
+        <span className="transition-transform group-open:rotate-180">▾</span>
+      </summary>
+      <div className="mt-2 rounded-xl border border-brand/10 bg-surface px-5 py-4">
+        <form action={action} className="space-y-3">
           <Select name="productId" label="Товар">
             {products.map((p) => (
               <option key={p.id} value={p.id}>{p.name}</option>
@@ -242,8 +242,8 @@ function Op({ title, action, products, warehouses, withTarget, qtyLabel }: OpPro
             Виконати
           </Button>
         </form>
-      </details>
-    </Card>
+      </div>
+    </details>
   );
 }
 

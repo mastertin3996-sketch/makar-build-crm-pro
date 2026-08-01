@@ -174,7 +174,7 @@ const BUTTON_BASE =
   "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50";
 
 const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
-  primary: "bg-brand text-background hover:bg-brand-light focus-visible:ring-brand shadow-[0_0_0_1px_rgba(212,175,55,0.4)]",
+  primary: "gold-metal focus-visible:ring-brand",
   secondary:
     "border border-brand/25 bg-transparent text-foreground hover:bg-brand/10 hover:border-brand/40 focus-visible:ring-brand/50",
   ghost: "text-muted hover:bg-white/5 hover:text-foreground focus-visible:ring-brand/40",
