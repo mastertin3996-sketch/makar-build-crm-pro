@@ -109,11 +109,8 @@ body {
   border-color: rgba(212, 175, 55, 0.75);
 }
 
-/* Хромовий еліптичний відблиск у верхньому правому куті бічної панелі
-   («19. Еліптичний хром» з /design-preview). */
+/* Глянцевий діагональний блік із верхнього правого кута, крутіший нахил
+   («5. Крутіший кут» з /design-preview). */
 .sidebar-glow {
-  background:
-    radial-gradient(ellipse 140px 60px at 100% 0%, rgba(255, 255, 255, 0.3) 0%, transparent 60%),
-    radial-gradient(circle at 100% 0%, rgba(235, 232, 224, 0.14) 0%, transparent 65%),
-    #0a0a0b;
+  background: linear-gradient(200deg, rgba(255, 255, 255, 0.18) 0%, transparent 40%), #0a0a0b;
 }
