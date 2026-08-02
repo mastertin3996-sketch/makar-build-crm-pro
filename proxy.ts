@@ -40,5 +40,5 @@ export async function proxy(req: NextRequest) {
 
 // Не чіпаємо статику, API-роутів немає; інше — під захистом
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.svg$).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|bg-lion.png|.*\\.svg$).*)"],
 };
