@@ -32,7 +32,7 @@ export function Sidebar({
         <div className="text-lg font-bold leading-tight text-foreground">
           MAKAR BUILD
         </div>
-        <div className="text-xs font-semibold tracking-widest text-brand">
+        <div className="text-xs font-semibold tracking-widest text-[#b8935a]">
           CRM PRO
         </div>
       </div>
@@ -89,7 +89,7 @@ export function Sidebar({
             <span className="block truncate text-sm font-medium text-foreground">
               {user.fullName}
             </span>
-            <span className="block text-xs text-brand">
+            <span className="block text-xs text-[#b8935a]">
               {ROLE_LABELS[user.role]}
             </span>
           </span>

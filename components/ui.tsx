@@ -63,7 +63,7 @@ export function PageHeader({
       <div className="flex items-start gap-3">
         {icon && (
           <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand/10">
-            <Icon name={icon} className="h-5 w-5 text-brand" />
+            <Icon name={icon} className="h-5 w-5 text-[#b8935a]" />
           </span>
         )}
         <div>
