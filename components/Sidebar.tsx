@@ -28,10 +28,11 @@ export function Sidebar({
 
   return (
     <aside className="sidebar-glow flex w-64 shrink-0 flex-col text-[#b8935a]">
-      <div className="border-b border-brand/10 px-5 py-5">
+      <div className="px-5 py-5">
         {/* eslint-disable-next-line @next/next/no-img-element -- статичний PNG, оптимізатор next/image відхиляє цей файл (400) */}
         <img src="/logo.png" alt="MAKAR BUILD CRM PRO" className="h-auto w-full" />
       </div>
+      <div className="sidebar-divider" />
 
       <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-4">
         {items.map((item) => {

@@ -114,3 +114,17 @@ body {
 .sidebar-glow {
   background: linear-gradient(200deg, rgba(255, 255, 255, 0.18) 0%, transparent 40%), #0a0a0b;
 }
+
+/* Золота смуга-розділювач між лого й списком вкладок, з сильним звуженням
+   до прозорого на краях («4. Звуження 36%» з /design-preview). */
+.sidebar-divider {
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #8a5f16 36%,
+    #f6e2a0 50%,
+    #8a5f16 64%,
+    transparent 100%
+  );
+}
