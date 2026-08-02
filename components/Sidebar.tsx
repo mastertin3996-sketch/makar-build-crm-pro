@@ -29,12 +29,8 @@ export function Sidebar({
   return (
     <aside className="flex w-64 shrink-0 flex-col bg-[#0a0a0b] text-[#b8935a]">
       <div className="border-b border-brand/10 px-5 py-5">
-        <div className="text-lg font-bold leading-tight text-foreground">
-          MAKAR BUILD
-        </div>
-        <div className="text-xs font-semibold tracking-widest text-[#b8935a]">
-          CRM PRO
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element -- статичний PNG, оптимізатор next/image відхиляє цей файл (400) */}
+        <img src="/logo.png" alt="MAKAR BUILD CRM PRO" className="h-auto w-full" />
       </div>
 
       <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-4">
