@@ -61,24 +61,15 @@ body {
   border-radius: 4px;
 }
 
-/* Полірований золотий метал — вертикальна смуга відблиску (варіант 2 з /design-preview).
+/* Насичений золотий зливок — темні краї, світлий центр, об'ємна фаска.
    Використовується для основних кнопок і активного пункту меню. */
 .gold-metal {
-  background: linear-gradient(
-    90deg,
-    #8a5f16 0%,
-    #d9ad38 18%,
-    #fdf3cc 36%,
-    #e8c458 50%,
-    #b8862a 68%,
-    #8a5f16 85%,
-    #ad7e22 100%
-  );
+  background: linear-gradient(90deg, #8a5f16 0%, #f6e2a0 50%, #8a5f16 100%);
   box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.55),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.4),
-    0 3px 10px rgba(0, 0, 0, 0.5);
-  border: 1px solid #5c3d0c;
+    inset 0 2px 2px rgba(255, 255, 255, 0.6),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.55),
+    0 4px 10px rgba(0, 0, 0, 0.55);
+  border: 1.5px solid #4a3008;
   color: #1a1206;
 }
 .gold-metal:hover {
