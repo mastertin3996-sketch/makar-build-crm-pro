@@ -99,11 +99,12 @@ body {
   animation: neon-pulse 1.1s ease-in-out infinite;
 }
 
-/* Градієнтна рамка карток/таблиць (варіант 8 з /design-preview) —
-   той самий горизонтальний градієнт, що й у кнопок, але плоский (без фаски). */
-.card-border {
-  background: linear-gradient(90deg, #8a5f16 0%, #f6e2a0 50%, #8a5f16 100%);
+/* Скляна картка — 10% прозоре заповнення (крізь нього видно фон-водяний
+   знак) із суцільною золотою рамкою («10% — майже прозоро» з /design-preview). */
+.card-glass {
+  background: rgba(23, 23, 26, 0.1);
+  border: 2px solid rgba(212, 175, 55, 0.55);
 }
-.card-border:hover {
-  filter: brightness(1.1);
+.card-glass:hover {
+  border-color: rgba(212, 175, 55, 0.75);
 }
