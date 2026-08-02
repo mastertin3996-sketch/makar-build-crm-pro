@@ -186,7 +186,7 @@ export default async function RequestsPage({
                           #{r.number}
                         </Link>
                       </td>
-                      <td className="px-6 py-3 text-[#cfc9ba]">{r.title}</td>
+                      <td className="px-6 py-3 text-[#b8935a]">{r.title}</td>
                       <td className="px-6 py-3 text-muted">
                         {r.client ? (
                           <Link
@@ -206,7 +206,7 @@ export default async function RequestsPage({
                       <td className="px-6 py-3">
                         <StatusBadge status={r.status} />
                       </td>
-                      <td className="px-6 py-3 text-right font-medium text-[#cfc9ba]">
+                      <td className="px-6 py-3 text-right font-medium text-[#b8935a]">
                         {formatUAH(r.amount)}
                       </td>
                       <td className="px-6 py-3 text-muted">

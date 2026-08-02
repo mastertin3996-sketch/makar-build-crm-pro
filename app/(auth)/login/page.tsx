@@ -29,7 +29,7 @@ export default function LoginPage() {
           <LoginForm />
         </div>
 
-        <div className="mt-6 rounded-xl border border-brand/10 bg-white/5 p-4 text-xs text-[#cfc9ba]">
+        <div className="mt-6 rounded-xl border border-brand/10 bg-white/5 p-4 text-xs text-[#b8935a]">
           <div className="mb-1 font-semibold text-foreground">Демо-доступи:</div>
           <div>Власник — <span className="text-brand-light">owner@makar.ua</span> / <span className="text-brand-light">owner1234</span></div>
           <div>Менеджер — <span className="text-brand-light">manager@makar.ua</span> / <span className="text-brand-light">manager1234</span></div>

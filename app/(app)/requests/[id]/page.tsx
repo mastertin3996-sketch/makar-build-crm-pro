@@ -48,7 +48,7 @@ export default async function RequestCardPage({
         action={
           <Link
             href="/requests"
-            className="text-sm text-muted hover:text-[#cfc9ba]"
+            className="text-sm text-muted hover:text-[#b8935a]"
           >
             ← До списку
           </Link>
@@ -91,7 +91,7 @@ export default async function RequestCardPage({
               </div>
               <div>
                 <dt className="text-xs text-muted">Менеджер</dt>
-                <dd className="mt-0.5 text-[#cfc9ba]">{request.manager ?? "—"}</dd>
+                <dd className="mt-0.5 text-[#b8935a]">{request.manager ?? "—"}</dd>
               </div>
               <div>
                 <dt className="text-xs text-muted">Сума заявки</dt>
@@ -121,14 +121,14 @@ export default async function RequestCardPage({
               <tbody className="divide-y divide-brand/5">
                 {request.items.map((i) => (
                   <tr key={i.id}>
-                    <td className="px-6 py-3 text-[#cfc9ba]">{i.name}</td>
-                    <td className="px-6 py-3 text-right text-[#cfc9ba]">
+                    <td className="px-6 py-3 text-[#b8935a]">{i.name}</td>
+                    <td className="px-6 py-3 text-right text-[#b8935a]">
                       {i.quantity}
                     </td>
-                    <td className="px-6 py-3 text-right text-[#cfc9ba]">
+                    <td className="px-6 py-3 text-right text-[#b8935a]">
                       {formatUAH(i.price)}
                     </td>
-                    <td className="px-6 py-3 text-right font-medium text-[#cfc9ba]">
+                    <td className="px-6 py-3 text-right font-medium text-[#b8935a]">
                       {formatUAH(i.price * i.quantity)}
                     </td>
                   </tr>
@@ -221,7 +221,7 @@ export default async function RequestCardPage({
                         {formatDate(i.createdAt)}
                       </span>
                     </div>
-                    <p className="mt-0.5 text-sm text-[#cfc9ba]">{i.content}</p>
+                    <p className="mt-0.5 text-sm text-[#b8935a]">{i.content}</p>
                   </div>
                 </li>
               ))}

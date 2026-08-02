@@ -55,7 +55,7 @@ export default async function ShipmentCardPage({
         subtitle={CARRIER_LABELS[s.carrier]}
         icon="logistics"
         action={
-          <Link href="/logistics" className="text-sm text-muted hover:text-[#cfc9ba]">← До списку</Link>
+          <Link href="/logistics" className="text-sm text-muted hover:text-[#b8935a]">← До списку</Link>
         }
       />
 
@@ -109,7 +109,7 @@ export default async function ShipmentCardPage({
                     </span>
                     <span className="text-xs text-muted">{fmtDateTime(e.createdAt)}</span>
                   </div>
-                  <p className="mt-0.5 text-sm text-[#cfc9ba]">{e.description}</p>
+                  <p className="mt-0.5 text-sm text-[#b8935a]">{e.description}</p>
                   {e.location && <p className="text-xs text-muted">📍 {e.location}</p>}
                 </li>
               ))}
@@ -177,7 +177,7 @@ function Info({
   return (
     <div className={full ? "col-span-2" : ""}>
       <dt className="text-xs text-muted">{label}</dt>
-      <dd className="mt-0.5 text-[#cfc9ba]">
+      <dd className="mt-0.5 text-[#b8935a]">
         {value ? (
           href ? (
             <Link href={href} className="text-brand hover:underline">{value}</Link>

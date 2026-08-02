@@ -138,14 +138,14 @@ export default async function OrdersPage({
                     <Link href={`/orders/${o.id}`} className="font-medium text-brand hover:underline">#{o.number}</Link>
                   </td>
                   <td className="px-6 py-3 text-muted">{SOURCE_LABELS[o.channel]}</td>
-                  <td className="px-6 py-3 text-[#cfc9ba]">{o.client?.fullName ?? "—"}</td>
+                  <td className="px-6 py-3 text-[#b8935a]">{o.client?.fullName ?? "—"}</td>
                   <td className="px-6 py-3 text-muted">{o._count.items}</td>
                   <td className="px-6 py-3">
                     <Badge className={ORDER_STATUS_COLORS[o.status]}>
                       {ORDER_STATUS_LABELS[o.status]}
                     </Badge>
                   </td>
-                  <td className="px-6 py-3 text-right font-medium text-[#cfc9ba]">{formatUAH(o.totalAmount)}</td>
+                  <td className="px-6 py-3 text-right font-medium text-[#b8935a]">{formatUAH(o.totalAmount)}</td>
                   <td className="px-6 py-3 text-muted">{formatDate(o.createdAt)}</td>
                 </tr>
               ))}

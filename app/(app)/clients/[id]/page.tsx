@@ -37,7 +37,7 @@ export default async function ClientCardPage({
         title={client.fullName}
         subtitle={client.company ?? "Приватна особа"}
         action={
-          <Link href="/clients" className="text-sm text-muted hover:text-[#cfc9ba]">
+          <Link href="/clients" className="text-sm text-muted hover:text-[#b8935a]">
             ← До списку
           </Link>
         }
@@ -82,11 +82,11 @@ export default async function ClientCardPage({
                         #{r.number}
                       </Link>
                     </td>
-                    <td className="px-6 py-3 text-[#cfc9ba]">{r.title}</td>
+                    <td className="px-6 py-3 text-[#b8935a]">{r.title}</td>
                     <td className="px-6 py-3">
                       <StatusBadge status={r.status} />
                     </td>
-                    <td className="px-6 py-3 text-right text-[#cfc9ba]">
+                    <td className="px-6 py-3 text-right text-[#b8935a]">
                       {formatUAH(r.amount)}
                     </td>
                   </tr>
@@ -166,7 +166,7 @@ export default async function ClientCardPage({
                         {formatDate(i.createdAt)}
                       </span>
                     </div>
-                    <p className="mt-0.5 text-sm text-[#cfc9ba]">{i.content}</p>
+                    <p className="mt-0.5 text-sm text-[#b8935a]">{i.content}</p>
                   </div>
                 </li>
               ))}
@@ -193,7 +193,7 @@ function Info({
   return (
     <div className={full ? "col-span-2" : ""}>
       <dt className="text-xs text-muted">{label}</dt>
-      <dd className="mt-0.5 text-[#cfc9ba]">{value || "—"}</dd>
+      <dd className="mt-0.5 text-[#b8935a]">{value || "—"}</dd>
     </div>
   );
 }

@@ -81,7 +81,7 @@ export function RequestsBoard({
                 isCancelled ? "opacity-70" : ""
               }`}
             >
-              <span className={`text-xs font-semibold ${isCancelled ? "text-muted" : "text-[#cfc9ba]"}`}>
+              <span className={`text-xs font-semibold ${isCancelled ? "text-muted" : "text-[#b8935a]"}`}>
                 {STATUS_LABELS[status]}
               </span>
               <span
@@ -115,7 +115,7 @@ export function RequestsBoard({
                         {SOURCE_LABELS[r.source]}
                       </span>
                     </div>
-                    <p className="mb-2 line-clamp-2 text-sm text-[#cfc9ba]">{r.title}</p>
+                    <p className="mb-2 line-clamp-2 text-sm text-[#b8935a]">{r.title}</p>
                     <div className="flex items-center justify-between text-xs text-muted">
                       <span className="truncate">
                         {r.client ? (
@@ -126,7 +126,7 @@ export function RequestsBoard({
                           "— без клієнта —"
                         )}
                       </span>
-                      <span className="font-semibold text-[#cfc9ba]">{formatUAH(r.amount)}</span>
+                      <span className="font-semibold text-[#b8935a]">{formatUAH(r.amount)}</span>
                     </div>
                     {r.manager && (
                       <div className="mt-1.5 text-xs text-muted">👤 {r.manager}</div>

@@ -22,7 +22,7 @@ function Result({ state, pending }: { state: AiState; pending: boolean }) {
   return (
     <div className="mt-4">
       <div className="mb-2"><SourceBadge source={state.source} /></div>
-      <pre className="whitespace-pre-wrap rounded-lg bg-black/25 p-4 text-sm text-[#cfc9ba]">{state.text}</pre>
+      <pre className="whitespace-pre-wrap rounded-lg bg-black/25 p-4 text-sm text-[#b8935a]">{state.text}</pre>
     </div>
   );
 }

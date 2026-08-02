@@ -47,7 +47,7 @@ export default async function DocumentCardPage({
         title={`${doc.number} · ${DOC_TYPE_LABELS[doc.type]}`}
         subtitle={doc.title}
         icon="documents"
-        action={<Link href="/documents" className="text-sm text-muted hover:text-[#cfc9ba]">← До списку</Link>}
+        action={<Link href="/documents" className="text-sm text-muted hover:text-[#b8935a]">← До списку</Link>}
       />
 
       <div className="grid gap-6 p-8 lg:grid-cols-3">
@@ -87,10 +87,10 @@ export default async function DocumentCardPage({
                 <tbody className="divide-y divide-brand/5">
                   {items.map((i, idx) => (
                     <tr key={idx}>
-                      <td className="px-6 py-3 text-[#cfc9ba]">{i.name}</td>
-                      <td className="px-6 py-3 text-right text-[#cfc9ba]">{i.quantity}</td>
-                      <td className="px-6 py-3 text-right text-[#cfc9ba]">{formatUAH(i.price)}</td>
-                      <td className="px-6 py-3 text-right font-medium text-[#cfc9ba]">{formatUAH(i.price * i.quantity)}</td>
+                      <td className="px-6 py-3 text-[#b8935a]">{i.name}</td>
+                      <td className="px-6 py-3 text-right text-[#b8935a]">{i.quantity}</td>
+                      <td className="px-6 py-3 text-right text-[#b8935a]">{formatUAH(i.price)}</td>
+                      <td className="px-6 py-3 text-right font-medium text-[#b8935a]">{formatUAH(i.price * i.quantity)}</td>
                     </tr>
                   ))}
                   {items.length === 0 && (
@@ -170,7 +170,7 @@ function Info({ label, value, full = false, href }: { label: string; value?: str
   return (
     <div className={full ? "col-span-2" : ""}>
       <dt className="text-xs text-muted">{label}</dt>
-      <dd className="mt-0.5 text-[#cfc9ba]">
+      <dd className="mt-0.5 text-[#b8935a]">
         {value ? (href ? <Link href={href} className="text-brand hover:underline">{value}</Link> : value) : "—"}
       </dd>
     </div>

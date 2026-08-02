@@ -63,7 +63,7 @@ export default async function OrderCardPage({
         subtitle={`Канал: ${SOURCE_LABELS[order.channel]}`}
         icon="orders"
         action={
-          <Link href="/orders" className="text-sm text-muted hover:text-[#cfc9ba]">← До списку</Link>
+          <Link href="/orders" className="text-sm text-muted hover:text-[#b8935a]">← До списку</Link>
         }
       />
 
@@ -87,11 +87,11 @@ export default async function OrderCardPage({
               </div>
               <div>
                 <dt className="text-xs text-muted">Менеджер</dt>
-                <dd className="mt-0.5 text-[#cfc9ba]">{order.owner?.fullName ?? "—"}</dd>
+                <dd className="mt-0.5 text-[#b8935a]">{order.owner?.fullName ?? "—"}</dd>
               </div>
               <div>
                 <dt className="text-xs text-muted">Склад резервування</dt>
-                <dd className="mt-0.5 text-[#cfc9ba]">{order.warehouse?.name ?? "за замовчуванням"}</dd>
+                <dd className="mt-0.5 text-[#b8935a]">{order.warehouse?.name ?? "за замовчуванням"}</dd>
               </div>
               <div>
                 <dt className="text-xs text-muted">Сума</dt>
@@ -100,7 +100,7 @@ export default async function OrderCardPage({
               {order.comment && (
                 <div className="col-span-2">
                   <dt className="text-xs text-muted">Коментар</dt>
-                  <dd className="mt-0.5 text-[#cfc9ba]">{order.comment}</dd>
+                  <dd className="mt-0.5 text-[#b8935a]">{order.comment}</dd>
                 </div>
               )}
             </dl>
@@ -128,8 +128,8 @@ export default async function OrderCardPage({
                   const short = i.productId && i.product?.category !== "SERVICES" && i.reservedQty < i.quantity;
                   return (
                     <tr key={i.id}>
-                      <td className="px-6 py-3 text-[#cfc9ba]">{i.name}</td>
-                      <td className="px-6 py-3 text-right text-[#cfc9ba]">{i.quantity}</td>
+                      <td className="px-6 py-3 text-[#b8935a]">{i.name}</td>
+                      <td className="px-6 py-3 text-right text-[#b8935a]">{i.quantity}</td>
                       <td className="px-6 py-3 text-right">
                         {i.product?.category === "SERVICES" || !i.productId ? (
                           <span className="text-muted/50">—</span>
@@ -140,8 +140,8 @@ export default async function OrderCardPage({
                           </span>
                         )}
                       </td>
-                      <td className="px-6 py-3 text-right text-[#cfc9ba]">{formatUAH(i.price)}</td>
-                      <td className="px-6 py-3 text-right font-medium text-[#cfc9ba]">{formatUAH(i.price * i.quantity)}</td>
+                      <td className="px-6 py-3 text-right text-[#b8935a]">{formatUAH(i.price)}</td>
+                      <td className="px-6 py-3 text-right font-medium text-[#b8935a]">{formatUAH(i.price * i.quantity)}</td>
                       {canEdit && isOpen && (
                         <td className="px-6 py-3 text-right">
                           <form action={removeOrderItem}>

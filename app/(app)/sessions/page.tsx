@@ -66,8 +66,8 @@ export default async function SessionsPage() {
             <tbody className="divide-y divide-brand/5">
               {sessions.map((s) => (
                 <tr key={s.id} className="hover:bg-white/5">
-                  <td className="px-6 py-3 text-[#cfc9ba]">{s.device ?? "—"}</td>
-                  <td className="px-6 py-3 text-[#cfc9ba]">{s.browser ?? "—"}</td>
+                  <td className="px-6 py-3 text-[#b8935a]">{s.device ?? "—"}</td>
+                  <td className="px-6 py-3 text-[#b8935a]">{s.browser ?? "—"}</td>
                   <td className="px-6 py-3 text-muted">{s.ip ?? "—"}</td>
                   <td className="px-6 py-3 text-muted">{s.location ?? "—"}</td>
                   <td className="px-6 py-3 text-muted">{fmt(s.createdAt)}</td>
@@ -106,7 +106,7 @@ function Info({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <dt className="text-xs text-muted">{label}</dt>
-      <dd className="mt-0.5 text-[#cfc9ba]">{value}</dd>
+      <dd className="mt-0.5 text-[#b8935a]">{value}</dd>
     </div>
   );
 }

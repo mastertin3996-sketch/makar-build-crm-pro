@@ -123,7 +123,7 @@ export default async function DashboardPage() {
             <div className="flex flex-col items-center justify-center rounded-2xl bg-white/5 p-6">
               <RadialMeter ratio={paidRatio} />
               <div className="mt-4 text-center">
-                <div className="text-sm font-semibold text-[#cfc9ba]">Оплачені заявки</div>
+                <div className="text-sm font-semibold text-[#b8935a]">Оплачені заявки</div>
                 <div className="text-xs text-muted">
                   {paidCount} від {requests.length} усього
                 </div>
@@ -144,7 +144,7 @@ export default async function DashboardPage() {
                     <span className="flex w-5 shrink-0 items-center justify-center">
                       <PlatformIcon id={d.source} fallback={d.icon} size={16} />
                     </span>
-                    <div className="w-24 shrink-0 truncate text-sm text-[#cfc9ba]" title={d.label}>
+                    <div className="w-24 shrink-0 truncate text-sm text-[#b8935a]" title={d.label}>
                       {d.label}
                     </div>
                     <div className="h-2 flex-1 rounded-full bg-white/5">
@@ -170,7 +170,7 @@ export default async function DashboardPage() {
                     key={d.label}
                     className="flex items-center gap-2 rounded-full border border-brand/15 bg-white/5 px-3 py-1.5 text-sm"
                   >
-                    <span className="text-[#cfc9ba]">{d.label}</span>
+                    <span className="text-[#b8935a]">{d.label}</span>
                     <span className="rounded-full bg-brand px-1.5 py-0.5 text-xs font-bold text-background">
                       {d.value}
                     </span>
@@ -216,14 +216,14 @@ export default async function DashboardPage() {
                       #{r.number}
                     </Link>
                   </td>
-                  <td className="px-6 py-3 text-[#cfc9ba]">{r.title}</td>
+                  <td className="px-6 py-3 text-[#b8935a]">{r.title}</td>
                   <td className="px-6 py-3 text-muted">
                     {r.client?.fullName ?? "—"}
                   </td>
                   <td className="px-6 py-3">
                     <StatusBadge status={r.status} />
                   </td>
-                  <td className="px-6 py-3 text-right font-medium text-[#cfc9ba]">
+                  <td className="px-6 py-3 text-right font-medium text-[#b8935a]">
                     {formatUAH(r.amount)}
                   </td>
                   <td className="px-6 py-3 text-muted">

@@ -151,12 +151,12 @@ export default async function TelephonyPage({
                     return (
                       <tr key={c.id} className="hover:bg-white/5">
                         <td className="px-5 py-3" title={CALL_DIRECTION_LABELS[c.direction]}>{CALL_DIRECTION_ICONS[c.direction]}</td>
-                        <td className="px-5 py-3 text-[#cfc9ba]">
+                        <td className="px-5 py-3 text-[#b8935a]">
                           {c.client ? <Link href={`/clients/${c.client.id}`} className="text-brand hover:underline">{c.client.fullName}</Link> : <span className="font-mono text-xs">{number}</span>}
                         </td>
                         <td className="px-5 py-3 text-muted">{CALL_PROVIDER_LABELS[c.provider]}</td>
                         <td className="px-5 py-3"><Badge className={CALL_STATUS_COLORS[c.status]}>{CALL_STATUS_LABELS[c.status]}</Badge></td>
-                        <td className="px-5 py-3 text-right text-[#cfc9ba]">{c.duration ? formatDuration(c.duration) : "—"}</td>
+                        <td className="px-5 py-3 text-right text-[#b8935a]">{c.duration ? formatDuration(c.duration) : "—"}</td>
                         <td className="px-5 py-3">{c.recordingUrl ? <a href={c.recordingUrl} target="_blank" className="text-brand hover:underline">▶</a> : "—"}</td>
                         <td className="px-5 py-3">
                           {c.request ? (
@@ -186,7 +186,7 @@ export default async function TelephonyPage({
               {mgrStats.map((m) => (
                 <div key={m.user.id} className="rounded-lg bg-white/5 px-3 py-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-[#cfc9ba]">{m.user.fullName}</span>
+                    <span className="text-sm font-medium text-[#b8935a]">{m.user.fullName}</span>
                     <span className="text-sm font-semibold text-foreground">{m.total}</span>
                   </div>
                   <div className="mt-0.5 text-xs text-muted">

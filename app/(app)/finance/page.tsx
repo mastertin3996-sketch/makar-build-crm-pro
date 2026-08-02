@@ -182,7 +182,7 @@ export default async function FinancePage({
                       <td className="px-5 py-3">
                         <Link href={`/finance/${p.id}`} className="font-medium text-brand hover:underline">#{p.number}</Link>
                       </td>
-                      <td className="px-5 py-3 text-[#cfc9ba]">{p.client?.fullName ?? "—"}</td>
+                      <td className="px-5 py-3 text-[#b8935a]">{p.client?.fullName ?? "—"}</td>
                       <td className="px-5 py-3 text-muted">
                         {PAYMENT_METHOD_LABELS[p.method]}
                         {p.provider ? ` · ${PAYMENT_PROVIDER_LABELS[p.provider]}` : ""}
@@ -192,7 +192,7 @@ export default async function FinancePage({
                           {PAYMENT_STATUS_LABELS[p.status]}
                         </Badge>
                       </td>
-                      <td className={`px-5 py-3 text-right font-medium ${p.direction === "EXPENSE" ? "text-red-400" : "text-[#cfc9ba]"}`}>
+                      <td className={`px-5 py-3 text-right font-medium ${p.direction === "EXPENSE" ? "text-red-400" : "text-[#b8935a]"}`}>
                         {p.direction === "EXPENSE" ? "−" : ""}{formatUAH(p.amount)}
                       </td>
                       <td className="px-5 py-3 text-muted">{formatDate(p.createdAt)}</td>
@@ -213,7 +213,7 @@ export default async function FinancePage({
             <div className="space-y-2">
               {debts.map(({ client, debt }) => (
                 <div key={client.id} className="flex items-center justify-between rounded-lg bg-red-500/10 px-3 py-2">
-                  <Link href={`/clients/${client.id}`} className="text-sm text-[#cfc9ba] hover:underline">{client.fullName}</Link>
+                  <Link href={`/clients/${client.id}`} className="text-sm text-[#b8935a] hover:underline">{client.fullName}</Link>
                   <span className="text-sm font-semibold text-red-400">{formatUAH(debt)}</span>
                 </div>
               ))}

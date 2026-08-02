@@ -121,14 +121,14 @@ export default async function DocumentsPage({
                     <Link href={`/documents/${d.id}`} className="font-medium text-brand hover:underline">{d.number}</Link>
                   </td>
                   <td className="px-6 py-3 text-muted">{DOC_TYPE_SHORT[d.type]}</td>
-                  <td className="px-6 py-3 text-[#cfc9ba]">{d.title}</td>
+                  <td className="px-6 py-3 text-[#b8935a]">{d.title}</td>
                   <td className="px-6 py-3 text-muted">{d.client?.fullName ?? "—"}</td>
                   <td className="px-6 py-3">
                     <Badge className={DOC_STATUS_COLORS[d.status]}>
                       {DOC_STATUS_LABELS[d.status]}
                     </Badge>
                   </td>
-                  <td className="px-6 py-3 text-right font-medium text-[#cfc9ba]">{d.total ? formatUAH(d.total) : "—"}</td>
+                  <td className="px-6 py-3 text-right font-medium text-[#b8935a]">{d.total ? formatUAH(d.total) : "—"}</td>
                   <td className="px-6 py-3 text-muted">{formatDate(d.createdAt)}</td>
                 </tr>
               ))}

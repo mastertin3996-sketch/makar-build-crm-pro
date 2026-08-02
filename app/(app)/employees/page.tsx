@@ -93,7 +93,7 @@ export default async function EmployeesPage() {
                       {u.fullName}
                     </Link>
                   </td>
-                  <td className="px-6 py-3 text-[#cfc9ba]">{u.email}</td>
+                  <td className="px-6 py-3 text-[#b8935a]">{u.email}</td>
                   <td className="px-6 py-3">
                     <Badge className="bg-white/5 text-muted">{ROLE_LABELS[u.role]}</Badge>
                   </td>

@@ -100,9 +100,9 @@ export default async function ClientsPage({
                       {c.fullName}
                     </Link>
                   </td>
-                  <td className="px-6 py-3 text-[#cfc9ba]">{c.phone}</td>
+                  <td className="px-6 py-3 text-[#b8935a]">{c.phone}</td>
                   <td className="px-6 py-3 text-muted">{c.company ?? "—"}</td>
-                  <td className="px-6 py-3 text-[#cfc9ba]">{c._count.requests}</td>
+                  <td className="px-6 py-3 text-[#b8935a]">{c._count.requests}</td>
                   <td className="px-6 py-3 text-muted">
                     {formatDate(c.createdAt)}
                   </td>

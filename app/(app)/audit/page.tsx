@@ -103,8 +103,8 @@ export default async function AuditPage() {
             <tbody className="divide-y divide-brand/5">
               {logs.map((l) => (
                 <tr key={l.id} className="hover:bg-white/5">
-                  <td className="whitespace-nowrap px-6 py-3 text-[#cfc9ba]">{fmt(l.createdAt)}</td>
-                  <td className="px-6 py-3 text-[#cfc9ba]">{l.user?.fullName ?? "—"}</td>
+                  <td className="whitespace-nowrap px-6 py-3 text-[#b8935a]">{fmt(l.createdAt)}</td>
+                  <td className="px-6 py-3 text-[#b8935a]">{l.user?.fullName ?? "—"}</td>
                   <td className="px-6 py-3">
                     <Badge className="bg-white/5 text-muted">{ACTION_LABELS[l.action] ?? l.action}</Badge>
                   </td>

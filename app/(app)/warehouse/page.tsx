@@ -59,7 +59,7 @@ export default async function WarehousePage() {
   ).length;
 
   const stats = [
-    { label: "Складів", value: String(warehouses.length), accent: "text-[#cfc9ba]" },
+    { label: "Складів", value: String(warehouses.length), accent: "text-[#b8935a]" },
     { label: "Позицій на складах", value: String(items.length), accent: "text-indigo-400" },
     { label: "Загальний залишок", value: String(totalQty), accent: "text-brand" },
     { label: "Зарезервовано", value: String(totalReserved), accent: "text-amber-400" },
@@ -129,9 +129,9 @@ export default async function WarehousePage() {
                 const low = available <= 20 && i.product.category !== "SERVICES";
                 return (
                   <tr key={i.id} className="hover:bg-white/5">
-                    <td className="px-6 py-3 text-[#cfc9ba]">{i.product.name}</td>
+                    <td className="px-6 py-3 text-[#b8935a]">{i.product.name}</td>
                     <td className="px-6 py-3 text-muted">{i.warehouse.name}</td>
-                    <td className="px-6 py-3 text-right text-[#cfc9ba]">
+                    <td className="px-6 py-3 text-right text-[#b8935a]">
                       {i.quantity} {i.product.unit}
                     </td>
                     <td className="px-6 py-3 text-right text-amber-400">{i.reserved || "—"}</td>
@@ -173,12 +173,12 @@ export default async function WarehousePage() {
                       {MOVEMENT_ICONS[m.type]} {MOVEMENT_LABELS[m.type]}
                     </Badge>
                   </td>
-                  <td className="px-6 py-3 text-[#cfc9ba]">{m.product.name}</td>
+                  <td className="px-6 py-3 text-[#b8935a]">{m.product.name}</td>
                   <td className="px-6 py-3 text-muted">
                     {m.warehouse.name}
                     {m.toWarehouse ? ` → ${m.toWarehouse.name}` : ""}
                   </td>
-                  <td className="px-6 py-3 text-right text-[#cfc9ba]">{m.quantity}</td>
+                  <td className="px-6 py-3 text-right text-[#b8935a]">{m.quantity}</td>
                   <td className="px-6 py-3 text-muted">{m.note ?? "—"}</td>
                 </tr>
               ))}

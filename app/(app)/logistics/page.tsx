@@ -53,7 +53,7 @@ export default async function LogisticsPage({
   const totalCost = shipments.reduce((s, sh) => s + (sh.cost ?? 0), 0);
 
   const stats = [
-    { label: "Усього відправлень", value: String(total), accent: "text-[#cfc9ba]" },
+    { label: "Усього відправлень", value: String(total), accent: "text-[#b8935a]" },
     { label: "У дорозі", value: String(inTransit), accent: "text-sky-400" },
     { label: "Вручено", value: String(countOf("DELIVERED")), accent: "text-green-400" },
     { label: "Вартість доставки", value: formatUAH(totalCost), accent: "text-brand" },
@@ -147,15 +147,15 @@ export default async function LogisticsPage({
                   <td className="px-6 py-3">
                     <Link href={`/logistics/${s.id}`} className="font-mono text-xs font-medium text-brand hover:underline">{s.ttn}</Link>
                   </td>
-                  <td className="px-6 py-3 text-[#cfc9ba]">{CARRIER_LABELS[s.carrier]}</td>
-                  <td className="px-6 py-3 text-[#cfc9ba]">{s.recipientName}</td>
+                  <td className="px-6 py-3 text-[#b8935a]">{CARRIER_LABELS[s.carrier]}</td>
+                  <td className="px-6 py-3 text-[#b8935a]">{s.recipientName}</td>
                   <td className="px-6 py-3 text-muted">{s.cityFrom ?? "—"} → {s.cityTo ?? "—"}</td>
                   <td className="px-6 py-3">
                     <Badge className={SHIPMENT_STATUS_COLORS[s.status]}>
                       {SHIPMENT_STATUS_LABELS[s.status]}
                     </Badge>
                   </td>
-                  <td className="px-6 py-3 text-right text-[#cfc9ba]">{s.cost ? formatUAH(s.cost) : "—"}</td>
+                  <td className="px-6 py-3 text-right text-[#b8935a]">{s.cost ? formatUAH(s.cost) : "—"}</td>
                   <td className="px-6 py-3 text-muted">{formatDate(s.createdAt)}</td>
                 </tr>
               ))}

@@ -39,7 +39,7 @@ export default async function PaymentCardPage({
         title={`Оплата #${p.number}`}
         subtitle={`${PAYMENT_DIRECTION_LABELS[p.direction]} · ${PAYMENT_METHOD_LABELS[p.method]}`}
         icon="finance"
-        action={<Link href="/finance" className="text-sm text-muted hover:text-[#cfc9ba]">← До списку</Link>}
+        action={<Link href="/finance" className="text-sm text-muted hover:text-[#b8935a]">← До списку</Link>}
       />
 
       <div className="grid gap-6 p-8 lg:grid-cols-3">
@@ -119,7 +119,7 @@ function Info({ label, value, full = false, href }: { label: string; value?: str
   return (
     <div className={full ? "col-span-2" : ""}>
       <dt className="text-xs text-muted">{label}</dt>
-      <dd className="mt-0.5 text-[#cfc9ba]">
+      <dd className="mt-0.5 text-[#b8935a]">
         {value ? (href ? <Link href={href} className="text-brand hover:underline">{value}</Link> : value) : "—"}
       </dd>
     </div>

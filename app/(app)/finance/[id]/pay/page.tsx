@@ -30,11 +30,11 @@ export default async function PayLiqpayPage({
         title={`Оплата #${p.number}`}
         subtitle="Перенаправлення на LiqPay…"
         icon="finance"
-        action={<Link href={`/finance/${id}`} className="text-sm text-muted hover:text-[#cfc9ba]">← Назад</Link>}
+        action={<Link href={`/finance/${id}`} className="text-sm text-muted hover:text-[#b8935a]">← Назад</Link>}
       />
       <div className="p-8">
         <Card className="max-w-md p-6 text-center">
-          <p className="mb-4 text-sm text-[#cfc9ba]">
+          <p className="mb-4 text-sm text-[#b8935a]">
             Сума до оплати: <span className="font-semibold">{formatUAH(p.amount)}</span>
           </p>
           <p className="mb-4 text-xs text-muted">

@@ -27,7 +27,7 @@ export function Sidebar({
     .join("");
 
   return (
-    <aside className="flex w-64 shrink-0 flex-col bg-[#0a0a0b] text-[#cfc9ba]">
+    <aside className="flex w-64 shrink-0 flex-col bg-[#0a0a0b] text-[#b8935a]">
       <div className="border-b border-brand/10 px-5 py-5">
         <div className="text-lg font-bold leading-tight text-foreground">
           MAKAR BUILD
@@ -95,7 +95,7 @@ export function Sidebar({
           </span>
         </Link>
         <form action={logoutAction} className="mt-3">
-          <button className="flex w-full items-center justify-center gap-2 rounded-lg border border-brand/15 bg-white/5 px-3 py-2 text-sm font-medium text-[#cfc9ba] transition-colors hover:bg-white/10 hover:text-foreground">
+          <button className="flex w-full items-center justify-center gap-2 rounded-lg border border-brand/15 bg-white/5 px-3 py-2 text-sm font-medium text-[#b8935a] transition-colors hover:bg-white/10 hover:text-foreground">
             <Icon name="logout" className="h-4 w-4" />
             Вийти
           </button>

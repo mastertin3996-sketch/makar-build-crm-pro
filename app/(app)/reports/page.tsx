@@ -83,7 +83,7 @@ function BarList({ rows }: { rows: { label: string; value: number; display: stri
           <div className="h-5 flex-1 rounded bg-white/5">
             <div className="h-5 rounded bg-brand" style={{ width: `${(row.value / max) * 100}%` }} />
           </div>
-          <div className="w-28 text-right text-sm font-medium text-[#cfc9ba]">{row.display}</div>
+          <div className="w-28 text-right text-sm font-medium text-[#b8935a]">{row.display}</div>
         </div>
       ))}
       {rows.length === 0 && <p className="text-sm text-muted">Немає даних</p>}
@@ -91,7 +91,7 @@ function BarList({ rows }: { rows: { label: string; value: number; display: stri
   );
 }
 
-function Stat({ label, value, accent = "text-[#cfc9ba]" }: { label: string; value: string; accent?: string }) {
+function Stat({ label, value, accent = "text-[#b8935a]" }: { label: string; value: string; accent?: string }) {
   return (
     <Card className="p-5">
       <div className="text-sm text-muted">{label}</div>
@@ -178,11 +178,11 @@ async function ManagersReport() {
         <tbody className="divide-y divide-brand/5">
           {rows.map((x) => (
             <tr key={x.user.id} className="hover:bg-white/5">
-              <td className="px-6 py-3 font-medium text-[#cfc9ba]">{x.user.fullName}</td>
+              <td className="px-6 py-3 font-medium text-[#b8935a]">{x.user.fullName}</td>
               <td className="px-6 py-3 text-muted">{ROLE_LABELS[x.user.role]}</td>
-              <td className="px-6 py-3 text-right text-[#cfc9ba]">{x.requests}</td>
-              <td className="px-6 py-3 text-right text-[#cfc9ba]">{x.orders}</td>
-              <td className="px-6 py-3 text-right font-medium text-[#cfc9ba]">{formatUAH(x.ordersSum)}</td>
+              <td className="px-6 py-3 text-right text-[#b8935a]">{x.requests}</td>
+              <td className="px-6 py-3 text-right text-[#b8935a]">{x.orders}</td>
+              <td className="px-6 py-3 text-right font-medium text-[#b8935a]">{formatUAH(x.ordersSum)}</td>
               <td className="px-6 py-3 text-right text-emerald-400">{formatUAH(x.paid)}</td>
             </tr>
           ))}
@@ -340,10 +340,10 @@ async function SourcesReport() {
         <tbody className="divide-y divide-brand/5">
           {rows.map(([source, v]) => (
             <tr key={source} className="hover:bg-white/5">
-              <td className="px-6 py-3 text-[#cfc9ba]">{SOURCE_LABELS[source as keyof typeof SOURCE_LABELS] ?? source}</td>
-              <td className="px-6 py-3 text-right text-[#cfc9ba]">{v.total}</td>
+              <td className="px-6 py-3 text-[#b8935a]">{SOURCE_LABELS[source as keyof typeof SOURCE_LABELS] ?? source}</td>
+              <td className="px-6 py-3 text-right text-[#b8935a]">{v.total}</td>
               <td className="px-6 py-3 text-right text-green-400">{v.won}</td>
-              <td className="px-6 py-3 text-right font-medium text-[#cfc9ba]">{v.total ? Math.round((v.won / v.total) * 100) : 0}%</td>
+              <td className="px-6 py-3 text-right font-medium text-[#b8935a]">{v.total ? Math.round((v.won / v.total) * 100) : 0}%</td>
             </tr>
           ))}
           {rows.length === 0 && <EmptyRow colSpan={4}>Немає даних</EmptyRow>}
