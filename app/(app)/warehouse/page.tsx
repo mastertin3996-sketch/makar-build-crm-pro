@@ -76,7 +76,7 @@ export default async function WarehousePage() {
           {stats.map((s) => (
             <Card key={s.label} className="p-5">
               <div className="text-sm text-muted">{s.label}</div>
-              <div className={`mt-2 text-2xl font-bold ${s.accent}`}>{s.value}</div>
+              <div className={`neon-glow mt-2 text-2xl font-bold ${s.accent}`}>{s.value}</div>
             </Card>
           ))}
         </div>
