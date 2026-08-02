@@ -50,7 +50,7 @@ export function Sidebar({
               className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                 active
                   ? "gold-metal"
-                  : "text-[#a9a190] hover:bg-white/5 hover:text-foreground"
+                  : "text-[#b8935a] hover:bg-white/5 hover:text-foreground"
               }`}
             >
               <Icon name={item.icon} className="h-[18px] w-[18px] shrink-0" />
