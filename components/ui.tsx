@@ -59,7 +59,7 @@ export function PageHeader({
   icon?: IconName;
 }) {
   return (
-    <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-brand/10 bg-background/90 px-8 py-5 backdrop-blur-sm">
+    <div className="sticky top-0 z-10 flex items-start justify-between gap-4 bg-background/90 px-8 py-5 backdrop-blur-sm">
       <div className="flex items-start gap-3">
         {icon && (
           <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand/10">
@@ -72,6 +72,7 @@ export function PageHeader({
         </div>
       </div>
       {action}
+      <div className="gold-divider absolute inset-x-0 bottom-0" />
     </div>
   );
 }

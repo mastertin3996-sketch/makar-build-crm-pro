@@ -32,7 +32,7 @@ export function Sidebar({
         {/* eslint-disable-next-line @next/next/no-img-element -- статичний PNG, оптимізатор next/image відхиляє цей файл (400) */}
         <img src="/logo.png" alt="MAKAR BUILD CRM PRO" className="h-auto w-full" />
       </div>
-      <div className="sidebar-divider" />
+      <div className="gold-divider" />
 
       <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-4">
         {items.map((item) => {
