@@ -39,7 +39,17 @@ export default async function AppLayout({
         soon={soon}
         user={{ fullName: user.fullName, role: user.role }}
       />
-      <main className="flex-1 overflow-x-hidden">{children}</main>
+      <div className="relative flex-1 overflow-x-hidden">
+        {/* Нерухомий фон лише в зоні контенту (праворуч від панелі) —
+            звичайний background-attachment:fixed рахує позицію відносно
+            viewport, а не цього блоку, тому фон фіксується окремим шаром
+            з явним відступом на ширину панелі (16rem), а не через сам <main>. */}
+        <div
+          className="fixed inset-y-0 right-0 -z-10 bg-background bg-cover bg-center bg-no-repeat"
+          style={{ left: "16rem", backgroundImage: "url('/bg-lion.png')" }}
+        />
+        <main className="relative">{children}</main>
+      </div>
     </div>
   );
 }

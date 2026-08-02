@@ -23,8 +23,7 @@ body {
 }
 
 body {
-  background: var(--color-background) url("/bg-lion.png") no-repeat center center fixed;
-  background-size: cover;
+  background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
