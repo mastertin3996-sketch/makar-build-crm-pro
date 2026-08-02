@@ -44,14 +44,11 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--color-brand) 30%, transparent);
+  background: linear-gradient(180deg, #8a5f16 0%, #f6e2a0 50%, #8a5f16 100%);
   border-radius: 999px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: color-mix(in srgb, var(--color-brand) 45%, transparent);
-  background-clip: padding-box;
+  filter: brightness(1.1);
 }
 
 /* Єдиний фокус-ring для всіх інтерактивних елементів замість розрізнених focus:border-* */
