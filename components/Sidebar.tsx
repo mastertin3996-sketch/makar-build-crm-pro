@@ -27,7 +27,7 @@ export function Sidebar({
     .join("");
 
   return (
-    <aside className="flex w-64 shrink-0 flex-col bg-[#0a0a0b] text-[#b8935a]">
+    <aside className="sidebar-glow flex w-64 shrink-0 flex-col text-[#b8935a]">
       <div className="border-b border-brand/10 px-5 py-5">
         {/* eslint-disable-next-line @next/next/no-img-element -- статичний PNG, оптимізатор next/image відхиляє цей файл (400) */}
         <img src="/logo.png" alt="MAKAR BUILD CRM PRO" className="h-auto w-full" />
