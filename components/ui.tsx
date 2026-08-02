@@ -90,11 +90,11 @@ export function Card({
 }) {
   return (
     <div
-      className={`rounded-xl border border-brand/10 bg-surface shadow-card transition-shadow ${
-        hoverable ? "hover:shadow-card-hover hover:border-brand/20" : ""
-      } ${className}`}
+      className={`card-border rounded-xl p-[3px] shadow-card transition-shadow ${
+        hoverable ? "hover:shadow-card-hover" : ""
+      }`}
     >
-      {children}
+      <div className={`rounded-[9px] bg-surface ${className}`}>{children}</div>
     </div>
   );
 }

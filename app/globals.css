@@ -98,3 +98,12 @@ body {
 .neon-glow {
   animation: neon-pulse 1.1s ease-in-out infinite;
 }
+
+/* Градієнтна рамка карток/таблиць (варіант 8 з /design-preview) —
+   той самий горизонтальний градієнт, що й у кнопок, але плоский (без фаски). */
+.card-border {
+  background: linear-gradient(90deg, #8a5f16 0%, #f6e2a0 50%, #8a5f16 100%);
+}
+.card-border:hover {
+  filter: brightness(1.1);
+}
