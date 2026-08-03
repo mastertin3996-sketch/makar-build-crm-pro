@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef, type MouseEvent } from "react";
+import { useState, useRef, useEffect, type MouseEvent } from "react";
+import { formatUAH } from "@/lib/labels";
 
 // Валідована категоріальна палітра (адаптована під золото-чорний бренд,
 // перевірена скриптом дата-віз скіла проти --color-background #0a0a0b):
@@ -8,6 +9,42 @@ import { useState, useRef, type MouseEvent } from "react";
 export const CHART_CATEGORICAL = ["#c9a227", "#3987e5", "#1fb787", "#9085e9", "#e66767"];
 // Ordinal-градієнт золота (світлий → темний) для впорядкованих етапів воронки.
 export const CHART_GOLD_ORDINAL = ["#f3e3ad", "#e2c465", "#d4af37", "#b8942c", "#8a6a1f", "#6b530f"];
+
+// ----------------------------------------------------------------------------
+// Лічильник цифр, що "накручується" від 0 до фінального значення
+// ----------------------------------------------------------------------------
+export function CountUp({
+  to,
+  duration = 500,
+  startDelay = 0,
+  format,
+}: {
+  to: number;
+  duration?: number;
+  startDelay?: number;
+  /** "currency" форматує через formatUAH; без значення — просте ціле число. */
+  format?: "currency";
+}) {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    let raf = 0;
+    const t0 = performance.now();
+    function tick(t: number) {
+      const elapsed = t - t0 - startDelay;
+      if (elapsed < 0) {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
+      const p = Math.min(1, elapsed / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setVal(Math.round(to * eased));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    }
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [to, duration, startDelay]);
+  return <>{format === "currency" ? formatUAH(val) : val}</>;
+}
 
 function pathFromPoints(data: number[], w: number, h: number, pad: number) {
   const max = Math.max(...data, 1);
@@ -29,10 +66,15 @@ export function AreaTrendChart({
   data,
   color = "#d4af37",
   height = 110,
+  animateDelay,
+  animateDuration = 1100,
 }: {
   data: { label: string; value: number; displayValue?: string }[];
   color?: string;
   height?: number;
+  /** Якщо задано — лінія "малюється", а заливка "піднімається" при першій появі. */
+  animateDelay?: number;
+  animateDuration?: number;
 }) {
   const w = 700;
   const pad = 8;
@@ -85,8 +127,24 @@ export function AreaTrendChart({
             <stop offset="100%" stopColor={color} stopOpacity={0} />
           </linearGradient>
         </defs>
-        <path d={areaPath} fill={`url(#${gradId})`} stroke="none" />
-        <path d={path} fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+        <path
+          d={areaPath}
+          fill={`url(#${gradId})`}
+          stroke="none"
+          className={animateDelay !== undefined ? "hero-rise" : undefined}
+          style={animateDelay !== undefined ? { animationDelay: `${animateDelay}ms`, animationDuration: `${animateDuration}ms` } : undefined}
+        />
+        <path
+          d={path}
+          fill="none"
+          stroke={color}
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          pathLength={animateDelay !== undefined ? 100 : undefined}
+          className={animateDelay !== undefined ? "hero-draw" : undefined}
+          style={animateDelay !== undefined ? { animationDelay: `${animateDelay}ms`, animationDuration: `${animateDuration}ms` } : undefined}
+        />
         {hp && (
           <>
             <line x1={hp.x} x2={hp.x} y1={pad} y2={height - pad} stroke="rgba(255,255,255,0.25)" strokeWidth={1} />
@@ -114,10 +172,15 @@ export function BarChartVertical({
   data,
   colors = CHART_GOLD_ORDINAL,
   height = 160,
+  animateDelay,
+  animateStagger = 100,
 }: {
   data: { label: string; value: number }[];
   colors?: string[];
   height?: number;
+  /** Якщо задано — стовпці виростають знизу по черзі при першій появі. */
+  animateDelay?: number;
+  animateStagger?: number;
 }) {
   const w = 100 * data.length;
   const max = Math.max(...data.map((d) => d.value), 1);
@@ -149,6 +212,12 @@ export function BarChartVertical({
               rx={4}
               fill={colors[i % colors.length]}
               opacity={hover === null || hover === i ? 1 : 0.55}
+              className={animateDelay !== undefined ? "bar-grow" : undefined}
+              style={
+                animateDelay !== undefined
+                  ? { animationDelay: `${animateDelay + i * animateStagger}ms`, transformOrigin: `${x + barW / 2}px ${chartH}px` }
+                  : undefined
+              }
             />
             <text x={x + barW / 2} y={chartH + 16} textAnchor="middle" fontSize={11} fill="#8c8578">
               {d.label}
@@ -170,10 +239,15 @@ export function DonutChart({
   data,
   colors = CHART_CATEGORICAL,
   size = 120,
+  animateDelay,
+  animateStagger = 120,
 }: {
   data: { label: string; value: number }[];
   colors?: string[];
   size?: number;
+  /** Якщо задано — сегменти вимальовуються по черзі при першій появі. */
+  animateDelay?: number;
+  animateStagger?: number;
 }) {
   const total = data.reduce((s, d) => s + d.value, 0) || 1;
   const r = size / 2 - 14;
@@ -208,7 +282,12 @@ export function DonutChart({
               opacity={hover === null || hover === i ? 1 : 0.4}
               onMouseEnter={() => setHover(i)}
               onMouseLeave={() => setHover(null)}
-              style={{ cursor: "pointer", transition: "opacity 0.15s" }}
+              className={animateDelay !== undefined ? "donut-sweep" : undefined}
+              style={{
+                cursor: "pointer",
+                transition: "opacity 0.15s",
+                ...(animateDelay !== undefined ? { animationDelay: `${animateDelay + i * animateStagger}ms` } : {}),
+              }}
             >
               <title>{`${d.label}: ${d.value}`}</title>
             </circle>

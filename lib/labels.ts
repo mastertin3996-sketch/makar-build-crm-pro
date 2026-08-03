@@ -360,11 +360,10 @@ export const MOVEMENT_COLORS: Record<string, string> = {
 };
 
 export function formatUAH(value: number): string {
-  return new Intl.NumberFormat("uk-UA", {
-    style: "currency",
-    currency: "UAH",
-    maximumFractionDigits: 0,
-  }).format(value);
+  // Символ валюти додається вручну (а не через style: "currency"), бо Intl
+  // резолвить позначення UAH по-різному в Node (₴) і в браузерах (грн) —
+  // це давало розбіжність між серверно- і клієнтськи відформатованими сумами.
+  return `${new Intl.NumberFormat("uk-UA", { maximumFractionDigits: 0 }).format(value)} ₴`;
 }
 
 export function monthKey(d: Date | string): string {

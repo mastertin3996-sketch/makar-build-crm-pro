@@ -5,7 +5,8 @@ import { canFinance } from "@/lib/permissions";
 import { PageHeader, Card, StatusBadge } from "@/components/ui";
 import { Icon, type IconName } from "@/components/icons";
 import { RadialMeter } from "@/components/RadialMeter";
-import { AreaTrendChart, BarChartVertical, DonutChart, KpiDelta } from "@/components/charts";
+import { AreaTrendChart, BarChartVertical, DonutChart, KpiDelta, CountUp } from "@/components/charts";
+import { DASHBOARD_ANIM_PACE } from "@/lib/dashboardAnim";
 import {
   STATUS_LABELS,
   STATUS_ORDER,
@@ -104,25 +105,32 @@ export default async function DashboardPage() {
   const salesPrevHalf = salesTrend.slice(0, trendHalf).reduce((s, d) => s + d.value, 0);
   const salesRecentHalf = salesTrend.slice(trendHalf).reduce((s, d) => s + d.value, 0);
 
-  const stats: { label: string; value: string; icon: IconName; delta?: { current: number; previous: number } }[] = [
+  const stats: {
+    label: string;
+    value: number;
+    format?: "currency";
+    icon: IconName;
+    delta?: { current: number; previous: number };
+  }[] = [
     // Фінансові показники — лише за наявності права на перегляд оплат
     ...(showPayments
       ? [
           {
             label: "Продажі (оплачені)",
-            value: formatUAH(totalSales),
+            value: totalSales,
+            format: "currency" as const,
             icon: "finance" as const,
             delta: { current: salesRecentHalf, previous: salesPrevHalf },
           },
-          { label: "Очікування оплат", value: formatUAH(awaitingPayment), icon: "clock" as const },
+          { label: "Очікування оплат", value: awaitingPayment, format: "currency" as const, icon: "clock" as const },
         ]
       : []),
-    { label: "Нові заявки", value: String(newLeads), icon: "plus" as const },
-    { label: "Активні замовлення", value: String(activeOrders), icon: "orders" as const },
-    { label: "Відправлень в дорозі", value: String(inTransit), icon: "logistics" as const },
-    { label: "Клієнтів у базі", value: String(clientsCount), icon: "clients" as const },
-    { label: "Позицій у каталозі", value: String(productsCount), icon: "catalog" as const },
-    { label: "Усього заявок", value: String(requests.length), icon: "requests" as const },
+    { label: "Нові заявки", value: newLeads, icon: "plus" as const },
+    { label: "Активні замовлення", value: activeOrders, icon: "orders" as const },
+    { label: "Відправлень в дорозі", value: inTransit, icon: "logistics" as const },
+    { label: "Клієнтів у базі", value: clientsCount, icon: "clients" as const },
+    { label: "Позицій у каталозі", value: productsCount, icon: "catalog" as const },
+    { label: "Усього заявок", value: requests.length, icon: "requests" as const },
   ];
 
   return (
@@ -134,20 +142,29 @@ export default async function DashboardPage() {
       />
 
       <div className="p-8 space-y-8">
-        {/* KPI показники */}
+        {/* KPI показники — поява: скелетон → pop + лічильник цифр */}
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          {stats.map((s) => (
-            <div key={s.label} className="card-glass rounded-lg px-3 py-2.5">
-              <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-muted">
-                <Icon name={s.icon} className="h-3.5 w-3.5 text-brand" />
-                {s.label}
+          {stats.map((s, i) => {
+            const delay = DASHBOARD_ANIM_PACE.kpiRevealAt + i * DASHBOARD_ANIM_PACE.kpiStagger;
+            return (
+              <div
+                key={s.label}
+                className="card-glass kpi-pop rounded-lg px-3 py-2.5"
+                style={{ animationDelay: `0ms, ${delay}ms`, animationDuration: `${DASHBOARD_ANIM_PACE.skeletonMs}ms, 500ms` }}
+              >
+                <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-muted">
+                  <Icon name={s.icon} className="h-3.5 w-3.5 text-brand" />
+                  {s.label}
+                </div>
+                <div className="mt-1 flex items-baseline gap-2">
+                  <span className="text-xl font-bold text-foreground">
+                    <CountUp to={s.value} startDelay={delay} format={s.format} />
+                  </span>
+                  {s.delta && <KpiDelta current={s.delta.current} previous={s.delta.previous} />}
+                </div>
               </div>
-              <div className="mt-1 flex items-baseline gap-2">
-                <span className="text-xl font-bold text-foreground">{s.value}</span>
-                {s.delta && <KpiDelta current={s.delta.current} previous={s.delta.previous} />}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Тренд продажів — hero-графік на всю ширину */}
@@ -156,7 +173,13 @@ export default async function DashboardPage() {
             <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
               Продажі, останні {TREND_DAYS} днів
             </h2>
-            <AreaTrendChart data={salesTrend} color="#d4af37" height={130} />
+            <AreaTrendChart
+              data={salesTrend}
+              color="#d4af37"
+              height={130}
+              animateDelay={DASHBOARD_ANIM_PACE.heroAt}
+              animateDuration={DASHBOARD_ANIM_PACE.heroDuration}
+            />
           </Card>
         )}
 
@@ -178,14 +201,24 @@ export default async function DashboardPage() {
                 <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
                   Джерела лідів
                 </h2>
-                <DonutChart data={bySource} size={120} />
+                <DonutChart
+                  data={bySource}
+                  size={120}
+                  animateDelay={DASHBOARD_ANIM_PACE.comboAt}
+                  animateStagger={DASHBOARD_ANIM_PACE.comboStagger}
+                />
               </div>
 
               <div>
                 <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
                   Заявки за статусами
                 </h2>
-                <BarChartVertical data={byStatus} height={160} />
+                <BarChartVertical
+                  data={byStatus}
+                  height={160}
+                  animateDelay={DASHBOARD_ANIM_PACE.comboAt}
+                  animateStagger={DASHBOARD_ANIM_PACE.comboStagger}
+                />
               </div>
             </div>
           </div>
