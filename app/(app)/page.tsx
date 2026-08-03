@@ -2,9 +2,10 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireUser, requestScopeWhere } from "@/lib/auth";
 import { canFinance } from "@/lib/permissions";
-import { PageHeader, Card, StatusBadge, PlatformIcon } from "@/components/ui";
-import { Icon } from "@/components/icons";
+import { PageHeader, Card, StatusBadge } from "@/components/ui";
+import { Icon, type IconName } from "@/components/icons";
 import { RadialMeter } from "@/components/RadialMeter";
+import { AreaTrendChart, BarChartVertical, DonutChart, KpiDelta } from "@/components/charts";
 import {
   STATUS_LABELS,
   STATUS_ORDER,
@@ -74,13 +75,45 @@ export default async function DashboardPage() {
       value: count,
       icon: SOURCE_ICONS[source as RequestSource],
     }));
-  const maxSource = Math.max(...bySource.map((s) => s.value), 1);
 
-  const stats = [
+  // Тренд продажів за останні 30 днів — hero-графік і дельта для KPI "Продажі"
+  const TREND_DAYS = 30;
+  const dayKey = (d: Date) => d.toISOString().slice(0, 10);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const days = Array.from({ length: TREND_DAYS }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(d.getDate() - (TREND_DAYS - 1 - i));
+    return d;
+  });
+  const salesByDay = new Map<string, number>();
+  for (const r of requests) {
+    if (!PAID.includes(r.status)) continue;
+    const key = dayKey(new Date(r.createdAt));
+    salesByDay.set(key, (salesByDay.get(key) ?? 0) + r.amount);
+  }
+  const salesTrend = days.map((d) => {
+    const value = salesByDay.get(dayKey(d)) ?? 0;
+    return {
+      label: d.toLocaleDateString("uk-UA", { day: "2-digit", month: "2-digit" }),
+      value,
+      displayValue: formatUAH(value),
+    };
+  });
+  const trendHalf = Math.floor(TREND_DAYS / 2);
+  const salesPrevHalf = salesTrend.slice(0, trendHalf).reduce((s, d) => s + d.value, 0);
+  const salesRecentHalf = salesTrend.slice(trendHalf).reduce((s, d) => s + d.value, 0);
+
+  const stats: { label: string; value: string; icon: IconName; delta?: { current: number; previous: number } }[] = [
     // Фінансові показники — лише за наявності права на перегляд оплат
     ...(showPayments
       ? [
-          { label: "Продажі (оплачені)", value: formatUAH(totalSales), icon: "finance" as const },
+          {
+            label: "Продажі (оплачені)",
+            value: formatUAH(totalSales),
+            icon: "finance" as const,
+            delta: { current: salesRecentHalf, previous: salesPrevHalf },
+          },
           { label: "Очікування оплат", value: formatUAH(awaitingPayment), icon: "clock" as const },
         ]
       : []),
@@ -102,20 +135,30 @@ export default async function DashboardPage() {
 
       <div className="p-8 space-y-8">
         {/* KPI показники */}
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {stats.map((s) => (
-            <div
-              key={s.label}
-              className="border-b-2 border-transparent px-1 py-3 transition-colors hover:border-brand"
-            >
-              <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted">
+            <div key={s.label} className="rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2.5">
+              <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-muted">
                 <Icon name={s.icon} className="h-3.5 w-3.5 text-brand" />
                 {s.label}
               </div>
-              <div className="mt-1.5 text-2xl font-bold text-foreground">{s.value}</div>
+              <div className="mt-1 flex items-baseline gap-2">
+                <span className="text-xl font-bold text-foreground">{s.value}</span>
+                {s.delta && <KpiDelta current={s.delta.current} previous={s.delta.previous} />}
+              </div>
             </div>
           ))}
         </div>
+
+        {/* Тренд продажів — hero-графік на всю ширину */}
+        {showPayments && (
+          <Card className="p-6 md:p-8">
+            <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
+              Продажі, останні {TREND_DAYS} днів
+            </h2>
+            <AreaTrendChart data={salesTrend} color="#d4af37" height={130} />
+          </Card>
+        )}
 
         <Card className="p-6 md:p-8">
           <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
@@ -130,52 +173,19 @@ export default async function DashboardPage() {
               </div>
             </div>
 
-            <div>
-              {/* Джерела лідів — рейтинг */}
-              <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
-                Джерела лідів — рейтинг
-              </h2>
-              <div className="space-y-3">
-                {bySource.map((d, i) => (
-                  <div key={d.label} className="flex items-center gap-3">
-                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand text-[11px] font-bold text-background">
-                      {i + 1}
-                    </div>
-                    <span className="flex w-5 shrink-0 items-center justify-center">
-                      <PlatformIcon id={d.source} fallback={d.icon} size={16} />
-                    </span>
-                    <div className="w-24 shrink-0 truncate text-sm text-[#b8935a]" title={d.label}>
-                      {d.label}
-                    </div>
-                    <div className="h-2 flex-1 rounded-full bg-white/5">
-                      <div
-                        className="h-2 rounded-full bg-brand"
-                        style={{ width: `${(d.value / maxSource) * 100}%` }}
-                      />
-                    </div>
-                    <div className="w-6 shrink-0 text-right text-sm font-bold tabular-nums text-foreground">
-                      {d.value}
-                    </div>
-                  </div>
-                ))}
+            <div className="grid gap-6 sm:grid-cols-2">
+              <div>
+                <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
+                  Джерела лідів
+                </h2>
+                <DonutChart data={bySource} size={120} />
               </div>
 
-              {/* Заявки за статусами — чіпи */}
-              <h2 className="mb-3 mt-7 text-sm font-semibold uppercase tracking-wide text-muted">
-                Заявки за статусами
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {byStatus.map((d) => (
-                  <div
-                    key={d.label}
-                    className="flex items-center gap-2 rounded-full border border-brand/15 bg-white/5 px-3 py-1.5 text-sm"
-                  >
-                    <span className="text-[#b8935a]">{d.label}</span>
-                    <span className="rounded-full bg-brand px-1.5 py-0.5 text-xs font-bold text-background">
-                      {d.value}
-                    </span>
-                  </div>
-                ))}
+              <div>
+                <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
+                  Заявки за статусами
+                </h2>
+                <BarChartVertical data={byStatus} height={160} />
               </div>
             </div>
           </div>
