@@ -137,7 +137,7 @@ export default async function DashboardPage() {
         {/* KPI показники */}
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {stats.map((s) => (
-            <div key={s.label} className="rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2.5">
+            <div key={s.label} className="card-glass rounded-lg px-3 py-2.5">
               <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-muted">
                 <Icon name={s.icon} className="h-3.5 w-3.5 text-brand" />
                 {s.label}
